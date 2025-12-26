@@ -28,32 +28,26 @@ class MyTextForm extends StatelessWidget {
   final Function(String)? onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: elevation,
-      margin: margin,
-      child: _buildTextFormField(context),
-    );
-  }
+  Widget build(BuildContext context) => Card(
+    elevation: elevation,
+    margin: margin,
+    child: _buildTextFormField(context),
+  );
 
-  Widget _buildTextFormField(BuildContext context) {
-    return TextFormField(
-      focusNode: focusNode,
-      controller: controller,
-      keyboardType: type,
-      style: context.textTheme.labelLarge,
-      decoration: _buildInputDecoration(),
-      validator: validator,
-      onChanged: onChanged,
-    );
-  }
+  Widget _buildTextFormField(BuildContext context) => TextFormField(
+    focusNode: focusNode,
+    controller: controller,
+    keyboardType: type,
+    style: context.textTheme.labelLarge,
+    decoration: _buildInputDecoration(),
+    validator: validator,
+    onChanged: onChanged,
+  );
 
-  InputDecoration _buildInputDecoration() {
-    return InputDecoration(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12.5, vertical: 0),
-      prefixIcon: icon,
-      suffixIcon: iconButton,
-      labelText: labelText,
-    );
-  }
+  InputDecoration _buildInputDecoration() => InputDecoration(
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12.5, vertical: 0),
+    prefixIcon: icon,
+    suffixIcon: iconButton,
+    labelText: labelText,
+  );
 }

@@ -44,34 +44,28 @@ class _HourlyState extends State<Hourly> {
     );
   }
 
-  Widget _buildTimeText(TextTheme textTheme, String time) {
-    return Column(
-      children: [
-        Text(statusData.getTimeFormat(time), style: textTheme.labelLarge),
-        Text(
-          DateFormat('E', locale.languageCode).format(DateTime.tryParse(time)!),
-          style: textTheme.labelLarge?.copyWith(color: Colors.grey),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWeatherImage() {
-    return Image.asset(
-      statusWeather.getImageToday(
-        widget.weather,
-        widget.time,
-        widget.timeDay,
-        widget.timeNight,
+  Widget _buildTimeText(TextTheme textTheme, String time) => Column(
+    children: [
+      Text(statusData.getTimeFormat(time), style: textTheme.labelLarge),
+      Text(
+        DateFormat('E', locale.languageCode).format(DateTime.tryParse(time)!),
+        style: textTheme.labelLarge?.copyWith(color: Colors.grey),
       ),
-      scale: 3,
-    );
-  }
+    ],
+  );
 
-  Widget _buildTemperatureText(TextTheme textTheme) {
-    return Text(
-      statusData.getDegree(widget.degree.round()),
-      style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-    );
-  }
+  Widget _buildWeatherImage() => Image.asset(
+    statusWeather.getImageToday(
+      widget.weather,
+      widget.time,
+      widget.timeDay,
+      widget.timeNight,
+    ),
+    scale: 3,
+  );
+
+  Widget _buildTemperatureText(TextTheme textTheme) => Text(
+    statusData.getDegree(widget.degree.round()),
+    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+  );
 }

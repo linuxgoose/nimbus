@@ -161,171 +161,151 @@ class _PlaceActionState extends State<PlaceAction>
     );
   }
 
-  Widget _buildTitleText() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 14, bottom: 7),
-      child: Text(
-        widget.edit ? 'edit'.tr : 'create'.tr,
-        style: context.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
-        textAlign: TextAlign.center,
+  Widget _buildTitleText() => Padding(
+    padding: const EdgeInsets.only(top: 14, bottom: 7),
+    child: Text(
+      widget.edit ? 'edit'.tr : 'create'.tr,
+      style: context.textTheme.titleLarge?.copyWith(
+        fontWeight: FontWeight.bold,
       ),
-    );
-  }
+      textAlign: TextAlign.center,
+    ),
+  );
 
-  Widget _buildSearchField() {
-    return RawAutocomplete<Result>(
-      focusNode: _focusNode,
-      textEditingController: _controller,
-      fieldViewBuilder:
-          (
-            BuildContext context,
-            TextEditingController fieldTextEditingController,
-            FocusNode fieldFocusNode,
-            VoidCallback onFieldSubmitted,
-          ) {
-            return MyTextForm(
-              elevation: kTextFieldElevation,
-              labelText: 'search'.tr,
-              type: TextInputType.text,
-              icon: const Icon(IconsaxPlusLinear.global_search),
-              controller: _controller,
-              margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-              focusNode: _focusNode,
-            );
-          },
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text.isEmpty) {
-          return const Iterable<Result>.empty();
-        }
-        return WeatherAPI().getCity(textEditingValue.text, locale);
-      },
-      onSelected: (Result selection) => fillController(selection),
-      displayStringForOption: (Result option) =>
-          '${option.name}, ${option.admin1}',
-      optionsViewBuilder:
-          (
-            BuildContext context,
-            AutocompleteOnSelected<Result> onSelected,
-            Iterable<Result> options,
-          ) {
-            return _buildOptionsView(context, onSelected, options);
-          },
-    );
-  }
+  Widget _buildSearchField() => RawAutocomplete<Result>(
+    focusNode: _focusNode,
+    textEditingController: _controller,
+    fieldViewBuilder:
+        (
+          BuildContext context,
+          TextEditingController fieldTextEditingController,
+          FocusNode fieldFocusNode,
+          VoidCallback onFieldSubmitted,
+        ) => MyTextForm(
+          elevation: kTextFieldElevation,
+          labelText: 'search'.tr,
+          type: TextInputType.text,
+          icon: const Icon(IconsaxPlusLinear.global_search),
+          controller: _controller,
+          margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+          focusNode: _focusNode,
+        ),
+    optionsBuilder: (TextEditingValue textEditingValue) {
+      if (textEditingValue.text.isEmpty) {
+        return const Iterable<Result>.empty();
+      }
+      return WeatherAPI().getCity(textEditingValue.text, locale);
+    },
+    onSelected: (Result selection) => fillController(selection),
+    displayStringForOption: (Result option) =>
+        '${option.name}, ${option.admin1}',
+    optionsViewBuilder:
+        (
+          BuildContext context,
+          AutocompleteOnSelected<Result> onSelected,
+          Iterable<Result> options,
+        ) => _buildOptionsView(context, onSelected, options),
+  );
 
   Widget _buildOptionsView(
     BuildContext context,
     AutocompleteOnSelected<Result> onSelected,
     Iterable<Result> options,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: Material(
-          borderRadius: BorderRadius.circular(20),
-          elevation: 4.0,
-          child: ListView.builder(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            itemCount: options.length,
-            itemBuilder: (BuildContext context, int index) {
-              final Result option = options.elementAt(index);
-              return InkWell(
-                onTap: () => onSelected(option),
-                child: ListTile(
-                  title: Text(
-                    '${option.name}, ${option.admin1}',
-                    style: context.textTheme.labelLarge,
-                  ),
+  ) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    child: Align(
+      alignment: Alignment.topCenter,
+      child: Material(
+        borderRadius: BorderRadius.circular(20),
+        elevation: 4.0,
+        child: ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          itemCount: options.length,
+          itemBuilder: (BuildContext context, int index) {
+            final Result option = options.elementAt(index);
+            return InkWell(
+              onTap: () => onSelected(option),
+              child: ListTile(
+                title: Text(
+                  '${option.name}, ${option.admin1}',
+                  style: context.textTheme.labelLarge,
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _buildLatitudeField() {
-    return MyTextForm(
-      elevation: kTextFieldElevation,
-      controller: _controllerLat,
-      labelText: 'lat'.tr,
-      type: TextInputType.number,
-      icon: const Icon(IconsaxPlusLinear.location),
-      onChanged: (value) {
-        controller.lat.value = value;
-        setState(() {});
-      },
-      margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-      validator: (value) => _validateLatitude(value),
-    );
-  }
+  Widget _buildLatitudeField() => MyTextForm(
+    elevation: kTextFieldElevation,
+    controller: _controllerLat,
+    labelText: 'lat'.tr,
+    type: TextInputType.number,
+    icon: const Icon(IconsaxPlusLinear.location),
+    onChanged: (value) {
+      controller.lat.value = value;
+      setState(() {});
+    },
+    margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+    validator: (value) => _validateLatitude(value),
+  );
 
-  Widget _buildLongitudeField() {
-    return MyTextForm(
-      elevation: kTextFieldElevation,
-      controller: _controllerLon,
-      labelText: 'lon'.tr,
-      type: TextInputType.number,
-      icon: const Icon(IconsaxPlusLinear.location),
-      onChanged: (value) {
-        controller.lon.value = value;
-        setState(() {});
-      },
-      margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-      validator: (value) => _validateLongitude(value),
-    );
-  }
+  Widget _buildLongitudeField() => MyTextForm(
+    elevation: kTextFieldElevation,
+    controller: _controllerLon,
+    labelText: 'lon'.tr,
+    type: TextInputType.number,
+    icon: const Icon(IconsaxPlusLinear.location),
+    onChanged: (value) {
+      controller.lon.value = value;
+      setState(() {});
+    },
+    margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+    validator: (value) => _validateLongitude(value),
+  );
 
-  Widget _buildCityField() {
-    return MyTextForm(
-      elevation: kTextFieldElevation,
-      controller: _controllerCity,
-      labelText: 'city'.tr,
-      type: TextInputType.name,
-      icon: const Icon(IconsaxPlusLinear.building_3),
-      onChanged: (value) {
-        controller.city.value = value;
-        setState(() {});
-      },
-      margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-      validator: (value) => _validateCity(value),
-    );
-  }
+  Widget _buildCityField() => MyTextForm(
+    elevation: kTextFieldElevation,
+    controller: _controllerCity,
+    labelText: 'city'.tr,
+    type: TextInputType.name,
+    icon: const Icon(IconsaxPlusLinear.building_3),
+    onChanged: (value) {
+      controller.city.value = value;
+      setState(() {});
+    },
+    margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+    validator: (value) => _validateCity(value),
+  );
 
-  Widget _buildDistrictField() {
-    return MyTextForm(
-      elevation: kTextFieldElevation,
-      controller: _controllerDistrict,
-      labelText: 'district'.tr,
-      type: TextInputType.streetAddress,
-      icon: const Icon(IconsaxPlusLinear.global),
-      onChanged: (value) {
-        controller.district.value = value;
-        setState(() {});
-      },
-      margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
-      validator: (value) => _validateDistrict(value),
-    );
-  }
+  Widget _buildDistrictField() => MyTextForm(
+    elevation: kTextFieldElevation,
+    controller: _controllerDistrict,
+    labelText: 'district'.tr,
+    type: TextInputType.streetAddress,
+    icon: const Icon(IconsaxPlusLinear.global),
+    onChanged: (value) {
+      controller.district.value = value;
+      setState(() {});
+    },
+    margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
+    validator: (value) => _validateDistrict(value),
+  );
 
-  Widget _buildSubmitButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: SizeTransition(
-        sizeFactor: _animation,
-        axisAlignment: -1.0,
-        child: MyTextButton(
-          buttonName: 'done'.tr,
-          onPressed: controller.canCompose.value ? _handleSubmit : null,
-        ),
+  Widget _buildSubmitButton() => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+    child: SizeTransition(
+      sizeFactor: _animation,
+      axisAlignment: -1.0,
+      child: MyTextButton(
+        buttonName: 'done'.tr,
+        onPressed: controller.canCompose.value ? _handleSubmit : null,
       ),
-    );
-  }
+    ),
+  );
 
   String? _validateLatitude(String? value) {
     if (value == null || value.isEmpty) {

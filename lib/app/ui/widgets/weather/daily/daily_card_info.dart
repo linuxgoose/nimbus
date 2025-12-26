@@ -67,9 +67,8 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
             });
           },
           itemCount: timeDaily.length,
-          itemBuilder: (context, index) {
-            return _buildPageContent(context, weatherData, index);
-          },
+          itemBuilder: (context, index) =>
+              _buildPageContent(context, weatherData, index),
         ),
       ),
     );
@@ -79,25 +78,23 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     BuildContext context,
     TextTheme textTheme,
     List<DateTime> timeDaily,
-  ) {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      centerTitle: true,
-      leading: IconButton(
-        onPressed: () => Get.back(),
-        icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+  ) => AppBar(
+    automaticallyImplyLeading: false,
+    centerTitle: true,
+    leading: IconButton(
+      onPressed: () => Get.back(),
+      icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+    ),
+    title: Text(
+      DateFormat.MMMMEEEEd(locale.languageCode).format(timeDaily[pageIndex]),
+      style: textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
       ),
-      title: Text(
-        DateFormat.MMMMEEEEd(locale.languageCode).format(timeDaily[pageIndex]),
-        style: textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-        ),
-      ),
-    );
-  }
+    ),
+  );
 
   Widget _buildPageContent(
     BuildContext context,
@@ -206,38 +203,29 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     int startIndex,
     String sunrise,
     String sunset,
-  ) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 15),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: SizedBox(
-          height: 135,
-          child: ScrollablePositionedList.separated(
-            separatorBuilder: (BuildContext context, int index) {
-              return const VerticalDivider(
-                width: 10,
-                indent: 40,
-                endIndent: 40,
-              );
-            },
-            scrollDirection: Axis.horizontal,
-            itemCount: 24,
-            itemBuilder: (ctx, i) {
-              return _buildHourlyItem(
-                context,
-                weatherData,
-                startIndex,
-                i,
-                sunrise,
-                sunset,
-              );
-            },
+  ) => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: SizedBox(
+        height: 135,
+        child: ScrollablePositionedList.separated(
+          separatorBuilder: (BuildContext context, int index) =>
+              const VerticalDivider(width: 10, indent: 40, endIndent: 40),
+          scrollDirection: Axis.horizontal,
+          itemCount: 24,
+          itemBuilder: (ctx, i) => _buildHourlyItem(
+            context,
+            weatherData,
+            startIndex,
+            i,
+            sunrise,
+            sunset,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 
   Widget _buildHourlyItem(
     BuildContext context,
@@ -259,11 +247,7 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     }
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          hourOfDay = i;
-        });
-      },
+      onTap: () => setState(() => hourOfDay = i),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -284,9 +268,8 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     );
   }
 
-  Widget _buildSunsetSunriseWidget(String sunrise, String sunset) {
-    return SunsetSunrise(timeSunrise: sunrise, timeSunset: sunset);
-  }
+  Widget _buildSunsetSunriseWidget(String sunrise, String sunset) =>
+      SunsetSunrise(timeSunrise: sunrise, timeSunset: sunset);
 
   Widget _buildHourlyDescContainer(
     WeatherCard weatherData,
@@ -330,19 +313,17 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     int? precipitationProbabilityMax,
     double? rainSum,
     double? precipitationSum,
-  ) {
-    return DescContainer(
-      apparentTemperatureMin: apparentTemperatureMin,
-      apparentTemperatureMax: apparentTemperatureMax,
-      uvIndexMax: uvIndexMax,
-      windDirection10MDominant: windDirection10MDominant,
-      windSpeed10MMax: windSpeed10MMax,
-      windGusts10MMax: windGusts10MMax,
-      precipitationProbabilityMax: precipitationProbabilityMax,
-      rainSum: rainSum,
-      precipitationSum: precipitationSum,
-      initiallyExpanded: true,
-      title: 'dailyVariables'.tr,
-    );
-  }
+  ) => DescContainer(
+    apparentTemperatureMin: apparentTemperatureMin,
+    apparentTemperatureMax: apparentTemperatureMax,
+    uvIndexMax: uvIndexMax,
+    windDirection10MDominant: windDirection10MDominant,
+    windSpeed10MMax: windSpeed10MMax,
+    windGusts10MMax: windGusts10MMax,
+    precipitationProbabilityMax: precipitationProbabilityMax,
+    rainSum: rainSum,
+    precipitationSum: precipitationSum,
+    initiallyExpanded: true,
+    title: 'dailyVariables'.tr,
+  );
 }

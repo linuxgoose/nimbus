@@ -71,26 +71,24 @@ class _DescContainerState extends State<DescContainer> {
   final message = Message();
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 15),
-      child: ExpansionTile(
-        shape: const Border(),
-        title: Text(widget.title, style: context.textTheme.labelLarge),
-        initiallyExpanded: widget.initiallyExpanded,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20, bottom: 5),
-            child: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              spacing: 5,
-              children: _buildWeatherDescriptions(context),
-            ),
+  Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: ExpansionTile(
+      shape: const Border(),
+      title: Text(widget.title, style: context.textTheme.labelLarge),
+      initiallyExpanded: widget.initiallyExpanded,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 5),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            spacing: 5,
+            children: _buildWeatherDescriptions(context),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
   List<Widget> _buildWeatherDescriptions(BuildContext context) {
     final List<Widget> descriptions = [];

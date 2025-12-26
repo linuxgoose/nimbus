@@ -266,12 +266,12 @@ class WeatherController extends GetxController {
       return;
     }
 
-    isar.writeTxnSync(() {
-      isar.mainWeatherCaches
+    isar.writeTxnSync(
+      () => isar.mainWeatherCaches
           .filter()
           .timestampLessThan(cacheExpiry)
-          .deleteAllSync();
-    });
+          .deleteAllSync(),
+    );
     if (isar.mainWeatherCaches.where().findAllSync().isEmpty) {
       await flutterLocalNotificationsPlugin.cancelAll();
     }
@@ -437,32 +437,24 @@ class WeatherController extends GetxController {
       weatherCard.timezone!,
     );
 
-    isar.writeTxnSync(() {
-      _updateWeatherCard(weatherCard, updatedCard);
-    });
+    isar.writeTxnSync(() => _updateWeatherCard(weatherCard, updatedCard));
   }
 
-  Future<void> deleteCardWeather(WeatherCard weatherCard) async {
-    isar.writeTxnSync(() {
-      weatherCards.remove(weatherCard);
-      isar.weatherCards.deleteSync(weatherCard.id);
-    });
-  }
+  Future<void> deleteCardWeather(WeatherCard weatherCard) async =>
+      await isar.writeTxnSync(() {
+        weatherCards.remove(weatherCard);
+        isar.weatherCards.deleteSync(weatherCard.id);
+      });
 
-  int getTime(List<String> time, String timezone) {
-    return time.indexWhere((t) {
-      final dateTime = DateTime.parse(t);
-      return tz.TZDateTime.now(tz.getLocation(timezone)).hour ==
-              dateTime.hour &&
-          tz.TZDateTime.now(tz.getLocation(timezone)).day == dateTime.day;
-    });
-  }
+  int getTime(List<String> time, String timezone) => time.indexWhere((t) {
+    final dateTime = DateTime.parse(t);
+    return tz.TZDateTime.now(tz.getLocation(timezone)).hour == dateTime.hour &&
+        tz.TZDateTime.now(tz.getLocation(timezone)).day == dateTime.day;
+  });
 
-  int getDay(List<DateTime> time, String timezone) {
-    return time.indexWhere(
-      (t) => tz.TZDateTime.now(tz.getLocation(timezone)).day == t.day,
-    );
-  }
+  int getDay(List<DateTime> time, String timezone) => time.indexWhere(
+    (t) => tz.TZDateTime.now(tz.getLocation(timezone)).day == t.day,
+  );
 
   TimeOfDay parseTime(String? timeStr) {
     if (timeStr == null) {
@@ -481,9 +473,8 @@ class WeatherController extends GetxController {
     }
   }
 
-  String timeTo24h(TimeOfDay time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-  }
+  String timeTo24h(TimeOfDay time) =>
+      '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
   String formatTime(String? timeStr) {
     final time = parseTime(timeStr);
@@ -564,9 +555,7 @@ class WeatherController extends GetxController {
 
   Future<bool> updateWidgetBackgroundColor(String color) async {
     settings.widgetBackgroundColor = color;
-    isar.writeTxnSync(() {
-      isar.settings.putSync(settings);
-    });
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
 
     final results = await Future.wait<bool?>([
       HomeWidget.saveWidgetData('background_color', color),
@@ -577,9 +566,7 @@ class WeatherController extends GetxController {
 
   Future<bool> updateWidgetTextColor(String color) async {
     settings.widgetTextColor = color;
-    isar.writeTxnSync(() {
-      isar.settings.putSync(settings);
-    });
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
 
     final results = await Future.wait<bool?>([
       HomeWidget.saveWidgetData('text_color', color),

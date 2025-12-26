@@ -31,25 +31,23 @@ class _DailyCardListState extends State<DailyCardList> {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      automaticallyImplyLeading: false,
-      centerTitle: true,
-      leading: IconButton(
-        onPressed: () => Get.back(),
-        icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+  AppBar _buildAppBar(BuildContext context) => AppBar(
+    automaticallyImplyLeading: false,
+    centerTitle: true,
+    leading: IconButton(
+      onPressed: () => Get.back(),
+      icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+    ),
+    title: Text(
+      'weatherMore'.tr,
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
       ),
-      title: Text(
-        'weatherMore'.tr,
-        style: context.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-        ),
-      ),
-    );
-  }
+    ),
+  );
 
   Widget _buildDailyCardItem(
     BuildContext context,
