@@ -63,6 +63,8 @@ class _NowState extends State<Now> {
           statusWeather.getText(widget.weather),
           style: context.textTheme.titleLarge,
         ),
+        const Gap(5),
+        _buildDateText(context),
         if (_buildWeatherSummary().isNotEmpty) const Gap(8),
         if (_buildWeatherSummary().isNotEmpty)
           Padding(
@@ -73,8 +75,6 @@ class _NowState extends State<Now> {
               textAlign: TextAlign.center,
             ),
           ),
-        const Gap(5),
-        _buildDateText(context),
       ],
     ),
   );
@@ -96,21 +96,19 @@ class _NowState extends State<Now> {
                   statusWeather.getText(widget.weather),
                   style: context.textTheme.titleLarge?.copyWith(fontSize: 20),
                 ),
-                if (_buildWeatherSummary().isNotEmpty) const Gap(4),
+                _buildFeelsLikeText(context),
+                const Gap(30),
+                _buildTemperatureCompactText(context, widget.degree),
+                const Gap(5),
+                _buildMinMaxTemperatureText(context),
+                if (_buildWeatherSummary().isNotEmpty) const Gap(8),
                 if (_buildWeatherSummary().isNotEmpty)
                   Text(
                     _buildWeatherSummary(),
                     style: context.textTheme.bodySmall?.copyWith(
                       color: Colors.grey,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                _buildFeelsLikeText(context),
-                const Gap(30),
-                _buildTemperatureCompactText(context, widget.degree),
-                const Gap(5),
-                _buildMinMaxTemperatureText(context),
               ],
             ),
           ),
