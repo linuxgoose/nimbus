@@ -63,7 +63,6 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildWidgetCard(context),
         _buildMapCard(context),
         _buildLanguageCard(context),
-        _buildGroupsCard(context),
         _buildLicenseCard(context),
         _buildVersionCard(context),
         _buildGitHubCard(context),
@@ -956,57 +955,6 @@ class _SettingsPageState extends State<SettingsPage> {
     ),
   );
 
-  Widget _buildGroupsCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.link_square),
-    text: 'groups'.tr,
-    onPressed: () => _showGroupsBottomSheet(context),
-  );
-
-  void _showGroupsBottomSheet(BuildContext context) => showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) => Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      child: StatefulBuilder(
-        builder: (BuildContext context, setState) => SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildGroupsTitle(context),
-              _buildDiscordSettingCard(context),
-              _buildTelegramSettingCard(context),
-              const Gap(10),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-
-  Widget _buildGroupsTitle(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 15),
-    child: Text(
-      'groups'.tr,
-      style: context.textTheme.titleLarge?.copyWith(fontSize: 20),
-    ),
-  );
-
-  Widget _buildDiscordSettingCard(BuildContext context) => SettingCard(
-    elevation: 4,
-    icon: const Icon(LineAwesomeIcons.discord),
-    text: 'Discord',
-    onPressed: () =>
-        weatherController.urlLauncher('https://discord.gg/JMMa9aHh8f'),
-  );
-
-  Widget _buildTelegramSettingCard(BuildContext context) => SettingCard(
-    elevation: 4,
-    icon: const Icon(LineAwesomeIcons.telegram),
-    text: 'Telegram',
-    onPressed: () =>
-        weatherController.urlLauncher('https://t.me/darkmoonightX'),
-  );
-
   Widget _buildLicenseCard(BuildContext context) => SettingCard(
     icon: const Icon(IconsaxPlusLinear.document),
     text: 'license'.tr,
@@ -1021,7 +969,7 @@ class _SettingsPageState extends State<SettingsPage> {
             image: DecorationImage(image: AssetImage('assets/icons/icon.png')),
           ),
         ),
-        applicationName: 'Rain',
+        applicationName: 'Nimbus',
         applicationVersion: appVersion,
       ),
       transition: Transition.downToUp,
@@ -1039,7 +987,7 @@ class _SettingsPageState extends State<SettingsPage> {
     icon: const Icon(LineAwesomeIcons.github),
     text: '${'project'.tr} GitHub',
     onPressed: () =>
-        weatherController.urlLauncher('https://github.com/darkmoonight/Rain'),
+        weatherController.urlLauncher('https://github.com/linuxgoose/nimbus'),
   );
 
   Widget _buildOpenMeteoText(BuildContext context) => Padding(
