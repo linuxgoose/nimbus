@@ -10,7 +10,7 @@ import 'package:http_cache_file_store/http_cache_file_store.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class RadarPage extends StatefulWidget {
   const RadarPage({super.key});
@@ -173,10 +173,7 @@ class _RadarPageState extends State<RadarPage> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(
-              IconsaxPlusLinear.layer,
-              color: context.theme.colorScheme.primary,
-            ),
+            Icon(LucideIcons.layers, color: context.theme.colorScheme.primary),
             const SizedBox(width: 12),
             const Text('Radar Color Scheme'),
           ],
@@ -291,10 +288,7 @@ class _RadarPageState extends State<RadarPage> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(
-              IconsaxPlusLinear.radar,
-              color: context.theme.colorScheme.primary,
-            ),
+            Icon(LucideIcons.radar, color: context.theme.colorScheme.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -566,12 +560,12 @@ class _RadarPageState extends State<RadarPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(IconsaxPlusLinear.layer),
+            icon: const Icon(LucideIcons.layers),
             onPressed: _showColorSchemeDialog,
             tooltip: 'Color Scheme',
           ),
           IconButton(
-            icon: const Icon(IconsaxPlusLinear.refresh),
+            icon: const Icon(LucideIcons.refreshCw),
             onPressed: _fetchRadarTimestamps,
             tooltip: 'Refresh',
           ),
@@ -676,7 +670,7 @@ class _RadarPageState extends State<RadarPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        IconsaxPlusLinear.danger,
+                        LucideIcons.triangleAlert,
                         size: 64,
                         color: context.theme.colorScheme.onSurfaceVariant,
                       ),
@@ -688,7 +682,7 @@ class _RadarPageState extends State<RadarPage> {
                       const SizedBox(height: 8),
                       TextButton.icon(
                         onPressed: _fetchRadarTimestamps,
-                        icon: const Icon(IconsaxPlusLinear.refresh),
+                        icon: const Icon(LucideIcons.refreshCw),
                         label: const Text('Retry'),
                       ),
                     ],
@@ -728,7 +722,7 @@ class _RadarPageState extends State<RadarPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          IconsaxPlusLinear.radar,
+                          LucideIcons.radar,
                           size: 16,
                           color: context.theme.colorScheme.primary,
                         ),
@@ -752,7 +746,7 @@ class _RadarPageState extends State<RadarPage> {
                   heroTag: 'legend',
                   mini: true,
                   onPressed: _showLegend,
-                  child: const Icon(IconsaxPlusLinear.information),
+                  child: const Icon(LucideIcons.info),
                 ),
               ),
 
@@ -764,7 +758,7 @@ class _RadarPageState extends State<RadarPage> {
                   heroTag: 'center',
                   mini: true,
                   onPressed: _centerOnLocation,
-                  child: const Icon(IconsaxPlusLinear.location),
+                  child: const Icon(LucideIcons.mapPin),
                 ),
               ),
             ],
@@ -838,22 +832,20 @@ class _RadarPageState extends State<RadarPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: const Icon(IconsaxPlusLinear.backward),
+              icon: const Icon(LucideIcons.skipBack),
               onPressed: _goToPreviousFrame,
               tooltip: 'Previous frame',
             ),
             const SizedBox(width: 16),
             IconButton.filled(
-              icon: Icon(
-                _isPlaying ? IconsaxPlusLinear.pause : IconsaxPlusLinear.play,
-              ),
+              icon: Icon(_isPlaying ? LucideIcons.pause : LucideIcons.play),
               onPressed: _togglePlayPause,
               iconSize: 32,
               tooltip: _isPlaying ? 'Pause' : 'Play',
             ),
             const SizedBox(width: 16),
             IconButton(
-              icon: const Icon(IconsaxPlusLinear.forward),
+              icon: const Icon(LucideIcons.skipForward),
               onPressed: _goToNextFrame,
               tooltip: 'Next frame',
             ),

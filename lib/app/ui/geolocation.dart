@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:nimbus/app/api/api.dart';
 import 'package:nimbus/app/api/city_api.dart';
@@ -137,7 +137,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
           elevation: kTextFieldElevation,
           labelText: 'search'.tr,
           type: TextInputType.text,
-          icon: const Icon(IconsaxPlusLinear.global_search),
+          icon: const Icon(LucideIcons.search),
           controller: _controller,
           margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
           focusNode: _focusNode,
@@ -198,7 +198,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
       margin: const EdgeInsets.all(2.5),
       child: IconButton(
         onPressed: _handleLocationButtonPress,
-        icon: const Icon(IconsaxPlusLinear.location),
+        icon: const Icon(LucideIcons.mapPin),
       ),
     ),
   );
@@ -250,7 +250,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
     controller: _controllerLat,
     labelText: 'lat'.tr,
     type: TextInputType.number,
-    icon: const Icon(IconsaxPlusLinear.location),
+    icon: const Icon(LucideIcons.mapPin),
     margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
     validator: (value) => _validateLatitude(value),
   );
@@ -260,7 +260,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
     controller: _controllerLon,
     labelText: 'lon'.tr,
     type: TextInputType.number,
-    icon: const Icon(IconsaxPlusLinear.location),
+    icon: const Icon(LucideIcons.mapPin),
     margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
     validator: (value) => _validateLongitude(value),
   );
@@ -270,7 +270,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
     controller: _controllerCity,
     labelText: 'city'.tr,
     type: TextInputType.name,
-    icon: const Icon(IconsaxPlusLinear.building_3),
+    icon: const Icon(LucideIcons.building),
     margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
     validator: (value) => _validateCity(value),
   );
@@ -280,7 +280,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
     controller: _controllerDistrict,
     labelText: 'district'.tr,
     type: TextInputType.streetAddress,
-    icon: const Icon(IconsaxPlusLinear.global),
+    icon: const Icon(LucideIcons.globe),
     margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
   );
 
@@ -424,7 +424,7 @@ class _SelectGeolocationState extends State<SelectGeolocation> {
         ? null
         : IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
+            icon: const Icon(LucideIcons.arrowLeft, size: 20),
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),

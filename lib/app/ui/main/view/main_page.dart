@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/api.dart'; // Import to use WeatherAPI
 import 'package:nimbus/app/controller/controller.dart';
@@ -170,7 +170,7 @@ class _MainPageState extends State<MainPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(IconsaxPlusLinear.danger, color: warningColor, size: 28),
+                Icon(LucideIcons.triangleAlert, color: warningColor, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -355,7 +355,7 @@ class _MainPageState extends State<MainPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                IconsaxPlusLinear.radar,
+                LucideIcons.radar,
                 size: 32,
                 color: context.theme.colorScheme.onPrimaryContainer,
               ),
@@ -382,7 +382,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             Icon(
-              IconsaxPlusLinear.arrow_right_3,
+              LucideIcons.arrowRight,
               color: context.theme.colorScheme.onSurfaceVariant,
             ),
           ],
@@ -390,7 +390,6 @@ class _MainPageState extends State<MainPage> {
       ),
     ),
   );
-
   Widget _buildAqiTile() => Card(
     margin: const EdgeInsets.only(bottom: 15),
     child: InkWell(
@@ -435,7 +434,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             Icon(
-              IconsaxPlusLinear.arrow_right_3,
+              LucideIcons.arrowRight,
               color: context.theme.colorScheme.onSurfaceVariant,
             ),
           ],

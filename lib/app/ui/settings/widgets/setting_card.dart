@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class SettingCard extends StatelessWidget {
   const SettingCard({
@@ -61,7 +61,7 @@ class SettingCard extends StatelessWidget {
     } else if (info) {
       return _buildInfoWidget();
     } else {
-      return const Icon(IconsaxPlusLinear.arrow_right_3, size: 18);
+      return const Icon(LucideIcons.arrowRight, size: 18);
     }
   }
 
@@ -80,7 +80,7 @@ class SettingCard extends StatelessWidget {
     return DropdownButton<String>(
       icon: const Padding(
         padding: EdgeInsets.only(left: 7),
-        child: Icon(IconsaxPlusLinear.arrow_down),
+        child: Icon(LucideIcons.chevronDown),
       ),
       iconSize: 15,
       alignment: AlignmentDirectional.centerEnd,
@@ -100,10 +100,7 @@ class SettingCard extends StatelessWidget {
   Widget _buildInfoWidget() {
     if (infoSettings) {
       return Wrap(
-        children: [
-          infoWidget!,
-          const Icon(IconsaxPlusLinear.arrow_right_3, size: 18),
-        ],
+        children: [infoWidget!, const Icon(LucideIcons.arrowRight, size: 18)],
       );
     } else {
       return infoWidget!;

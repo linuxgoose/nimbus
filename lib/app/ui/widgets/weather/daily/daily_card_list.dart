@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/ui/widgets/weather/daily/daily_card_info.dart';
 import 'package:nimbus/app/ui/widgets/weather/daily/daily_card.dart';
@@ -36,7 +36,7 @@ class _DailyCardListState extends State<DailyCardList> {
     centerTitle: true,
     leading: IconButton(
       onPressed: () => Get.back(),
-      icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
+      icon: const Icon(LucideIcons.arrowLeft, size: 20),
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
     ),

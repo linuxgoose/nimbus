@@ -9,7 +9,7 @@ import 'package:flutter_map_cache/flutter_map_cache.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http_cache_file_store/http_cache_file_store.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/api/api.dart';
@@ -370,7 +370,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
         MyTextForm(
           labelText: 'search'.tr,
           type: TextInputType.text,
-          icon: const Icon(IconsaxPlusLinear.global_search),
+          icon: const Icon(LucideIcons.search),
           controller: controller,
           margin: const EdgeInsets.all(10),
           focusNode: focusNode,
@@ -379,7 +379,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
               ? IconButton(
                   onPressed: () => controller.clear(),
                   icon: const Icon(
-                    IconsaxPlusLinear.close_circle,
+                    LucideIcons.circleX,
                     color: Colors.grey,
                     size: 20,
                   ),
@@ -532,7 +532,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                     children: [
                       FloatingActionButton(
                         heroTag: 'home',
-                        child: const Icon(IconsaxPlusLinear.home_2),
+                        child: const Icon(LucideIcons.house),
                         onPressed: () => _resetMapOrientation(
                           center: LatLng(
                             mainLocation.lat ??
@@ -546,21 +546,21 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                         heroTag: 'warnings',
                         child: Icon(
                           _showWarnings
-                              ? IconsaxPlusLinear.danger
-                              : IconsaxPlusLinear.slash,
+                              ? LucideIcons.triangleAlert
+                              : LucideIcons.slash,
                         ),
                         onPressed: () =>
                             setState(() => _showWarnings = !_showWarnings),
                       ),
                       FloatingActionButton(
                         heroTag: 'zoom_out',
-                        child: const Icon(IconsaxPlusLinear.search_zoom_out_1),
+                        child: const Icon(LucideIcons.zoomOut),
                         onPressed: () =>
                             _animatedMapController.animatedZoomOut(),
                       ),
                       FloatingActionButton(
                         heroTag: 'zoom_in',
-                        child: const Icon(IconsaxPlusLinear.search_zoom_in),
+                        child: const Icon(LucideIcons.zoomIn),
                         onPressed: () =>
                             _animatedMapController.animatedZoomIn(),
                       ),
