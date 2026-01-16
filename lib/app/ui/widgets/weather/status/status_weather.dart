@@ -20,6 +20,11 @@ class StatusWeather {
         'wi-day-rain',
         'wi-fog',
         'wi-wind-direction',
+        'wi-snow',
+        'wi-day-snow',
+        'wi-night-snow',
+        'wi-day-snow-96',
+        'wi-night-snow-96',
       ];
 
       // Extract filename without path and extension for exact matching
@@ -147,7 +152,7 @@ class StatusWeather {
       case 77:
       case 85:
       case 86:
-        return '${assetImageRoot}snow${isDay ? '_day' : ''}.png';
+        return '$assetImageRoot${isDay ? 'wi-day-snow-96' : 'wi-night-snow-96'}.png';
       case 95:
       case 96:
       case 99:
@@ -396,28 +401,28 @@ class StatusWeather {
       false: '${assetImageRoot}wi-night-rain.png',
     },
     71: {
-      true: '${assetImageRoot}snow_day.png',
-      false: '${assetImageRoot}snow_night.png',
+      true: '${assetImageRoot}wi-day-snow.png',
+      false: '${assetImageRoot}wi-night-snow.png',
     },
     73: {
-      true: '${assetImageRoot}snow_day.png',
-      false: '${assetImageRoot}snow_night.png',
+      true: '${assetImageRoot}wi-day-snow.png',
+      false: '${assetImageRoot}wi-night-snow.png',
     },
     75: {
-      true: '${assetImageRoot}snow_day.png',
-      false: '${assetImageRoot}snow_night.png',
+      true: '${assetImageRoot}wi-day-snow.png',
+      false: '${assetImageRoot}wi-night-snow.png',
     },
     77: {
-      true: '${assetImageRoot}snow_day.png',
-      false: '${assetImageRoot}snow_night.png',
+      true: '${assetImageRoot}wi-day-snow.png',
+      false: '${assetImageRoot}wi-night-snow.png',
     },
     85: {
-      true: '${assetImageRoot}snow_day.png',
-      false: '${assetImageRoot}snow_night.png',
+      true: '${assetImageRoot}wi-day-snow.png',
+      false: '${assetImageRoot}wi-night-snow.png',
     },
     86: {
-      true: '${assetImageRoot}snow_day.png',
-      false: '${assetImageRoot}snow_night.png',
+      true: '${assetImageRoot}wi-day-snow.png',
+      false: '${assetImageRoot}wi-night-snow.png',
     },
     95: {
       true: '${assetImageRoot}thunder_day.png',
