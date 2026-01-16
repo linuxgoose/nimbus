@@ -216,6 +216,8 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildHideTidesSettingCard(context, setState),
               _buildUseDummyTidesSettingCard(context, setState),
               _buildTidesApiKeySettingCard(context, setState),
+              _buildCheckTidesCacheSettingCard(context, setState),
+              _buildClearTidesCacheSettingCard(context, setState),
               const Gap(10),
             ],
           ),
@@ -254,6 +256,8 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildAqiTitle(context),
               _buildHideAqiSettingCard(context, setState),
               _buildAqiIndexSettingCard(context, setState),
+              _buildCheckAqiCacheSettingCard(context, setState),
+              _buildClearAqiCacheSettingCard(context, setState),
               const Gap(10),
             ],
           ),
@@ -553,6 +557,188 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
+  Widget _buildCheckTidesCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Check Tide Cache',
+    onPressed: () {
+      final cacheCount = isar.tideCaches.countSync();
+      final caches = isar.tideCaches
+          .getAllSync([])
+          .whereType<TideCache>()
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Tide Cache Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total cached entries: $cacheCount'),
+              const SizedBox(height: 16),
+              if (caches.isNotEmpty) ...[
+                const Text(
+                  'Cached locations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...caches.map(
+                  (cache) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• ${cache.locationKey}\n  Cached: ${cache.cachedAt}\n  Expires: ${cache.expiresAt}',
+                      style: context.textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildClearTidesCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.trash2),
+    text: 'Clear Tide Cache',
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Clear Tide Cache'),
+          content: const Text(
+            'Are you sure you want to clear all cached tide data?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final count = isar.writeTxnSync(() {
+                  return isar.tideCaches.clearSync();
+                });
+                Navigator.pop(context);
+                // ignore: void_checks
+                showSnackBar(content: 'Cleared tide cache entries');
+                setState(() {});
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildCheckAqiCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Check AQI Cache',
+    onPressed: () {
+      final cacheCount = isar.aqiCaches.countSync();
+      final caches = isar.aqiCaches
+          .getAllSync([])
+          .whereType<AqiCache>()
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('AQI Cache Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total cached entries: $cacheCount'),
+              const SizedBox(height: 16),
+              if (caches.isNotEmpty) ...[
+                const Text(
+                  'Cached locations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...caches.map(
+                  (cache) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• ${cache.locationKey}\n  Cached: ${cache.cachedAt}\n  Expires: ${cache.expiresAt}',
+                      style: context.textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildClearAqiCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.trash2),
+    text: 'Clear AQI Cache',
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Clear AQI Cache'),
+          content: const Text(
+            'Are you sure you want to clear all cached AQI data?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final count = isar.writeTxnSync(() {
+                  return isar.aqiCaches.clearSync();
+                });
+                Navigator.pop(context);
+                // ignore: void_checks
+                showSnackBar(content: 'Cleared AQI cache entries');
+                setState(() {});
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 
   Widget _buildTimeRangeSettingCard(
     BuildContext context,
