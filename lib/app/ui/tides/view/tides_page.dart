@@ -97,7 +97,10 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   Map<String, dynamic>? _getCachedTideData(double lat, double lon) {
-    final locationKey = '${lat}_${lon}';
+    // Round to 4 decimal places for consistent key matching
+    final roundedLat = (lat * 10000).round() / 10000;
+    final roundedLon = (lon * 10000).round() / 10000;
+    final locationKey = '${roundedLat}_${roundedLon}';
     final cache = isar.tideCaches
         .getAllSync([])
         .whereType<TideCache>()
@@ -126,26 +129,18 @@ class _TidesPageState extends State<TidesPage> {
   void _cacheTideData(double lat, double lon, Map<String, dynamic> data) {
     final now = DateTime.now();
     final expiresAt = now.add(const Duration(hours: 24));
-    final locationKey = '${lat}_${lon}';
-
-    // Delete existing cache for this location
-    final existing = isar.tideCaches
-        .getAllSync([])
-        .whereType<TideCache>()
-        .where((c) => c.locationKey == locationKey)
-        .firstOrNull;
+    // Round to 4 decimal places for consistent key matching
+    final roundedLat = (lat * 10000).round() / 10000;
+    final roundedLon = (lon * 10000).round() / 10000;
+    final locationKey = '${roundedLat}_${roundedLon}';
 
     isar.writeTxnSync(() {
-      if (existing != null) {
-        isar.tideCaches.deleteSync(existing.id);
-      }
-
-      // Store new cache
-      isar.tideCaches.putSync(
+      // Use putByLocationKeySync to automatically replace existing entry with same key
+      isar.tideCaches.putByLocationKeySync(
         TideCache(
           locationKey: locationKey,
-          lat: lat,
-          lon: lon,
+          lat: roundedLat,
+          lon: roundedLon,
           cachedDataJson: jsonEncode(data),
           cachedAt: now,
           expiresAt: expiresAt,
