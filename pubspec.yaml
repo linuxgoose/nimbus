@@ -1,9 +1,9 @@
-name: rain
-description: Weather application
+name: nimbus
+description: A minimalist weather app built with Flutter featuring real-time hyper-local data, 24-hour forecasts, and highly customizable home screen widgets.
 
 publish_to: "none"
 
-version: 1.3.10+43
+version: 0.0.1+43
 
 environment:
   sdk: ">=3.10.4 <4.0.0"

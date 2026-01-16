@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_weather.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:timezone/standalone.dart' as tz;
 
 class PlaceCard extends StatefulWidget {

@@ -9,13 +9,13 @@ import 'package:home_widget/home_widget.dart';
 import 'package:isar_community/isar.dart';
 import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:path_provider/path_provider.dart';
-import 'package:rain/app/api/api.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/utils/notification.dart';
-import 'package:rain/app/utils/show_snack_bar.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_weather.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/api/api.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/utils/notification.dart';
+import 'package:nimbus/app/utils/show_snack_bar.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/main.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/standalone.dart' as tz;
@@ -28,11 +28,13 @@ class WeatherController extends GetxController {
   final isLoading = true.obs;
   final _district = ''.obs;
   final _city = ''.obs;
+  final _country = ''.obs;
   final _latitude = 0.0.obs;
   final _longitude = 0.0.obs;
 
   String get district => _district.value;
   String get city => _city.value;
+  String get country => _country.value;
   double get latitude => _latitude.value;
   double get longitude => _longitude.value;
 
@@ -124,6 +126,7 @@ class WeatherController extends GetxController {
     _longitude.value = position.longitude;
     _district.value = place.administrativeArea ?? '';
     _city.value = place.locality ?? '';
+    _country.value = place.country ?? '';
 
     _mainWeather.value = await WeatherAPI().getWeatherData(
       _latitude.value,
@@ -159,6 +162,7 @@ class WeatherController extends GetxController {
       'lon': position.longitude,
       'city': place.administrativeArea ?? '',
       'district': place.locality ?? '',
+      'country': place.country ?? '',
     };
   }
 
@@ -226,8 +230,9 @@ class WeatherController extends GetxController {
       );
     }
 
-    isLoading.value = false;
+    await updateWidget();
 
+    isLoading.value = false;
     Future.delayed(const Duration(milliseconds: 30), scrollToCurrentHour);
   }
 
@@ -249,6 +254,7 @@ class WeatherController extends GetxController {
       lon: _longitude.value,
       city: _city.value,
       district: _district.value,
+      country: _country.value,
     );
 
     isar.writeTxnSync(() {
@@ -487,13 +493,14 @@ class WeatherController extends GetxController {
   }
 
   Future<String> getLocalImagePath(String icon) async {
-    final directory = await getTemporaryDirectory();
+    final directory = await getApplicationSupportDirectory();
     final imagePath = '${directory.path}/$icon';
 
-    final data = await rootBundle.load('assets/images/$icon');
-    final bytes = data.buffer.asUint8List();
-
-    await File(imagePath).writeAsBytes(bytes);
+    if (!await File(imagePath).exists()) {
+      final data = await rootBundle.load('assets/images/$icon');
+      final bytes = data.buffer.asUint8List();
+      await File(imagePath).writeAsBytes(bytes);
+    }
 
     return imagePath;
   }
@@ -559,7 +566,10 @@ class WeatherController extends GetxController {
 
     final results = await Future.wait<bool?>([
       HomeWidget.saveWidgetData('background_color', color),
-      HomeWidget.updateWidget(androidName: androidWidgetName),
+      HomeWidget.updateWidget(androidName: 'CurrentWidget'),
+      HomeWidget.updateWidget(androidName: 'OreoWidget'),
+      HomeWidget.updateWidget(androidName: 'HourlyWidget'),
+      HomeWidget.updateWidget(androidName: 'DailyWidget'),
     ]);
     return !results.contains(false);
   }
@@ -570,50 +580,211 @@ class WeatherController extends GetxController {
 
     final results = await Future.wait<bool?>([
       HomeWidget.saveWidgetData('text_color', color),
-      HomeWidget.updateWidget(androidName: androidWidgetName),
+      HomeWidget.updateWidget(androidName: 'CurrentWidget'),
+      HomeWidget.updateWidget(androidName: 'OreoWidget'),
+      HomeWidget.updateWidget(androidName: 'HourlyWidget'),
+      HomeWidget.updateWidget(androidName: 'DailyWidget'),
     ]);
     return !results.contains(false);
   }
 
   Future<bool> updateWidget() async {
-    final TimezoneInfo timeZoneName = await FlutterTimezone.getLocalTimezone();
-    tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation(timeZoneName.identifier));
+    try {
+      tz.initializeTimeZones();
 
-    final isarWidget = await Isar.open([
-      SettingsSchema,
-      MainWeatherCacheSchema,
-      LocationCacheSchema,
-      WeatherCardSchema,
-    ], directory: (await getApplicationSupportDirectory()).path);
+      final isarWidget =
+          Isar.getInstance() ??
+          await Isar.open([
+            SettingsSchema,
+            MainWeatherCacheSchema,
+            LocationCacheSchema,
+            WeatherCardSchema,
+          ], directory: (await getApplicationSupportDirectory()).path);
 
-    final mainWeatherCache = isarWidget.mainWeatherCaches
-        .where()
-        .findFirstSync();
-    if (mainWeatherCache == null) return false;
+      final mainWeatherCache = isarWidget.mainWeatherCaches
+          .where()
+          .findFirstSync();
+      final locationCache = isarWidget.locationCaches.where().findFirstSync();
 
-    final hour = getTime(mainWeatherCache.time!, mainWeatherCache.timezone!);
-    final day = getDay(mainWeatherCache.timeDaily!, mainWeatherCache.timezone!);
+      if (mainWeatherCache == null) return false;
 
-    final results = await Future.wait<bool?>([
-      HomeWidget.saveWidgetData(
-        'weather_icon',
-        await getLocalImagePath(
+      final hour = getTime(mainWeatherCache.time!, mainWeatherCache.timezone!);
+      final day = getDay(
+        mainWeatherCache.timeDaily!,
+        mainWeatherCache.timezone!,
+      );
+
+      await HomeWidget.setAppGroupId(appGroupId);
+
+      // Save Location Name
+      final String cityName = locationCache?.city ?? "Unknown";
+      final String districtName = locationCache?.district ?? "";
+      final String displayName = districtName.isNotEmpty
+          ? "$cityName, $districtName"
+          : cityName;
+
+      await HomeWidget.saveWidgetData('location_name', displayName);
+
+      // --- Current Weather Data ---
+      final degree = '${mainWeatherCache.temperature2M?[hour].round()}°';
+      final description = StatusWeather().getText(
+        mainWeatherCache.weathercode![hour],
+      );
+      final windSpeed = '${mainWeatherCache.windspeed10M?[hour]?.round()} km/h';
+      final humidity = '${mainWeatherCache.relativehumidity2M?[hour]}%';
+      final visibilityVal = ((mainWeatherCache.visibility?[hour] ?? 0) / 1000)
+          .round();
+      final visibility = '$visibilityVal km';
+
+      await HomeWidget.saveWidgetData('weather_degree', degree);
+      await HomeWidget.saveWidgetData('weather_description', description);
+      await HomeWidget.saveWidgetData('weather_wind', windSpeed);
+      await HomeWidget.saveWidgetData('weather_humidity', humidity);
+      await HomeWidget.saveWidgetData('weather_visibility', visibility);
+
+      // --- Weather Icon ---
+      try {
+        final imagePath = await getLocalImagePath(
           StatusWeather().getImageNotification(
             mainWeatherCache.weathercode![hour],
             mainWeatherCache.time![hour],
             mainWeatherCache.sunrise![day],
             mainWeatherCache.sunset![day],
           ),
-        ),
-      ),
-      HomeWidget.saveWidgetData(
-        'weather_degree',
-        '${mainWeatherCache.temperature2M?[hour].round()}°',
-      ),
-      HomeWidget.updateWidget(androidName: androidWidgetName),
-    ]);
-    return !results.contains(false);
+        );
+        await HomeWidget.saveWidgetData('weather_icon', imagePath);
+      } catch (_) {}
+
+      // --- Hourly & Daily Forecasting ---
+      await _updateHourlyWidget(mainWeatherCache, hour, day);
+      await _updateDailyWidget(mainWeatherCache, day);
+
+      final bool updated = (await Future.wait<bool?>([
+        HomeWidget.updateWidget(androidName: 'CurrentWidget'),
+        HomeWidget.updateWidget(androidName: 'OreoWidget'),
+        HomeWidget.updateWidget(androidName: 'HourlyWidget'),
+        HomeWidget.updateWidget(androidName: 'DailyWidget'),
+      ])).any((result) => result == true);
+
+      return updated;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<void> _updateHourlyWidget(
+    MainWeatherCache mainWeatherCache,
+    int currentHour,
+    int currentDay,
+  ) async {
+    try {
+      for (int i = 0; i < 6; i++) {
+        final hourIndex = currentHour + i;
+        if (hourIndex >= mainWeatherCache.time!.length) break;
+
+        final time = mainWeatherCache.time?[hourIndex];
+        final weathercode = mainWeatherCache.weathercode?[hourIndex];
+        final temp = mainWeatherCache.temperature2M?[hourIndex];
+        // Use windspeed10M to match Isar schema naming
+        final wind = mainWeatherCache.windspeed10M?[hourIndex];
+
+        if (time != null &&
+            weathercode != null &&
+            temp != null &&
+            wind != null) {
+          final timeFormat = DateFormat.Hm(
+            locale.languageCode,
+          ).format(DateTime.parse(time));
+
+          final tempStr = '${temp.round()}°';
+          final windStr = '${wind.round()} km/h';
+
+          await HomeWidget.saveWidgetData('hourly_time_$i', timeFormat);
+          await HomeWidget.saveWidgetData('hourly_temp_$i', tempStr);
+          await HomeWidget.saveWidgetData('hourly_wind_$i', windStr);
+
+          try {
+            int dayIdx = currentDay;
+            if (DateTime.parse(time).day != DateTime.now().day) {
+              if (currentDay + 1 < mainWeatherCache.sunrise!.length) {
+                dayIdx = currentDay + 1;
+              }
+            }
+
+            final imagePath = await getLocalImagePath(
+              StatusWeather().getImageNotification(
+                weathercode,
+                time,
+                mainWeatherCache.sunrise![dayIdx],
+                mainWeatherCache.sunset![dayIdx],
+              ),
+            );
+            await HomeWidget.saveWidgetData('hourly_icon_$i', imagePath);
+          } catch (e) {
+            debugPrint("Widget Hourly Icon Error at index $i: $e");
+          }
+        }
+      }
+      // Force update for this specific widget
+      await HomeWidget.updateWidget(androidName: 'HourlyWidget');
+    } catch (e) {
+      debugPrint("Widget Hourly Loop Error: $e");
+    }
+  }
+
+  Future<void> _updateDailyWidget(
+    MainWeatherCache mainWeatherCache,
+    int currentDay,
+  ) async {
+    try {
+      for (
+        int i = 0;
+        i < 6 && (currentDay + i) < mainWeatherCache.timeDaily!.length;
+        i++
+      ) {
+        final dayIndex = currentDay + i;
+        final date = mainWeatherCache.timeDaily?[dayIndex];
+        final weathercode = mainWeatherCache.weathercodeDaily?[dayIndex];
+        final tempMax = mainWeatherCache.temperature2MMax?[dayIndex];
+        final tempMin = mainWeatherCache.temperature2MMin?[dayIndex];
+
+        if (date != null &&
+            weathercode != null &&
+            tempMax != null &&
+            tempMin != null) {
+          final dateFormat = DateFormat.MMMd(locale.languageCode).format(date);
+
+          await HomeWidget.saveWidgetData('daily_date_$i', dateFormat);
+          await HomeWidget.saveWidgetData(
+            'daily_max_$i',
+            '${tempMax.round()}°',
+          );
+          await HomeWidget.saveWidgetData(
+            'daily_min_$i',
+            '${tempMin.round()}°',
+          );
+
+          try {
+            final sunrise = mainWeatherCache.sunrise?[dayIndex];
+            final sunset = mainWeatherCache.sunset?[dayIndex];
+            if (sunrise != null && sunset != null) {
+              final imagePath = await getLocalImagePath(
+                StatusWeather().getImageNotification(
+                  weathercode,
+                  '${DateFormat('yyyy-MM-dd').format(date)}T12:00',
+                  sunrise,
+                  sunset,
+                ),
+              );
+              await HomeWidget.saveWidgetData('daily_icon_$i', imagePath);
+            }
+          } catch (_) {}
+        }
+      }
+      await HomeWidget.updateWidget(androidName: 'DailyWidget');
+    } catch (e) {
+      debugPrint("Widget Daily Loop Error: $e");
+    }
   }
 
   void urlLauncher(String uri) async {

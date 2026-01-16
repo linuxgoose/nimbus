@@ -151,8 +151,9 @@ class LocationCache {
   double? lon;
   String? city;
   String? district;
+  String? country;
 
-  LocationCache({this.lat, this.lon, this.city, this.district});
+  LocationCache({this.lat, this.lon, this.city, this.district, this.country});
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -160,6 +161,7 @@ class LocationCache {
     'lon': lon,
     'city': city,
     'district': district,
+    'country': country,
   };
 }
 

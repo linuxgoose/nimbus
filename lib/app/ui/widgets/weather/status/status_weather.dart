@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 const assetImageRoot = 'assets/images/';
@@ -77,17 +78,47 @@ class StatusWeather {
     final isDayTime =
         currentTime.isAfter(dayTime) && currentTime.isBefore(nightTime);
 
-    return imagePaths[weather]?[isDayTime] ?? '';
+    String path = imagePaths[weather]?[isDayTime] ?? '';
+
+    // If Dark Mode is active, try to use the white (-w) version
+    if (Get.isDarkMode && path.isNotEmpty) {
+      // 1. Define which icons actually have a white (-w) version
+      // Add the base names of your white icons to this list
+      const whiteIconsAvailable = [
+        'wi-night-clear',
+        'wi-sun',
+        'wi-full-moon',
+        'wi-moon',
+        'wi-cloud',
+        'wi-cloudy-day',
+        'wi-day-clear',
+        'wi-night-cloudy',
+        'wi-night-rain',
+        'wi-day-rain',
+        'wi-fog',
+      ];
+
+      // 2. Check if the current path contains one of those names
+      bool hasWhiteVersion = whiteIconsAvailable.any(
+        (name) => path.contains(name),
+      );
+
+      if (hasWhiteVersion) {
+        path = path.replaceAll('.png', '-w.png');
+      }
+    }
+
+    return path;
   }
 
   String _getDailyImage(int? weather, {bool isDay = false}) {
     switch (weather) {
       case 0:
-        return '$assetImageRoot${isDay ? 'clear_day' : 'sun'}.png';
+        return '$assetImageRoot${isDay ? 'wi-day-clear' : 'wi-sun'}.png';
       case 1:
       case 2:
       case 3:
-        return '$assetImageRoot${isDay ? 'cloudy_day' : 'cloud'}.png';
+        return '$assetImageRoot${isDay ? 'wi-cloudy-day' : 'wi-cloud'}.png';
       case 45:
       case 48:
         return '${assetImageRoot}fog${isDay ? '_day' : ''}.png';
@@ -169,18 +200,27 @@ class StatusWeather {
 
   final Map<int, Map<bool, String>> _getDayNightImagePaths = {
     0: {
-      true: '${assetImageRoot}sun.png',
-      false: '${assetImageRoot}full-moon.png',
+      true: '${assetImageRoot}wi-sun.png',
+      false: '${assetImageRoot}wi-moon.png',
     },
-    1: {true: '${assetImageRoot}cloud.png', false: '${assetImageRoot}moon.png'},
-    2: {true: '${assetImageRoot}cloud.png', false: '${assetImageRoot}moon.png'},
-    3: {true: '${assetImageRoot}cloud.png', false: '${assetImageRoot}moon.png'},
+    1: {
+      true: '${assetImageRoot}wi-cloud.png',
+      false: '${assetImageRoot}wi-moon.png',
+    },
+    2: {
+      true: '${assetImageRoot}wi-cloud.png',
+      false: '${assetImageRoot}wi-moon.png',
+    },
+    3: {
+      true: '${assetImageRoot}wi-cloud.png',
+      false: '${assetImageRoot}wi-moon.png',
+    },
     45: {
-      true: '${assetImageRoot}fog.png',
+      true: '${assetImageRoot}wi-fog.png',
       false: '${assetImageRoot}fog_moon.png',
     },
     48: {
-      true: '${assetImageRoot}fog.png',
+      true: '${assetImageRoot}wi-fog.png',
       false: '${assetImageRoot}fog_moon.png',
     },
     51: {true: '${assetImageRoot}rain.png', false: '${assetImageRoot}rain.png'},
@@ -227,20 +267,20 @@ class StatusWeather {
 
   final Map<int, Map<bool, String>> _getTodayImagePaths = {
     0: {
-      true: '${assetImageRoot}clear_day.png',
-      false: '${assetImageRoot}clear_night.png',
+      true: '${assetImageRoot}wi-day-clear.png',
+      false: '${assetImageRoot}wi-night-clear.png',
     },
     1: {
-      true: '${assetImageRoot}cloudy_day.png',
-      false: '${assetImageRoot}cloudy_night.png',
+      true: '${assetImageRoot}wi-cloudy-day.png',
+      false: '${assetImageRoot}wi-night-cloudy.png',
     },
     2: {
-      true: '${assetImageRoot}cloudy_day.png',
-      false: '${assetImageRoot}cloudy_night.png',
+      true: '${assetImageRoot}wi-cloudy-day.png',
+      false: '${assetImageRoot}wi-night-cloudy.png',
     },
     3: {
-      true: '${assetImageRoot}cloudy_day.png',
-      false: '${assetImageRoot}cloudy_night.png',
+      true: '${assetImageRoot}wi-cloudy-day.png',
+      false: '${assetImageRoot}wi-night-cloudy.png',
     },
     45: {
       true: '${assetImageRoot}fog_day.png',
@@ -251,56 +291,56 @@ class StatusWeather {
       false: '${assetImageRoot}fog_night.png',
     },
     51: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     53: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     55: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     56: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     57: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     61: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     63: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     65: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     66: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     67: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     80: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     81: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     82: {
-      true: '${assetImageRoot}rain_day.png',
-      false: '${assetImageRoot}rain_night.png',
+      true: '${assetImageRoot}wi-day-rain.png',
+      false: '${assetImageRoot}wi-night-rain.png',
     },
     71: {
       true: '${assetImageRoot}snow_day.png',
@@ -341,12 +381,12 @@ class StatusWeather {
   };
 
   final Map<int, Map<bool, String>> _getNotificationImagePaths = {
-    0: {true: 'sun.png', false: 'full-moon.png'},
-    1: {true: 'cloud.png', false: 'moon.png'},
-    2: {true: 'cloud.png', false: 'moon.png'},
-    3: {true: 'cloud.png', false: 'moon.png'},
-    45: {true: 'fog.png', false: 'fog_moon.png'},
-    48: {true: 'fog.png', false: 'fog_moon.png'},
+    0: {true: 'wi-sun.png', false: 'wi-moon.png'},
+    1: {true: 'wi-cloud.png', false: 'wi-moon.png'},
+    2: {true: 'wi-cloud.png', false: 'wi-moon.png'},
+    3: {true: 'wi-cloud.png', false: 'wi-moon.png'},
+    45: {true: 'wi-fog.png', false: 'fog_moon.png'},
+    48: {true: 'wi-fog.png', false: 'fog_moon.png'},
     51: {true: 'rain.png', false: 'rain.png'},
     53: {true: 'rain.png', false: 'rain.png'},
     55: {true: 'rain.png', false: 'rain.png'},

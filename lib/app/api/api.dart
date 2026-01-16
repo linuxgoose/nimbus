@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:rain/app/api/city_api.dart';
-import 'package:rain/app/api/weather_api.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/api/city_api.dart';
+import 'package:nimbus/app/api/weather_api.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/main.dart';
 
 class WeatherAPI {
   final Dio dio = Dio()

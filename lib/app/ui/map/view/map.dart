@@ -11,17 +11,17 @@ import 'package:http_cache_file_store/http_cache_file_store.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:rain/app/api/api.dart';
-import 'package:rain/app/api/city_api.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/ui/places/view/place_info.dart';
-import 'package:rain/app/ui/places/widgets/place_action.dart';
-import 'package:rain/app/ui/places/widgets/place_card.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_weather.dart';
-import 'package:rain/app/ui/widgets/text_form.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/api/api.dart';
+import 'package:nimbus/app/api/city_api.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/places/view/place_info.dart';
+import 'package:nimbus/app/ui/places/widgets/place_action.dart';
+import 'package:nimbus/app/ui/places/widgets/place_card.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/app/ui/widgets/text_form.dart';
+import 'package:nimbus/main.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});

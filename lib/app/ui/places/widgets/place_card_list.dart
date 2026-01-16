@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/ui/places/view/place_info.dart';
-import 'package:rain/app/ui/places/widgets/place_card.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/places/view/place_info.dart';
+import 'package:nimbus/app/ui/places/widgets/place_card.dart';
 
 class PlaceCardList extends StatefulWidget {
   const PlaceCardList({super.key, required this.searchCity});

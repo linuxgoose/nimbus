@@ -11,13 +11,13 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/ui/settings/widgets/setting_card.dart';
-import 'package:rain/main.dart';
-import 'package:rain/theme/theme_controller.dart';
-import 'package:rain/app/utils/color_converter.dart';
-import 'package:rain/app/utils/show_snack_bar.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/settings/widgets/setting_card.dart';
+import 'package:nimbus/main.dart';
+import 'package:nimbus/theme/theme_controller.dart';
+import 'package:nimbus/app/utils/color_converter.dart';
+import 'package:nimbus/app/utils/show_snack_bar.dart';
 import 'package:restart_app/restart_app.dart';
 
 class SettingsPage extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/main.dart';
 
 class ThemeController extends GetxController {
   ThemeMode get theme => _getThemeMode();

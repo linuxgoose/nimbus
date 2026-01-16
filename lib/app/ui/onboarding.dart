@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/ui/geolocation.dart';
-import 'package:rain/app/ui/widgets/button.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/geolocation.dart';
+import 'package:nimbus/app/ui/widgets/button.dart';
+import 'package:nimbus/main.dart';
 import 'package:get/get.dart';
 
 class OnBoarding extends StatefulWidget {

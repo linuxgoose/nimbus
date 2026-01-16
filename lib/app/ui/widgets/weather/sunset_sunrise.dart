@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 
 class SunsetSunrise extends StatefulWidget {
   const SunsetSunrise({
@@ -35,7 +35,8 @@ class _SunsetSunriseState extends State<SunsetSunrise> {
               context,
               'sunrise'.tr,
               statusData.getTimeFormat(widget.timeSunrise),
-              'assets/images/sunrise.png',
+              // If Dark Mode, append -w to the path
+              'assets/images/wi-sunrise${Get.isDarkMode ? "-w" : ""}.png',
               titleSmall,
               titleLarge,
             ),
@@ -43,7 +44,8 @@ class _SunsetSunriseState extends State<SunsetSunrise> {
               context,
               'sunset'.tr,
               statusData.getTimeFormat(widget.timeSunset),
-              'assets/images/sunset.png',
+              // If Dark Mode, append -w to the path
+              'assets/images/wi-sunset${Get.isDarkMode ? "-w" : ""}.png',
               titleSmall,
               titleLarge,
             ),

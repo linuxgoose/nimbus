@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rain/app/ui/widgets/weather/desc/desc.dart';
-import 'package:rain/app/ui/widgets/weather/desc/message.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/desc/desc.dart';
+import 'package:nimbus/app/ui/widgets/weather/desc/message.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 
 class DescContainer extends StatefulWidget {
   const DescContainer({
@@ -169,17 +169,19 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': statusData.getDegree(widget.dewpoint2M?.round()),
-        'imageName': 'assets/images/dew.png',
+        'imageName':
+            'assets/images/wi-dewpoint${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'dewpoint'.tr,
       },
       {
         'value': statusData.getDegree(widget.feels?.round()),
-        'imageName': 'assets/images/temperature.png',
+        'imageName':
+            'assets/images/wi-thermometer${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'feels'.tr,
       },
       {
         'value': statusData.getVisibility(widget.visibility),
-        'imageName': 'assets/images/fog.png',
+        'imageName': 'assets/images/wi-fog${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'visibility'.tr,
       },
       {
@@ -220,29 +222,31 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': '${widget.humidity}%',
-        'imageName': 'assets/images/humidity.png',
+        'imageName':
+            'assets/images/wi-humidity${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'humidity'.tr,
       },
       {
         'value': '${widget.cloudcover}%',
-        'imageName': 'assets/images/cloudy.png',
+        'imageName': 'assets/images/wi-cloudy${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'cloudcover'.tr,
       },
       {
         'value': statusData.getPressure(widget.pressure?.round()),
-        'imageName': 'assets/images/atmospheric.png',
+        'imageName':
+            'assets/images/wi-barometer${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'pressure'.tr,
         'message': message.getPressure(widget.pressure?.round()),
       },
       {
         'value': widget.uvIndex?.round(),
-        'imageName': 'assets/images/uv.png',
+        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'uvIndex'.tr,
         'message': message.getUvIndex(widget.uvIndex?.round()),
       },
       {
         'value': '${widget.shortwaveRadiation?.round()} ${'W/m2'.tr}',
-        'imageName': 'assets/images/shortwave_radiation.png',
+        'imageName': 'assets/images/wi-hot${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'shortwaveRadiation'.tr,
       },
     ];

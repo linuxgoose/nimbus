@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/ui/widgets/weather/daily/daily_card_info.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_weather.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/widgets/weather/daily/daily_card_info.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/main.dart';
 
 class DailyContainer extends StatefulWidget {
   const DailyContainer({
