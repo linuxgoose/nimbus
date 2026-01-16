@@ -173,6 +173,12 @@ Future<void> initializeIsar() async {
     settings.theme = 'system';
     isar.writeTxnSync(() => isar.settings.putSync(settings));
   }
+
+  // Initialize new alert settings if they don't exist
+  if (settings.alertMinSeverity.isEmpty) {
+    settings.alertMinSeverity = 'all';
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+  }
 }
 
 Future<void> initializeNotifications() async {

@@ -435,7 +435,7 @@ class TideCache {
   Id id = Isar.autoIncrement;
 
   @Index(unique: true)
-  String? locationKey; // Composite key: "lat_lon"
+  String locationKey = ''; // Composite key: "lat_lon"
   double? lat;
   double? lon;
 
@@ -444,7 +444,7 @@ class TideCache {
   DateTime? expiresAt; // Cache expires after 24 hours
 
   TideCache({
-    this.locationKey,
+    required this.locationKey,
     this.lat,
     this.lon,
     this.cachedDataJson,

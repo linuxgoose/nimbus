@@ -23350,12 +23350,7 @@ int _tideCacheEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  {
-    final value = object.locationKey;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.locationKey.length * 3;
   return bytesCount;
 }
 
@@ -23384,7 +23379,7 @@ TideCache _tideCacheDeserialize(
     cachedDataJson: reader.readStringOrNull(offsets[1]),
     expiresAt: reader.readDateTimeOrNull(offsets[2]),
     lat: reader.readDoubleOrNull(offsets[3]),
-    locationKey: reader.readStringOrNull(offsets[4]),
+    locationKey: reader.readString(offsets[4]),
     lon: reader.readDoubleOrNull(offsets[5]),
   );
   object.id = id;
@@ -23407,7 +23402,7 @@ P _tideCacheDeserializeProp<P>(
     case 3:
       return (reader.readDoubleOrNull(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 5:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
@@ -23428,40 +23423,38 @@ void _tideCacheAttach(IsarCollection<dynamic> col, Id id, TideCache object) {
 }
 
 extension TideCacheByIndex on IsarCollection<TideCache> {
-  Future<TideCache?> getByLocationKey(String? locationKey) {
+  Future<TideCache?> getByLocationKey(String locationKey) {
     return getByIndex(r'locationKey', [locationKey]);
   }
 
-  TideCache? getByLocationKeySync(String? locationKey) {
+  TideCache? getByLocationKeySync(String locationKey) {
     return getByIndexSync(r'locationKey', [locationKey]);
   }
 
-  Future<bool> deleteByLocationKey(String? locationKey) {
+  Future<bool> deleteByLocationKey(String locationKey) {
     return deleteByIndex(r'locationKey', [locationKey]);
   }
 
-  bool deleteByLocationKeySync(String? locationKey) {
+  bool deleteByLocationKeySync(String locationKey) {
     return deleteByIndexSync(r'locationKey', [locationKey]);
   }
 
-  Future<List<TideCache?>> getAllByLocationKey(
-    List<String?> locationKeyValues,
-  ) {
+  Future<List<TideCache?>> getAllByLocationKey(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return getAllByIndex(r'locationKey', values);
   }
 
-  List<TideCache?> getAllByLocationKeySync(List<String?> locationKeyValues) {
+  List<TideCache?> getAllByLocationKeySync(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'locationKey', values);
   }
 
-  Future<int> deleteAllByLocationKey(List<String?> locationKeyValues) {
+  Future<int> deleteAllByLocationKey(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return deleteAllByIndex(r'locationKey', values);
   }
 
-  int deleteAllByLocationKeySync(List<String?> locationKeyValues) {
+  int deleteAllByLocationKeySync(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return deleteAllByIndexSync(r'locationKey', values);
   }
@@ -23565,29 +23558,8 @@ extension TideCacheQueryWhere
     });
   }
 
-  QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'locationKey', value: [null]),
-      );
-    });
-  }
-
-  QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.between(
-          indexName: r'locationKey',
-          lower: [null],
-          includeLower: false,
-          upper: [],
-        ),
-      );
-    });
-  }
-
   QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyEqualTo(
-    String? locationKey,
+    String locationKey,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -23600,7 +23572,7 @@ extension TideCacheQueryWhere
   }
 
   QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyNotEqualTo(
-    String? locationKey,
+    String locationKey,
   ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -24104,26 +24076,8 @@ extension TideCacheQueryFilter
     });
   }
 
-  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
-  locationKeyIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'locationKey'),
-      );
-    });
-  }
-
-  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
-  locationKeyIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'locationKey'),
-      );
-    });
-  }
-
   QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -24139,7 +24093,7 @@ extension TideCacheQueryFilter
 
   QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
   locationKeyGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -24156,7 +24110,7 @@ extension TideCacheQueryFilter
   }
 
   QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -24173,8 +24127,8 @@ extension TideCacheQueryFilter
   }
 
   QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -24605,7 +24559,7 @@ extension TideCacheQueryProperty
     });
   }
 
-  QueryBuilder<TideCache, String?, QQueryOperations> locationKeyProperty() {
+  QueryBuilder<TideCache, String, QQueryOperations> locationKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'locationKey');
     });

@@ -69,6 +69,7 @@ class _TidesPageState extends State<TidesPage> {
       );
 
       if (cached != null) {
+        debugPrint('✓ Tides: Using cached data for ${_selectedLocation!.name}');
         setState(() {
           _tideData = cached;
           _isLoading = false;
@@ -77,6 +78,7 @@ class _TidesPageState extends State<TidesPage> {
       }
 
       // Fetch new data if no valid cache
+      debugPrint('↓ Tides: Fetching new data for ${_selectedLocation!.name}');
       final data = await _tidesAPI.getTideData(
         _selectedLocation!.lat!,
         _selectedLocation!.lon!,
@@ -101,16 +103,28 @@ class _TidesPageState extends State<TidesPage> {
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
     final locationKey = '${roundedLat}_${roundedLon}';
-    final cache = isar.tideCaches
-        .getAllSync([])
-        .whereType<TideCache>()
-        .where((c) => c.locationKey == locationKey)
-        .firstOrNull;
 
-    if (cache == null) return null;
+    debugPrint(
+      '🔍 Cache lookup for key: $locationKey (lat: $lat -> $roundedLat, lon: $lon -> $roundedLon)',
+    );
+
+    // Use the unique index to directly get the cache
+    final cache = isar.tideCaches.getByLocationKeySync(locationKey);
+
+    debugPrint(
+      '📦 Cache result: ${cache != null ? "Found (cached at ${cache.cachedAt})" : "Not found"}',
+    );
+
+    if (cache == null) {
+      debugPrint('❌ No cache found for $locationKey');
+      return null;
+    }
+
+    debugPrint('✓ Cache found! Expires at: ${cache.expiresAt}');
 
     // Check if cache is expired (older than 24 hours)
     if (cache.expiresAt != null && DateTime.now().isAfter(cache.expiresAt!)) {
+      debugPrint('⏰ Cache expired, deleting...');
       // Delete expired cache
       isar.writeTxnSync(() {
         isar.tideCaches.deleteSync(cache.id);
@@ -120,9 +134,11 @@ class _TidesPageState extends State<TidesPage> {
 
     // Return cached data
     if (cache.cachedDataJson != null) {
+      debugPrint('✓ Returning cached data');
       return jsonDecode(cache.cachedDataJson!) as Map<String, dynamic>;
     }
 
+    debugPrint('❌ Cache found but no JSON data');
     return null;
   }
 
@@ -134,19 +150,37 @@ class _TidesPageState extends State<TidesPage> {
     final roundedLon = (lon * 10000).round() / 10000;
     final locationKey = '${roundedLat}_${roundedLon}';
 
-    isar.writeTxnSync(() {
-      // Use putByLocationKeySync to automatically replace existing entry with same key
-      isar.tideCaches.putByLocationKeySync(
-        TideCache(
+    debugPrint(
+      '💾 Caching tide data with key: $locationKey, expires: $expiresAt',
+    );
+
+    try {
+      // Use putByLocationKeySync which automatically replaces existing entries
+      final id = isar.writeTxnSync(() {
+        final tideCache = TideCache(
           locationKey: locationKey,
           lat: roundedLat,
           lon: roundedLon,
           cachedDataJson: jsonEncode(data),
           cachedAt: now,
           expiresAt: expiresAt,
-        ),
-      );
-    });
+        );
+
+        return isar.tideCaches.putByLocationKeySync(tideCache);
+      });
+
+      debugPrint('💾 Cache written with ID: $id');
+
+      // Verify the cache was written (must be AFTER transaction completes)
+      final ourCache = isar.tideCaches.getByLocationKeySync(locationKey);
+      if (ourCache != null) {
+        debugPrint('✓ Verified: Cache entry exists with key $locationKey');
+      } else {
+        debugPrint('❌ ERROR: Cache was written but cannot be found!');
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR caching tide data: $e');
+    }
   }
 
   @override
