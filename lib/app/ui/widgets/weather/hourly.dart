@@ -54,14 +54,18 @@ class _HourlyState extends State<Hourly> {
     ],
   );
 
-  Widget _buildWeatherImage() => Image.asset(
-    statusWeather.getImageToday(
-      widget.weather,
-      widget.time,
-      widget.timeDay,
-      widget.timeNight,
+  Widget _buildWeatherImage() => SizedBox(
+    width: 40,
+    height: 40,
+    child: Image.asset(
+      statusWeather.getImageToday(
+        widget.weather,
+        widget.time,
+        widget.timeDay,
+        widget.timeNight,
+      ),
+      fit: BoxFit.contain,
     ),
-    scale: 3,
   );
 
   Widget _buildTemperatureText(TextTheme textTheme) => Text(
