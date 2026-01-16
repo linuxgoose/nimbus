@@ -11,6 +11,7 @@ import 'package:nimbus/app/ui/widgets/weather/hourly.dart';
 import 'package:nimbus/app/ui/widgets/weather/now.dart';
 import 'package:nimbus/app/ui/widgets/shimmer.dart';
 import 'package:nimbus/app/ui/widgets/weather/sunset_sunrise.dart';
+import 'package:nimbus/app/ui/radar/view/radar_page.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -97,6 +98,7 @@ class _MainPageState extends State<MainPage> {
       // --- REAL API ALERT WIDGET ---
       _buildWeatherAlert(),
       // ----------------------------
+      _buildRadarTile(),
       _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
       _buildSunsetSunriseWidget(sunrise, sunset),
       _buildHourlyDescContainer(mainWeather, hourOfDay),
@@ -312,12 +314,64 @@ class _MainPageState extends State<MainPage> {
     initiallyExpanded: false,
     title: 'hourlyVariables'.tr,
   );
-
   Widget _buildDailyContainer(WeatherCard weatherCard) => DailyContainer(
     weatherData: weatherCard,
     onTap: () => Get.to(
       () => DailyCardList(weatherData: weatherCard),
       transition: Transition.downToUp,
+    ),
+  );
+
+  Widget _buildRadarTile() => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () =>
+          Get.to(() => const RadarPage(), transition: Transition.downToUp),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                IconsaxPlusLinear.radar,
+                size: 32,
+                color: context.theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Weather Radar',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'View live precipitation and radar imagery',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              IconsaxPlusLinear.arrow_right_3,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
     ),
   );
 }
