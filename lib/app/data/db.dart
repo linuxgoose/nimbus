@@ -417,3 +417,26 @@ class TideCache {
     this.expiresAt,
   });
 }
+
+@collection
+class AqiCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String? locationKey; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  String? cachedDataJson; // Store the entire AQI data response as JSON
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 1 hour
+
+  AqiCache({
+    this.locationKey,
+    this.lat,
+    this.lon,
+    this.cachedDataJson,
+    this.cachedAt,
+    this.expiresAt,
+  });
+}

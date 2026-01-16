@@ -135,6 +135,7 @@ Future<void> initializeIsar() async {
       WeatherCardSchema,
       TideLocationSchema,
       TideCacheSchema,
+      AqiCacheSchema,
     ], directory: (await getApplicationSupportDirectory()).path);
   } catch (e) {
     // If schema is invalid (e.g., after adding new collections), delete and recreate
@@ -153,6 +154,7 @@ Future<void> initializeIsar() async {
       WeatherCardSchema,
       TideLocationSchema,
       TideCacheSchema,
+      AqiCacheSchema,
     ], directory: dir.path);
   }
 

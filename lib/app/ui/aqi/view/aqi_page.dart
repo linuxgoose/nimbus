@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/main.dart';
 import 'package:dio/dio.dart';
 
@@ -43,6 +45,18 @@ class _AqiPageState extends State<AqiPage> {
     }
 
     try {
+      // Check for cached data first
+      final cached = _getCachedAqiData(lat, lon);
+
+      if (cached != null) {
+        setState(() {
+          aqiData = cached;
+          isLoading = false;
+        });
+        return;
+      }
+
+      // Fetch new data if no valid cache
       final dio = Dio();
       final response = await dio.get(
         'https://air-quality-api.open-meteo.com/v1/air-quality',
@@ -59,6 +73,9 @@ class _AqiPageState extends State<AqiPage> {
       );
 
       if (response.statusCode == 200) {
+        // Cache the fetched data
+        _cacheAqiData(lat, lon, response.data);
+
         setState(() {
           aqiData = response.data;
           isLoading = false;
@@ -71,6 +88,59 @@ class _AqiPageState extends State<AqiPage> {
       });
       debugPrint('Error fetching AQI data: $e');
     }
+  }
+
+  Map<String, dynamic>? _getCachedAqiData(double lat, double lon) {
+    // Round to 4 decimal places for consistent key matching
+    final roundedLat = (lat * 10000).round() / 10000;
+    final roundedLon = (lon * 10000).round() / 10000;
+    final locationKey = '${roundedLat}_${roundedLon}';
+    final cache = isar.aqiCaches
+        .getAllSync([])
+        .whereType<AqiCache>()
+        .where((c) => c.locationKey == locationKey)
+        .firstOrNull;
+
+    if (cache == null) return null;
+
+    // Check if cache is expired (older than 1 hour)
+    if (cache.expiresAt != null && DateTime.now().isAfter(cache.expiresAt!)) {
+      // Delete expired cache
+      isar.writeTxnSync(() {
+        isar.aqiCaches.deleteSync(cache.id);
+      });
+      return null;
+    }
+
+    // Return cached data
+    if (cache.cachedDataJson != null) {
+      return jsonDecode(cache.cachedDataJson!) as Map<String, dynamic>;
+    }
+
+    return null;
+  }
+
+  void _cacheAqiData(double lat, double lon, Map<String, dynamic> data) {
+    final now = DateTime.now();
+    final expiresAt = now.add(const Duration(hours: 1));
+    // Round to 4 decimal places for consistent key matching
+    final roundedLat = (lat * 10000).round() / 10000;
+    final roundedLon = (lon * 10000).round() / 10000;
+    final locationKey = '${roundedLat}_${roundedLon}';
+
+    isar.writeTxnSync(() {
+      // Use putByLocationKeySync to automatically replace existing entry with same key
+      isar.aqiCaches.putByLocationKeySync(
+        AqiCache(
+          locationKey: locationKey,
+          lat: roundedLat,
+          lon: roundedLon,
+          cachedDataJson: jsonEncode(data),
+          cachedAt: now,
+          expiresAt: expiresAt,
+        ),
+      );
+    });
   }
 
   @override

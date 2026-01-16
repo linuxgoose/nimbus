@@ -22300,3 +22300,1344 @@ extension TideCacheQueryProperty
     });
   }
 }
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+extension GetAqiCacheCollection on Isar {
+  IsarCollection<AqiCache> get aqiCaches => this.collection();
+}
+
+const AqiCacheSchema = CollectionSchema(
+  name: r'AqiCache',
+  id: -3699130149583890885,
+  properties: {
+    r'cachedAt': PropertySchema(
+      id: 0,
+      name: r'cachedAt',
+      type: IsarType.dateTime,
+    ),
+    r'cachedDataJson': PropertySchema(
+      id: 1,
+      name: r'cachedDataJson',
+      type: IsarType.string,
+    ),
+    r'expiresAt': PropertySchema(
+      id: 2,
+      name: r'expiresAt',
+      type: IsarType.dateTime,
+    ),
+    r'lat': PropertySchema(id: 3, name: r'lat', type: IsarType.double),
+    r'locationKey': PropertySchema(
+      id: 4,
+      name: r'locationKey',
+      type: IsarType.string,
+    ),
+    r'lon': PropertySchema(id: 5, name: r'lon', type: IsarType.double),
+  },
+
+  estimateSize: _aqiCacheEstimateSize,
+  serialize: _aqiCacheSerialize,
+  deserialize: _aqiCacheDeserialize,
+  deserializeProp: _aqiCacheDeserializeProp,
+  idName: r'id',
+  indexes: {
+    r'locationKey': IndexSchema(
+      id: 1950685211417560871,
+      name: r'locationKey',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'locationKey',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+      ],
+    ),
+  },
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _aqiCacheGetId,
+  getLinks: _aqiCacheGetLinks,
+  attach: _aqiCacheAttach,
+  version: '3.3.0',
+);
+
+int _aqiCacheEstimateSize(
+  AqiCache object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.cachedDataJson;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.locationKey;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _aqiCacheSerialize(
+  AqiCache object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDateTime(offsets[0], object.cachedAt);
+  writer.writeString(offsets[1], object.cachedDataJson);
+  writer.writeDateTime(offsets[2], object.expiresAt);
+  writer.writeDouble(offsets[3], object.lat);
+  writer.writeString(offsets[4], object.locationKey);
+  writer.writeDouble(offsets[5], object.lon);
+}
+
+AqiCache _aqiCacheDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = AqiCache(
+    cachedAt: reader.readDateTimeOrNull(offsets[0]),
+    cachedDataJson: reader.readStringOrNull(offsets[1]),
+    expiresAt: reader.readDateTimeOrNull(offsets[2]),
+    lat: reader.readDoubleOrNull(offsets[3]),
+    locationKey: reader.readStringOrNull(offsets[4]),
+    lon: reader.readDoubleOrNull(offsets[5]),
+  );
+  object.id = id;
+  return object;
+}
+
+P _aqiCacheDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    case 2:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readDoubleOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+Id _aqiCacheGetId(AqiCache object) {
+  return object.id;
+}
+
+List<IsarLinkBase<dynamic>> _aqiCacheGetLinks(AqiCache object) {
+  return [];
+}
+
+void _aqiCacheAttach(IsarCollection<dynamic> col, Id id, AqiCache object) {
+  object.id = id;
+}
+
+extension AqiCacheByIndex on IsarCollection<AqiCache> {
+  Future<AqiCache?> getByLocationKey(String? locationKey) {
+    return getByIndex(r'locationKey', [locationKey]);
+  }
+
+  AqiCache? getByLocationKeySync(String? locationKey) {
+    return getByIndexSync(r'locationKey', [locationKey]);
+  }
+
+  Future<bool> deleteByLocationKey(String? locationKey) {
+    return deleteByIndex(r'locationKey', [locationKey]);
+  }
+
+  bool deleteByLocationKeySync(String? locationKey) {
+    return deleteByIndexSync(r'locationKey', [locationKey]);
+  }
+
+  Future<List<AqiCache?>> getAllByLocationKey(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return getAllByIndex(r'locationKey', values);
+  }
+
+  List<AqiCache?> getAllByLocationKeySync(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'locationKey', values);
+  }
+
+  Future<int> deleteAllByLocationKey(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'locationKey', values);
+  }
+
+  int deleteAllByLocationKeySync(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'locationKey', values);
+  }
+
+  Future<Id> putByLocationKey(AqiCache object) {
+    return putByIndex(r'locationKey', object);
+  }
+
+  Id putByLocationKeySync(AqiCache object, {bool saveLinks = true}) {
+    return putByIndexSync(r'locationKey', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByLocationKey(List<AqiCache> objects) {
+    return putAllByIndex(r'locationKey', objects);
+  }
+
+  List<Id> putAllByLocationKeySync(
+    List<AqiCache> objects, {
+    bool saveLinks = true,
+  }) {
+    return putAllByIndexSync(r'locationKey', objects, saveLinks: saveLinks);
+  }
+}
+
+extension AqiCacheQueryWhereSort on QueryBuilder<AqiCache, AqiCache, QWhere> {
+  QueryBuilder<AqiCache, AqiCache, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+}
+
+extension AqiCacheQueryWhere on QueryBuilder<AqiCache, AqiCache, QWhereClause> {
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'locationKey', value: [null]),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'locationKey',
+          lower: [null],
+          includeLower: false,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyEqualTo(
+    String? locationKey,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'locationKey',
+          value: [locationKey],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyNotEqualTo(
+    String? locationKey,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [],
+                upper: [locationKey],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [locationKey],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [locationKey],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [],
+                upper: [locationKey],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+}
+
+extension AqiCacheQueryFilter
+    on QueryBuilder<AqiCache, AqiCache, QFilterCondition> {
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cachedAt'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cachedAt'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedAtEqualTo(
+    DateTime? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cachedAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cachedAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cachedAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cachedAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cachedDataJson'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cachedDataJson'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedDataJsonEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedDataJsonBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cachedDataJson',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> cachedDataJsonMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'cachedDataJson',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cachedDataJson', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  cachedDataJsonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'cachedDataJson', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> expiresAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'expiresAt'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> expiresAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'expiresAt'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> expiresAtEqualTo(
+    DateTime? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'expiresAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> expiresAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'expiresAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> expiresAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'expiresAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> expiresAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'expiresAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> idEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> idGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> idLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> latIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> latIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> latEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> latGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> latLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> latBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lat',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'locationKey'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  locationKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'locationKey'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  locationKeyGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'locationKey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'locationKey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'locationKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
+  locationKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'locationKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> lonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> lonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> lonEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> lonGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> lonLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> lonBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lon',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+}
+
+extension AqiCacheQueryObject
+    on QueryBuilder<AqiCache, AqiCache, QFilterCondition> {}
+
+extension AqiCacheQueryLinks
+    on QueryBuilder<AqiCache, AqiCache, QFilterCondition> {}
+
+extension AqiCacheQuerySortBy on QueryBuilder<AqiCache, AqiCache, QSortBy> {
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByCachedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByCachedDataJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByCachedDataJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByLocationKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByLocationKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> sortByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+}
+
+extension AqiCacheQuerySortThenBy
+    on QueryBuilder<AqiCache, AqiCache, QSortThenBy> {
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByCachedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByCachedDataJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByCachedDataJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByLocationKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByLocationKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QAfterSortBy> thenByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+}
+
+extension AqiCacheQueryWhereDistinct
+    on QueryBuilder<AqiCache, AqiCache, QDistinct> {
+  QueryBuilder<AqiCache, AqiCache, QDistinct> distinctByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cachedAt');
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QDistinct> distinctByCachedDataJson({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'cachedDataJson',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QDistinct> distinctByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QDistinct> distinctByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lat');
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QDistinct> distinctByLocationKey({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'locationKey', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<AqiCache, AqiCache, QDistinct> distinctByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lon');
+    });
+  }
+}
+
+extension AqiCacheQueryProperty
+    on QueryBuilder<AqiCache, AqiCache, QQueryProperty> {
+  QueryBuilder<AqiCache, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<AqiCache, DateTime?, QQueryOperations> cachedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedAt');
+    });
+  }
+
+  QueryBuilder<AqiCache, String?, QQueryOperations> cachedDataJsonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedDataJson');
+    });
+  }
+
+  QueryBuilder<AqiCache, DateTime?, QQueryOperations> expiresAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<AqiCache, double?, QQueryOperations> latProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lat');
+    });
+  }
+
+  QueryBuilder<AqiCache, String?, QQueryOperations> locationKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'locationKey');
+    });
+  }
+
+  QueryBuilder<AqiCache, double?, QQueryOperations> lonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lon');
+    });
+  }
+}
