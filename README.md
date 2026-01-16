@@ -20,6 +20,12 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 - **Current Weather Conditions:** Stay up-to-date with real-time weather in your area.
 - **Hourly Forecasts:** Plan your day with detailed hourly weather predictions.
 - **7-Day Outlook:** Get a complete week-long weather forecast at your fingertips.
+- **Live Weather Radar:** Interactive radar map with animated precipitation overlays powered by RainViewer:
+  - Real-time precipitation visualization
+  - Animated playback with timeline controls
+  - 9 customizable color schemes (TITAN, NEXRAD, Weather Channel, Dark Sky, and more)
+  - Dynamic legend showing precipitation intensity
+  - Location centering and interactive map controls
 - **Detailed Weather Data:** Access comprehensive weather statistics including temperature, humidity, wind speed, precipitation probability, UV index, and more.
 - **Weather Alerts:** Receive timely notifications about significant weather changes and conditions.
 - **Multi-Language Support:** Choose from a wide range of language options.
@@ -37,7 +43,7 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 
 ### Reliable Data Sources
 
-Weather data is powered by [Open-Meteo](https://open-meteo.com/en/docs), providing accurate and up-to-date forecasts. Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery.
+Weather data is powered by [Open-Meteo](https://open-meteo.com/en/docs), providing accurate and up-to-date forecasts. Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking.
 
 ### Get Nimbus
 
