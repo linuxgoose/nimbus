@@ -105,6 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildWeatherDataSourceSettingCard(context, setState),
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
+                  _buildShowRainForecastSettingCard(context, setState),
                   const Gap(10),
                 ],
               ),
@@ -984,6 +985,22 @@ class _SettingsPageState extends State<SettingsPage> {
       settings.roundDegree = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       MyApp.updateAppState(context, newRoundDegree: value);
+      setState(() {});
+    },
+  );
+
+  Widget _buildShowRainForecastSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.cloudRain),
+    text: 'Show 6-Hour Rain Forecast',
+    switcher: true,
+    value: settings.showRainForecast,
+    onChange: (value) {
+      settings.showRainForecast = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
     },
   );

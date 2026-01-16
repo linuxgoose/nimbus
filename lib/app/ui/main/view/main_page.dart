@@ -12,6 +12,7 @@ import 'package:nimbus/app/ui/widgets/weather/hourly.dart';
 import 'package:nimbus/app/ui/widgets/weather/now.dart';
 import 'package:nimbus/app/ui/widgets/shimmer.dart';
 import 'package:nimbus/app/ui/widgets/weather/sunset_sunrise.dart';
+import 'package:nimbus/app/ui/widgets/weather/rain_forecast_chart.dart';
 import 'package:nimbus/app/ui/radar/view/radar_page.dart';
 import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:nimbus/app/ui/tides/view/tides_page.dart';
@@ -128,6 +129,7 @@ class _MainPageState extends State<MainPage> {
       // --- REAL API ALERT WIDGET ---
       _buildWeatherAlert(),
       // ----------------------------
+      if (settings.showRainForecast) _buildRainForecastChart(mainWeather),
       _buildRadarTile(),
       if (!settings.hideAqi) _buildAqiTile(),
       if (!settings.hideTides) _buildTidesTile(),
@@ -329,6 +331,18 @@ class _MainPageState extends State<MainPage> {
     precipitationProbability: mainWeather.precipitationProbability?[hourOfDay],
     uvIndex: mainWeather.uvIndex?[hourOfDay]?.round(),
   );
+
+  Widget _buildRainForecastChart(MainWeatherCache mainWeather) {
+    // Get current location from the weather controller
+    final latitude = weatherController.latitude;
+    final longitude = weatherController.longitude;
+
+    if (latitude == 0.0 || longitude == 0.0) {
+      return const SizedBox.shrink();
+    }
+
+    return RainForecastChart(latitude: latitude, longitude: longitude);
+  }
 
   Widget _buildHourlyList(
     BuildContext context,

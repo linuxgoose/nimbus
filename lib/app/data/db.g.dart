@@ -97,49 +97,54 @@ const SettingsSchema = CollectionSchema(
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 20, name: r'theme', type: IsarType.string),
+    r'showRainForecast': PropertySchema(
+      id: 20,
+      name: r'showRainForecast',
+      type: IsarType.bool,
+    ),
+    r'theme': PropertySchema(id: 21, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 22, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 23, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyTides': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 30, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 31, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -242,17 +247,18 @@ void _settingsSerialize(
   writer.writeBool(offsets[17], object.showAlertsOnMainPage);
   writer.writeBool(offsets[18], object.showAlertsOnMap);
   writer.writeBool(offsets[19], object.showDummyAlerts);
-  writer.writeString(offsets[20], object.theme);
-  writer.writeString(offsets[21], object.tidesApiKey);
-  writer.writeString(offsets[22], object.timeEnd);
-  writer.writeLong(offsets[23], object.timeRange);
-  writer.writeString(offsets[24], object.timeStart);
-  writer.writeString(offsets[25], object.timeformat);
-  writer.writeBool(offsets[26], object.useDummyTides);
-  writer.writeString(offsets[27], object.weatherDataSource);
-  writer.writeString(offsets[28], object.widgetBackgroundColor);
-  writer.writeString(offsets[29], object.widgetTextColor);
-  writer.writeString(offsets[30], object.wind);
+  writer.writeBool(offsets[20], object.showRainForecast);
+  writer.writeString(offsets[21], object.theme);
+  writer.writeString(offsets[22], object.tidesApiKey);
+  writer.writeString(offsets[23], object.timeEnd);
+  writer.writeLong(offsets[24], object.timeRange);
+  writer.writeString(offsets[25], object.timeStart);
+  writer.writeString(offsets[26], object.timeformat);
+  writer.writeBool(offsets[27], object.useDummyTides);
+  writer.writeString(offsets[28], object.weatherDataSource);
+  writer.writeString(offsets[29], object.widgetBackgroundColor);
+  writer.writeString(offsets[30], object.widgetTextColor);
+  writer.writeString(offsets[31], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -283,17 +289,18 @@ Settings _settingsDeserialize(
   object.showAlertsOnMainPage = reader.readBool(offsets[17]);
   object.showAlertsOnMap = reader.readBool(offsets[18]);
   object.showDummyAlerts = reader.readBool(offsets[19]);
-  object.theme = reader.readStringOrNull(offsets[20]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[21]);
-  object.timeEnd = reader.readStringOrNull(offsets[22]);
-  object.timeRange = reader.readLongOrNull(offsets[23]);
-  object.timeStart = reader.readStringOrNull(offsets[24]);
-  object.timeformat = reader.readString(offsets[25]);
-  object.useDummyTides = reader.readBool(offsets[26]);
-  object.weatherDataSource = reader.readString(offsets[27]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[28]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[29]);
-  object.wind = reader.readString(offsets[30]);
+  object.showRainForecast = reader.readBool(offsets[20]);
+  object.theme = reader.readStringOrNull(offsets[21]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[22]);
+  object.timeEnd = reader.readStringOrNull(offsets[23]);
+  object.timeRange = reader.readLongOrNull(offsets[24]);
+  object.timeStart = reader.readStringOrNull(offsets[25]);
+  object.timeformat = reader.readString(offsets[26]);
+  object.useDummyTides = reader.readBool(offsets[27]);
+  object.weatherDataSource = reader.readString(offsets[28]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[29]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[30]);
+  object.wind = reader.readString(offsets[31]);
   return object;
 }
 
@@ -345,26 +352,28 @@ P _settingsDeserializeProp<P>(
     case 19:
       return (reader.readBool(offset)) as P;
     case 20:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 21:
       return (reader.readStringOrNull(offset)) as P;
     case 22:
       return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 24:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 25:
-      return (reader.readString(offset)) as P;
-    case 26:
-      return (reader.readBool(offset)) as P;
-    case 27:
-      return (reader.readString(offset)) as P;
-    case 28:
       return (reader.readStringOrNull(offset)) as P;
+    case 26:
+      return (reader.readString(offset)) as P;
+    case 27:
+      return (reader.readBool(offset)) as P;
+    case 28:
+      return (reader.readString(offset)) as P;
     case 29:
       return (reader.readStringOrNull(offset)) as P;
     case 30:
+      return (reader.readStringOrNull(offset)) as P;
+    case 31:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1543,6 +1552,15 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'showDummyAlerts', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  showRainForecastEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'showRainForecast', value: value),
       );
     });
   }
@@ -3289,6 +3307,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowRainForecast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showRainForecast', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowRainForecastDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showRainForecast', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByTheme() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'theme', Sort.asc);
@@ -3679,6 +3709,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowRainForecast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showRainForecast', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowRainForecastDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showRainForecast', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByTheme() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'theme', Sort.asc);
@@ -3950,6 +3992,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByShowRainForecast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'showRainForecast');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByTheme({
     bool caseSensitive = true,
   }) {
@@ -4170,6 +4218,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> showDummyAlertsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'showDummyAlerts');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> showRainForecastProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'showRainForecast');
     });
   }
 
