@@ -24648,12 +24648,7 @@ int _aqiCacheEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  {
-    final value = object.locationKey;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.locationKey.length * 3;
   return bytesCount;
 }
 
@@ -24682,7 +24677,7 @@ AqiCache _aqiCacheDeserialize(
     cachedDataJson: reader.readStringOrNull(offsets[1]),
     expiresAt: reader.readDateTimeOrNull(offsets[2]),
     lat: reader.readDoubleOrNull(offsets[3]),
-    locationKey: reader.readStringOrNull(offsets[4]),
+    locationKey: reader.readString(offsets[4]),
     lon: reader.readDoubleOrNull(offsets[5]),
   );
   object.id = id;
@@ -24705,7 +24700,7 @@ P _aqiCacheDeserializeProp<P>(
     case 3:
       return (reader.readDoubleOrNull(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 5:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
@@ -24726,38 +24721,38 @@ void _aqiCacheAttach(IsarCollection<dynamic> col, Id id, AqiCache object) {
 }
 
 extension AqiCacheByIndex on IsarCollection<AqiCache> {
-  Future<AqiCache?> getByLocationKey(String? locationKey) {
+  Future<AqiCache?> getByLocationKey(String locationKey) {
     return getByIndex(r'locationKey', [locationKey]);
   }
 
-  AqiCache? getByLocationKeySync(String? locationKey) {
+  AqiCache? getByLocationKeySync(String locationKey) {
     return getByIndexSync(r'locationKey', [locationKey]);
   }
 
-  Future<bool> deleteByLocationKey(String? locationKey) {
+  Future<bool> deleteByLocationKey(String locationKey) {
     return deleteByIndex(r'locationKey', [locationKey]);
   }
 
-  bool deleteByLocationKeySync(String? locationKey) {
+  bool deleteByLocationKeySync(String locationKey) {
     return deleteByIndexSync(r'locationKey', [locationKey]);
   }
 
-  Future<List<AqiCache?>> getAllByLocationKey(List<String?> locationKeyValues) {
+  Future<List<AqiCache?>> getAllByLocationKey(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return getAllByIndex(r'locationKey', values);
   }
 
-  List<AqiCache?> getAllByLocationKeySync(List<String?> locationKeyValues) {
+  List<AqiCache?> getAllByLocationKeySync(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return getAllByIndexSync(r'locationKey', values);
   }
 
-  Future<int> deleteAllByLocationKey(List<String?> locationKeyValues) {
+  Future<int> deleteAllByLocationKey(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return deleteAllByIndex(r'locationKey', values);
   }
 
-  int deleteAllByLocationKeySync(List<String?> locationKeyValues) {
+  int deleteAllByLocationKeySync(List<String> locationKeyValues) {
     final values = locationKeyValues.map((e) => [e]).toList();
     return deleteAllByIndexSync(r'locationKey', values);
   }
@@ -24859,29 +24854,8 @@ extension AqiCacheQueryWhere on QueryBuilder<AqiCache, AqiCache, QWhereClause> {
     });
   }
 
-  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'locationKey', value: [null]),
-      );
-    });
-  }
-
-  QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.between(
-          indexName: r'locationKey',
-          lower: [null],
-          includeLower: false,
-          upper: [],
-        ),
-      );
-    });
-  }
-
   QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyEqualTo(
-    String? locationKey,
+    String locationKey,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -24894,7 +24868,7 @@ extension AqiCacheQueryWhere on QueryBuilder<AqiCache, AqiCache, QWhereClause> {
   }
 
   QueryBuilder<AqiCache, AqiCache, QAfterWhereClause> locationKeyNotEqualTo(
-    String? locationKey,
+    String locationKey,
   ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
@@ -25399,25 +25373,8 @@ extension AqiCacheQueryFilter
     });
   }
 
-  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'locationKey'),
-      );
-    });
-  }
-
-  QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
-  locationKeyIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'locationKey'),
-      );
-    });
-  }
-
   QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -25433,7 +25390,7 @@ extension AqiCacheQueryFilter
 
   QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition>
   locationKeyGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -25450,7 +25407,7 @@ extension AqiCacheQueryFilter
   }
 
   QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -25467,8 +25424,8 @@ extension AqiCacheQueryFilter
   }
 
   QueryBuilder<AqiCache, AqiCache, QAfterFilterCondition> locationKeyBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -25900,7 +25857,7 @@ extension AqiCacheQueryProperty
     });
   }
 
-  QueryBuilder<AqiCache, String?, QQueryOperations> locationKeyProperty() {
+  QueryBuilder<AqiCache, String, QQueryOperations> locationKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'locationKey');
     });

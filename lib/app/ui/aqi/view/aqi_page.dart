@@ -95,16 +95,28 @@ class _AqiPageState extends State<AqiPage> {
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
     final locationKey = '${roundedLat}_${roundedLon}';
-    final cache = isar.aqiCaches
-        .getAllSync([])
-        .whereType<AqiCache>()
-        .where((c) => c.locationKey == locationKey)
-        .firstOrNull;
 
-    if (cache == null) return null;
+    debugPrint(
+      '🔍 AQI Cache lookup for key: $locationKey (lat: $lat -> $roundedLat, lon: $lon -> $roundedLon)',
+    );
+
+    // Use the unique index to directly get the cache
+    final cache = isar.aqiCaches.getByLocationKeySync(locationKey);
+
+    debugPrint(
+      '📦 AQI Cache result: ${cache != null ? "Found (cached at ${cache.cachedAt})" : "Not found"}',
+    );
+
+    if (cache == null) {
+      debugPrint('❌ No AQI cache found for $locationKey');
+      return null;
+    }
+
+    debugPrint('✓ AQI Cache found! Expires at: ${cache.expiresAt}');
 
     // Check if cache is expired (older than 1 hour)
     if (cache.expiresAt != null && DateTime.now().isAfter(cache.expiresAt!)) {
+      debugPrint('⏰ AQI Cache expired, deleting...');
       // Delete expired cache
       isar.writeTxnSync(() {
         isar.aqiCaches.deleteSync(cache.id);
@@ -128,19 +140,37 @@ class _AqiPageState extends State<AqiPage> {
     final roundedLon = (lon * 10000).round() / 10000;
     final locationKey = '${roundedLat}_${roundedLon}';
 
-    isar.writeTxnSync(() {
+    debugPrint(
+      '💾 Caching AQI data with key: $locationKey, expires: $expiresAt',
+    );
+
+    try {
       // Use putByLocationKeySync to automatically replace existing entry with same key
-      isar.aqiCaches.putByLocationKeySync(
-        AqiCache(
-          locationKey: locationKey,
-          lat: roundedLat,
-          lon: roundedLon,
-          cachedDataJson: jsonEncode(data),
-          cachedAt: now,
-          expiresAt: expiresAt,
-        ),
-      );
-    });
+      final id = isar.writeTxnSync(() {
+        return isar.aqiCaches.putByLocationKeySync(
+          AqiCache(
+            locationKey: locationKey,
+            lat: roundedLat,
+            lon: roundedLon,
+            cachedDataJson: jsonEncode(data),
+            cachedAt: now,
+            expiresAt: expiresAt,
+          ),
+        );
+      });
+
+      debugPrint('💾 AQI Cache written with ID: $id');
+
+      // Verify the cache was written (must be AFTER transaction completes)
+      final ourCache = isar.aqiCaches.getByLocationKeySync(locationKey);
+      if (ourCache != null) {
+        debugPrint('✓ Verified: AQI Cache entry exists with key $locationKey');
+      } else {
+        debugPrint('❌ ERROR: AQI Cache was written but cannot be found!');
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR caching AQI data: $e');
+    }
   }
 
   @override

@@ -458,7 +458,7 @@ class AqiCache {
   Id id = Isar.autoIncrement;
 
   @Index(unique: true)
-  String? locationKey; // Composite key: "lat_lon"
+  String locationKey = ''; // Composite key: "lat_lon"
   double? lat;
   double? lon;
 
@@ -467,7 +467,7 @@ class AqiCache {
   DateTime? expiresAt; // Cache expires after 1 hour
 
   AqiCache({
-    this.locationKey,
+    required this.locationKey,
     this.lat,
     this.lon,
     this.cachedDataJson,
