@@ -5,7 +5,7 @@ import 'package:nimbus/translation/bn_in.dart';
 import 'package:nimbus/translation/cs_cz.dart';
 import 'package:nimbus/translation/da_dk.dart';
 import 'package:nimbus/translation/de_de.dart';
-import 'package:nimbus/translation/en_us.dart';
+import 'package:nimbus/translation/en_gb.dart';
 import 'package:nimbus/translation/es_es.dart';
 import 'package:nimbus/translation/fa_ir.dart';
 import 'package:nimbus/translation/fr_fr.dart';
@@ -42,7 +42,7 @@ class Translation extends Translations {
     'ar_SA': ArSa().messages,
     'as_IN': AsIn().messages,
     'ru_RU': RuRu().messages,
-    'en_US': EnUs().messages,
+    'en_GB': EnGb().messages,
     'fr_FR': FrFr().messages,
     'fa_IR': FaIr().messages,
     'it_IT': ItIt().messages,
