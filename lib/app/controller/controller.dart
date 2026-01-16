@@ -699,10 +699,15 @@ class WeatherController extends GetxController {
       final currentTime = DateFormat.Hm(
         locale.languageCode,
       ).format(DateTime.now());
-      await HomeWidget.saveWidgetData('small_location', displayName);
+      final currentDate = DateFormat.MMMd(
+        locale.languageCode,
+      ).format(DateTime.now());
       await HomeWidget.saveWidgetData('small_time', currentTime);
+      await HomeWidget.saveWidgetData('small_date', currentDate);
+      await HomeWidget.saveWidgetData('small_location', displayName);
       await HomeWidget.saveWidgetData('small_temperature', degree);
       await HomeWidget.saveWidgetData('small_precipitation', precip);
+      await HomeWidget.saveWidgetData('small_description', description);
       try {
         final smallIconPath = await getLocalImagePath(
           StatusWeather().getImageNotification(

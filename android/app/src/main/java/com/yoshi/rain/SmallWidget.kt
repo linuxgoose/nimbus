@@ -26,11 +26,14 @@ class SmallWidget : HomeWidgetProvider() {
                 val pendingIntent = HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
                 setOnClickPendingIntent(R.id.widget_small_container, pendingIntent)
 
-                // Location
-                setTextViewText(R.id.small_location, widgetData.getString("small_location", "Location") ?: "Location")
-
                 // Time
                 setTextViewText(R.id.small_time, widgetData.getString("small_time", "--:--") ?: "--:--")
+
+                // Date
+                setTextViewText(R.id.small_date, widgetData.getString("small_date", "") ?: "")
+
+                // Location
+                setTextViewText(R.id.small_location, widgetData.getString("small_location", "Location") ?: "Location")
 
                 // Temperature
                 setTextViewText(R.id.small_temperature, widgetData.getString("small_temperature", "--°") ?: "--°")
@@ -38,11 +41,14 @@ class SmallWidget : HomeWidgetProvider() {
                 // Precipitation
                 setTextViewText(R.id.small_precipitation, widgetData.getString("small_precipitation", "--") ?: "--")
 
+                // Description
+                setTextViewText(R.id.small_description, widgetData.getString("small_description", "") ?: "")
+
                 // Weather Icon
                 val imagePath = widgetData.getString("small_weather_icon", null)
                 if (imagePath != null) {
                     val options = BitmapFactory.Options().apply {
-                        inSampleSize = calculateInSampleSize(this, 40, 40)
+                        inSampleSize = calculateInSampleSize(this, 32, 32)
                     }
                     val bitmap = BitmapFactory.decodeFile(imagePath, options)
                     if (bitmap != null) {
@@ -72,12 +78,16 @@ class SmallWidget : HomeWidgetProvider() {
                 }
 
                 val textViews = listOf(
-                    R.id.small_location,
                     R.id.small_time,
+                    R.id.small_date,
+                    R.id.small_location,
                     R.id.small_temperature,
-                    R.id.small_precipitation
+                    R.id.small_description
                 )
                 textViews.forEach { setTextColor(it, finalTextColor) }
+                
+                // Keep precipitation blue
+                setTextColor(R.id.small_precipitation, Color.parseColor("#0066CC"))
             }
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
