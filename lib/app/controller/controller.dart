@@ -713,6 +713,7 @@ class WeatherController extends GetxController {
         final weathercode = mainWeatherCache.weathercode?[hourIndex];
         final temp = mainWeatherCache.temperature2M?[hourIndex];
         final wind = mainWeatherCache.windspeed10M?[hourIndex];
+        final precip = mainWeatherCache.precipitationProbability?[hourIndex];
 
         final timeFormat = DateFormat.Hm(
           locale.languageCode,
@@ -720,10 +721,12 @@ class WeatherController extends GetxController {
 
         final tempStr = '${temp?.round() ?? 0}°';
         final windStr = '${wind?.round() ?? 0} $speedUnit';
+        final precipStr = '${precip ?? 0}%';
 
         await HomeWidget.saveWidgetData('hourly_time_$i', timeFormat);
         await HomeWidget.saveWidgetData('hourly_temp_$i', tempStr);
         await HomeWidget.saveWidgetData('hourly_wind_$i', windStr);
+        await HomeWidget.saveWidgetData('hourly_precip_$i', precipStr);
 
         try {
           int dayIdx = currentDay;
