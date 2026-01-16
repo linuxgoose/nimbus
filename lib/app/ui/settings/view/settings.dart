@@ -58,6 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
       children: [
         _buildAppearanceCard(context),
         _buildFunctionsCard(context),
+        _buildTidesCard(context),
         _buildDataCard(context),
         _buildWidgetCard(context),
         _buildMapCard(context),
@@ -192,6 +193,39 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showFunctionsBottomSheet(context),
   );
 
+  Widget _buildTidesCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.waves),
+    text: 'Tides',
+    onPressed: () => _showTidesBottomSheet(context),
+  );
+
+  void _showTidesBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTidesTitle(context),
+              _buildHideTidesSettingCard(context, setState),
+              _buildUseDummyTidesSettingCard(context, setState),
+              _buildTidesApiKeySettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildTidesTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Tides', style: context.textTheme.headlineSmall),
+  );
+
   void _showFunctionsBottomSheet(BuildContext context) => showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Padding(
@@ -323,6 +357,115 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     },
   );
+
+  Widget _buildHideTidesSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.waves),
+    text: 'hideTides'.tr,
+    switcher: true,
+    value: settings.hideTides,
+    onChange: (value) {
+      settings.hideTides = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => Restart.restartApp(),
+      );
+    },
+  );
+
+  Widget _buildUseDummyTidesSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.testTube),
+    text: 'Use Dummy Tide Data',
+    switcher: true,
+    value: settings.useDummyTides,
+    onChange: (value) {
+      settings.useDummyTides = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildTidesApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.key),
+    text: 'Stormglass API Key',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.tidesApiKey?.isNotEmpty == true
+          ? '${settings.tidesApiKey!.substring(0, 8)}...'
+          : 'Not set',
+    ),
+    onPressed: () => _showTidesApiKeyDialog(context, setState),
+  );
+
+  void _showTidesApiKeyDialog(BuildContext context, StateSetter setState) {
+    final controller = TextEditingController(text: settings.tidesApiKey ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Stormglass API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Get your free API key (10 requests/day) from:',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://stormglass.io/',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.tidesApiKey = controller.text.trim();
+              if (settings.tidesApiKey!.isEmpty) {
+                settings.tidesApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildTimeRangeSettingCard(
     BuildContext context,

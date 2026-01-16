@@ -29,76 +29,91 @@ const SettingsSchema = CollectionSchema(
     ),
     r'degrees': PropertySchema(id: 2, name: r'degrees', type: IsarType.string),
     r'hideMap': PropertySchema(id: 3, name: r'hideMap', type: IsarType.bool),
-    r'language': PropertySchema(
+    r'hideTides': PropertySchema(
       id: 4,
+      name: r'hideTides',
+      type: IsarType.bool,
+    ),
+    r'language': PropertySchema(
+      id: 5,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 6, name: r'location', type: IsarType.bool),
+    r'location': PropertySchema(id: 7, name: r'location', type: IsarType.bool),
     r'materialColor': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'notifications',
       type: IsarType.bool,
     ),
-    r'onboard': PropertySchema(id: 10, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 11, name: r'onboard', type: IsarType.bool),
     r'pressure': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 14, name: r'theme', type: IsarType.string),
-    r'timeEnd': PropertySchema(id: 15, name: r'timeEnd', type: IsarType.string),
-    r'timeRange': PropertySchema(
+    r'theme': PropertySchema(id: 15, name: r'theme', type: IsarType.string),
+    r'tidesApiKey': PropertySchema(
       id: 16,
+      name: r'tidesApiKey',
+      type: IsarType.string,
+    ),
+    r'timeEnd': PropertySchema(id: 17, name: r'timeEnd', type: IsarType.string),
+    r'timeRange': PropertySchema(
+      id: 18,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'timeformat',
       type: IsarType.string,
     ),
+    r'useDummyTides': PropertySchema(
+      id: 21,
+      name: r'useDummyTides',
+      type: IsarType.bool,
+    ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 19,
+      id: 22,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 20,
+      id: 23,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 21, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 24, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -134,6 +149,12 @@ int _settingsEstimateSize(
   bytesCount += 3 + object.pressure.length * 3;
   {
     final value = object.theme;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.tidesApiKey;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -177,24 +198,27 @@ void _settingsSerialize(
   writer.writeString(offsets[1], object.aqiIndex);
   writer.writeString(offsets[2], object.degrees);
   writer.writeBool(offsets[3], object.hideMap);
-  writer.writeString(offsets[4], object.language);
-  writer.writeBool(offsets[5], object.largeElement);
-  writer.writeBool(offsets[6], object.location);
-  writer.writeBool(offsets[7], object.materialColor);
-  writer.writeString(offsets[8], object.measurements);
-  writer.writeBool(offsets[9], object.notifications);
-  writer.writeBool(offsets[10], object.onboard);
-  writer.writeString(offsets[11], object.pressure);
-  writer.writeBool(offsets[12], object.roundDegree);
-  writer.writeBool(offsets[13], object.showDummyAlerts);
-  writer.writeString(offsets[14], object.theme);
-  writer.writeString(offsets[15], object.timeEnd);
-  writer.writeLong(offsets[16], object.timeRange);
-  writer.writeString(offsets[17], object.timeStart);
-  writer.writeString(offsets[18], object.timeformat);
-  writer.writeString(offsets[19], object.widgetBackgroundColor);
-  writer.writeString(offsets[20], object.widgetTextColor);
-  writer.writeString(offsets[21], object.wind);
+  writer.writeBool(offsets[4], object.hideTides);
+  writer.writeString(offsets[5], object.language);
+  writer.writeBool(offsets[6], object.largeElement);
+  writer.writeBool(offsets[7], object.location);
+  writer.writeBool(offsets[8], object.materialColor);
+  writer.writeString(offsets[9], object.measurements);
+  writer.writeBool(offsets[10], object.notifications);
+  writer.writeBool(offsets[11], object.onboard);
+  writer.writeString(offsets[12], object.pressure);
+  writer.writeBool(offsets[13], object.roundDegree);
+  writer.writeBool(offsets[14], object.showDummyAlerts);
+  writer.writeString(offsets[15], object.theme);
+  writer.writeString(offsets[16], object.tidesApiKey);
+  writer.writeString(offsets[17], object.timeEnd);
+  writer.writeLong(offsets[18], object.timeRange);
+  writer.writeString(offsets[19], object.timeStart);
+  writer.writeString(offsets[20], object.timeformat);
+  writer.writeBool(offsets[21], object.useDummyTides);
+  writer.writeString(offsets[22], object.widgetBackgroundColor);
+  writer.writeString(offsets[23], object.widgetTextColor);
+  writer.writeString(offsets[24], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -208,25 +232,28 @@ Settings _settingsDeserialize(
   object.aqiIndex = reader.readString(offsets[1]);
   object.degrees = reader.readString(offsets[2]);
   object.hideMap = reader.readBool(offsets[3]);
+  object.hideTides = reader.readBool(offsets[4]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[4]);
-  object.largeElement = reader.readBool(offsets[5]);
-  object.location = reader.readBool(offsets[6]);
-  object.materialColor = reader.readBool(offsets[7]);
-  object.measurements = reader.readString(offsets[8]);
-  object.notifications = reader.readBool(offsets[9]);
-  object.onboard = reader.readBool(offsets[10]);
-  object.pressure = reader.readString(offsets[11]);
-  object.roundDegree = reader.readBool(offsets[12]);
-  object.showDummyAlerts = reader.readBool(offsets[13]);
-  object.theme = reader.readStringOrNull(offsets[14]);
-  object.timeEnd = reader.readStringOrNull(offsets[15]);
-  object.timeRange = reader.readLongOrNull(offsets[16]);
-  object.timeStart = reader.readStringOrNull(offsets[17]);
-  object.timeformat = reader.readString(offsets[18]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[19]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[20]);
-  object.wind = reader.readString(offsets[21]);
+  object.language = reader.readStringOrNull(offsets[5]);
+  object.largeElement = reader.readBool(offsets[6]);
+  object.location = reader.readBool(offsets[7]);
+  object.materialColor = reader.readBool(offsets[8]);
+  object.measurements = reader.readString(offsets[9]);
+  object.notifications = reader.readBool(offsets[10]);
+  object.onboard = reader.readBool(offsets[11]);
+  object.pressure = reader.readString(offsets[12]);
+  object.roundDegree = reader.readBool(offsets[13]);
+  object.showDummyAlerts = reader.readBool(offsets[14]);
+  object.theme = reader.readStringOrNull(offsets[15]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[16]);
+  object.timeEnd = reader.readStringOrNull(offsets[17]);
+  object.timeRange = reader.readLongOrNull(offsets[18]);
+  object.timeStart = reader.readStringOrNull(offsets[19]);
+  object.timeformat = reader.readString(offsets[20]);
+  object.useDummyTides = reader.readBool(offsets[21]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[22]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[23]);
+  object.wind = reader.readString(offsets[24]);
   return object;
 }
 
@@ -246,40 +273,46 @@ P _settingsDeserializeProp<P>(
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
       return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
       return (reader.readBool(offset)) as P;
     case 7:
       return (reader.readBool(offset)) as P;
     case 8:
-      return (reader.readString(offset)) as P;
-    case 9:
       return (reader.readBool(offset)) as P;
+    case 9:
+      return (reader.readString(offset)) as P;
     case 10:
       return (reader.readBool(offset)) as P;
     case 11:
-      return (reader.readString(offset)) as P;
-    case 12:
       return (reader.readBool(offset)) as P;
+    case 12:
+      return (reader.readString(offset)) as P;
     case 13:
       return (reader.readBool(offset)) as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 15:
       return (reader.readStringOrNull(offset)) as P;
     case 16:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 17:
       return (reader.readStringOrNull(offset)) as P;
     case 18:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 19:
       return (reader.readStringOrNull(offset)) as P;
     case 20:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 21:
+      return (reader.readBool(offset)) as P;
+    case 22:
+      return (reader.readStringOrNull(offset)) as P;
+    case 23:
+      return (reader.readStringOrNull(offset)) as P;
+    case 24:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -686,6 +719,16 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'hideMap', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> hideTidesEqualTo(
+    bool value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hideTides', value: value),
       );
     });
   }
@@ -1433,6 +1476,171 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'tidesApiKey'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  tidesApiKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'tidesApiKey'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'tidesApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  tidesApiKeyGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'tidesApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'tidesApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'tidesApiKey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'tidesApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'tidesApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'tidesApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'tidesApiKey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'tidesApiKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  tidesApiKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'tidesApiKey', value: ''),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> timeEndIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -1980,6 +2188,16 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> useDummyTidesEqualTo(
+    bool value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'useDummyTides', value: value),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition>
   widgetBackgroundColorIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -2503,6 +2721,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideTides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideTides', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideTidesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideTides', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByLanguage() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'language', Sort.asc);
@@ -2635,6 +2865,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByTidesApiKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesApiKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByTidesApiKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesApiKey', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByTimeEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timeEnd', Sort.asc);
@@ -2680,6 +2922,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByTimeformatDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timeformat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByUseDummyTides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyTides', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByUseDummyTidesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyTides', Sort.desc);
     });
   }
 
@@ -2768,6 +3022,18 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideMapDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideMap', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideTides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideTides', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideTidesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideTides', Sort.desc);
     });
   }
 
@@ -2915,6 +3181,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByTidesApiKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesApiKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByTidesApiKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesApiKey', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByTimeEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timeEnd', Sort.asc);
@@ -2960,6 +3238,18 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByTimeformatDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timeformat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByUseDummyTides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyTides', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByUseDummyTidesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyTides', Sort.desc);
     });
   }
 
@@ -3028,6 +3318,12 @@ extension SettingsQueryWhereDistinct
   QueryBuilder<Settings, Settings, QDistinct> distinctByHideMap() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hideMap');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByHideTides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideTides');
     });
   }
 
@@ -3105,6 +3401,14 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByTidesApiKey({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tidesApiKey', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByTimeEnd({
     bool caseSensitive = true,
   }) {
@@ -3132,6 +3436,12 @@ extension SettingsQueryWhereDistinct
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'timeformat', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByUseDummyTides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'useDummyTides');
     });
   }
 
@@ -3195,6 +3505,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> hideMapProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hideMap');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> hideTidesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideTides');
     });
   }
 
@@ -3264,6 +3580,12 @@ extension SettingsQueryProperty
     });
   }
 
+  QueryBuilder<Settings, String?, QQueryOperations> tidesApiKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tidesApiKey');
+    });
+  }
+
   QueryBuilder<Settings, String?, QQueryOperations> timeEndProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'timeEnd');
@@ -3285,6 +3607,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, String, QQueryOperations> timeformatProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'timeformat');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> useDummyTidesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'useDummyTides');
     });
   }
 
@@ -19706,6 +20034,2269 @@ extension WeatherCardQueryProperty
   windspeed10MMaxProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'windspeed10MMax');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+extension GetTideLocationCollection on Isar {
+  IsarCollection<TideLocation> get tideLocations => this.collection();
+}
+
+const TideLocationSchema = CollectionSchema(
+  name: r'TideLocation',
+  id: -8988670423968038352,
+  properties: {
+    r'isPrimary': PropertySchema(
+      id: 0,
+      name: r'isPrimary',
+      type: IsarType.bool,
+    ),
+    r'lastUpdated': PropertySchema(
+      id: 1,
+      name: r'lastUpdated',
+      type: IsarType.dateTime,
+    ),
+    r'lat': PropertySchema(id: 2, name: r'lat', type: IsarType.double),
+    r'lon': PropertySchema(id: 3, name: r'lon', type: IsarType.double),
+    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
+  },
+
+  estimateSize: _tideLocationEstimateSize,
+  serialize: _tideLocationSerialize,
+  deserialize: _tideLocationDeserialize,
+  deserializeProp: _tideLocationDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _tideLocationGetId,
+  getLinks: _tideLocationGetLinks,
+  attach: _tideLocationAttach,
+  version: '3.3.0',
+);
+
+int _tideLocationEstimateSize(
+  TideLocation object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.name;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _tideLocationSerialize(
+  TideLocation object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeBool(offsets[0], object.isPrimary);
+  writer.writeDateTime(offsets[1], object.lastUpdated);
+  writer.writeDouble(offsets[2], object.lat);
+  writer.writeDouble(offsets[3], object.lon);
+  writer.writeString(offsets[4], object.name);
+}
+
+TideLocation _tideLocationDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = TideLocation(
+    isPrimary: reader.readBoolOrNull(offsets[0]) ?? false,
+    lastUpdated: reader.readDateTimeOrNull(offsets[1]),
+    lat: reader.readDoubleOrNull(offsets[2]),
+    lon: reader.readDoubleOrNull(offsets[3]),
+    name: reader.readStringOrNull(offsets[4]),
+  );
+  object.id = id;
+  return object;
+}
+
+P _tideLocationDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 1:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 2:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+Id _tideLocationGetId(TideLocation object) {
+  return object.id;
+}
+
+List<IsarLinkBase<dynamic>> _tideLocationGetLinks(TideLocation object) {
+  return [];
+}
+
+void _tideLocationAttach(
+  IsarCollection<dynamic> col,
+  Id id,
+  TideLocation object,
+) {
+  object.id = id;
+}
+
+extension TideLocationQueryWhereSort
+    on QueryBuilder<TideLocation, TideLocation, QWhere> {
+  QueryBuilder<TideLocation, TideLocation, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+}
+
+extension TideLocationQueryWhere
+    on QueryBuilder<TideLocation, TideLocation, QWhereClause> {
+  QueryBuilder<TideLocation, TideLocation, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterWhereClause> idNotEqualTo(
+    Id id,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+}
+
+extension TideLocationQueryFilter
+    on QueryBuilder<TideLocation, TideLocation, QFilterCondition> {
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> idEqualTo(
+    Id value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> idGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> idLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  isPrimaryEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isPrimary', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lastUpdatedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastUpdated'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lastUpdatedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastUpdated'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lastUpdatedEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastUpdated', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lastUpdatedGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastUpdated',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lastUpdatedLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastUpdated',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lastUpdatedBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastUpdated',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> latIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  latIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> latEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  latGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> latLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> latBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lat',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> lonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> lonEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  lonGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> lonLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> lonBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lon',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'name'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'name'),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  nameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  nameStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition> nameMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterFilterCondition>
+  nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
+      );
+    });
+  }
+}
+
+extension TideLocationQueryObject
+    on QueryBuilder<TideLocation, TideLocation, QFilterCondition> {}
+
+extension TideLocationQueryLinks
+    on QueryBuilder<TideLocation, TideLocation, QFilterCondition> {}
+
+extension TideLocationQuerySortBy
+    on QueryBuilder<TideLocation, TideLocation, QSortBy> {
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByIsPrimary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByIsPrimaryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByLastUpdated() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy>
+  sortByLastUpdatedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> sortByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+}
+
+extension TideLocationQuerySortThenBy
+    on QueryBuilder<TideLocation, TideLocation, QSortThenBy> {
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByIsPrimary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByIsPrimaryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByLastUpdated() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy>
+  thenByLastUpdatedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QAfterSortBy> thenByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+}
+
+extension TideLocationQueryWhereDistinct
+    on QueryBuilder<TideLocation, TideLocation, QDistinct> {
+  QueryBuilder<TideLocation, TideLocation, QDistinct> distinctByIsPrimary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isPrimary');
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QDistinct> distinctByLastUpdated() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastUpdated');
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QDistinct> distinctByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lat');
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QDistinct> distinctByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lon');
+    });
+  }
+
+  QueryBuilder<TideLocation, TideLocation, QDistinct> distinctByName({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+}
+
+extension TideLocationQueryProperty
+    on QueryBuilder<TideLocation, TideLocation, QQueryProperty> {
+  QueryBuilder<TideLocation, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<TideLocation, bool, QQueryOperations> isPrimaryProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isPrimary');
+    });
+  }
+
+  QueryBuilder<TideLocation, DateTime?, QQueryOperations>
+  lastUpdatedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastUpdated');
+    });
+  }
+
+  QueryBuilder<TideLocation, double?, QQueryOperations> latProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lat');
+    });
+  }
+
+  QueryBuilder<TideLocation, double?, QQueryOperations> lonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lon');
+    });
+  }
+
+  QueryBuilder<TideLocation, String?, QQueryOperations> nameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+extension GetTideCacheCollection on Isar {
+  IsarCollection<TideCache> get tideCaches => this.collection();
+}
+
+const TideCacheSchema = CollectionSchema(
+  name: r'TideCache',
+  id: 9106067281431585454,
+  properties: {
+    r'cachedAt': PropertySchema(
+      id: 0,
+      name: r'cachedAt',
+      type: IsarType.dateTime,
+    ),
+    r'cachedDataJson': PropertySchema(
+      id: 1,
+      name: r'cachedDataJson',
+      type: IsarType.string,
+    ),
+    r'expiresAt': PropertySchema(
+      id: 2,
+      name: r'expiresAt',
+      type: IsarType.dateTime,
+    ),
+    r'lat': PropertySchema(id: 3, name: r'lat', type: IsarType.double),
+    r'locationKey': PropertySchema(
+      id: 4,
+      name: r'locationKey',
+      type: IsarType.string,
+    ),
+    r'lon': PropertySchema(id: 5, name: r'lon', type: IsarType.double),
+  },
+
+  estimateSize: _tideCacheEstimateSize,
+  serialize: _tideCacheSerialize,
+  deserialize: _tideCacheDeserialize,
+  deserializeProp: _tideCacheDeserializeProp,
+  idName: r'id',
+  indexes: {
+    r'locationKey': IndexSchema(
+      id: 1950685211417560871,
+      name: r'locationKey',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'locationKey',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+      ],
+    ),
+  },
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _tideCacheGetId,
+  getLinks: _tideCacheGetLinks,
+  attach: _tideCacheAttach,
+  version: '3.3.0',
+);
+
+int _tideCacheEstimateSize(
+  TideCache object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.cachedDataJson;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.locationKey;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _tideCacheSerialize(
+  TideCache object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDateTime(offsets[0], object.cachedAt);
+  writer.writeString(offsets[1], object.cachedDataJson);
+  writer.writeDateTime(offsets[2], object.expiresAt);
+  writer.writeDouble(offsets[3], object.lat);
+  writer.writeString(offsets[4], object.locationKey);
+  writer.writeDouble(offsets[5], object.lon);
+}
+
+TideCache _tideCacheDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = TideCache(
+    cachedAt: reader.readDateTimeOrNull(offsets[0]),
+    cachedDataJson: reader.readStringOrNull(offsets[1]),
+    expiresAt: reader.readDateTimeOrNull(offsets[2]),
+    lat: reader.readDoubleOrNull(offsets[3]),
+    locationKey: reader.readStringOrNull(offsets[4]),
+    lon: reader.readDoubleOrNull(offsets[5]),
+  );
+  object.id = id;
+  return object;
+}
+
+P _tideCacheDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    case 2:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readDoubleOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+Id _tideCacheGetId(TideCache object) {
+  return object.id;
+}
+
+List<IsarLinkBase<dynamic>> _tideCacheGetLinks(TideCache object) {
+  return [];
+}
+
+void _tideCacheAttach(IsarCollection<dynamic> col, Id id, TideCache object) {
+  object.id = id;
+}
+
+extension TideCacheByIndex on IsarCollection<TideCache> {
+  Future<TideCache?> getByLocationKey(String? locationKey) {
+    return getByIndex(r'locationKey', [locationKey]);
+  }
+
+  TideCache? getByLocationKeySync(String? locationKey) {
+    return getByIndexSync(r'locationKey', [locationKey]);
+  }
+
+  Future<bool> deleteByLocationKey(String? locationKey) {
+    return deleteByIndex(r'locationKey', [locationKey]);
+  }
+
+  bool deleteByLocationKeySync(String? locationKey) {
+    return deleteByIndexSync(r'locationKey', [locationKey]);
+  }
+
+  Future<List<TideCache?>> getAllByLocationKey(
+    List<String?> locationKeyValues,
+  ) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return getAllByIndex(r'locationKey', values);
+  }
+
+  List<TideCache?> getAllByLocationKeySync(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'locationKey', values);
+  }
+
+  Future<int> deleteAllByLocationKey(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'locationKey', values);
+  }
+
+  int deleteAllByLocationKeySync(List<String?> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'locationKey', values);
+  }
+
+  Future<Id> putByLocationKey(TideCache object) {
+    return putByIndex(r'locationKey', object);
+  }
+
+  Id putByLocationKeySync(TideCache object, {bool saveLinks = true}) {
+    return putByIndexSync(r'locationKey', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByLocationKey(List<TideCache> objects) {
+    return putAllByIndex(r'locationKey', objects);
+  }
+
+  List<Id> putAllByLocationKeySync(
+    List<TideCache> objects, {
+    bool saveLinks = true,
+  }) {
+    return putAllByIndexSync(r'locationKey', objects, saveLinks: saveLinks);
+  }
+}
+
+extension TideCacheQueryWhereSort
+    on QueryBuilder<TideCache, TideCache, QWhere> {
+  QueryBuilder<TideCache, TideCache, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+}
+
+extension TideCacheQueryWhere
+    on QueryBuilder<TideCache, TideCache, QWhereClause> {
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'locationKey', value: [null]),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'locationKey',
+          lower: [null],
+          includeLower: false,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyEqualTo(
+    String? locationKey,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'locationKey',
+          value: [locationKey],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterWhereClause> locationKeyNotEqualTo(
+    String? locationKey,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [],
+                upper: [locationKey],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [locationKey],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [locationKey],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [],
+                upper: [locationKey],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+}
+
+extension TideCacheQueryFilter
+    on QueryBuilder<TideCache, TideCache, QFilterCondition> {
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> cachedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cachedAt'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cachedAt'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> cachedAtEqualTo(
+    DateTime? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cachedAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> cachedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cachedAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> cachedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cachedAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> cachedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cachedAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cachedDataJson'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cachedDataJson'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cachedDataJson',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'cachedDataJson',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cachedDataJson', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  cachedDataJsonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'cachedDataJson', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> expiresAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'expiresAt'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  expiresAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'expiresAt'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> expiresAtEqualTo(
+    DateTime? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'expiresAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  expiresAtGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'expiresAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> expiresAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'expiresAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> expiresAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'expiresAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> idEqualTo(
+    Id value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> idGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> idLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> latIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> latIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> latEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> latGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> latLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> latBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lat',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  locationKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'locationKey'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  locationKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'locationKey'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  locationKeyGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'locationKey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  locationKeyStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> locationKeyMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'locationKey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  locationKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'locationKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition>
+  locationKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'locationKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> lonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> lonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> lonEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> lonGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> lonLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterFilterCondition> lonBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lon',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+}
+
+extension TideCacheQueryObject
+    on QueryBuilder<TideCache, TideCache, QFilterCondition> {}
+
+extension TideCacheQueryLinks
+    on QueryBuilder<TideCache, TideCache, QFilterCondition> {}
+
+extension TideCacheQuerySortBy on QueryBuilder<TideCache, TideCache, QSortBy> {
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByCachedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByCachedDataJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByCachedDataJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByLocationKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByLocationKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> sortByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+}
+
+extension TideCacheQuerySortThenBy
+    on QueryBuilder<TideCache, TideCache, QSortThenBy> {
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByCachedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByCachedDataJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByCachedDataJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByLocationKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByLocationKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.desc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QAfterSortBy> thenByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+}
+
+extension TideCacheQueryWhereDistinct
+    on QueryBuilder<TideCache, TideCache, QDistinct> {
+  QueryBuilder<TideCache, TideCache, QDistinct> distinctByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cachedAt');
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QDistinct> distinctByCachedDataJson({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'cachedDataJson',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QDistinct> distinctByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QDistinct> distinctByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lat');
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QDistinct> distinctByLocationKey({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'locationKey', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<TideCache, TideCache, QDistinct> distinctByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lon');
+    });
+  }
+}
+
+extension TideCacheQueryProperty
+    on QueryBuilder<TideCache, TideCache, QQueryProperty> {
+  QueryBuilder<TideCache, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<TideCache, DateTime?, QQueryOperations> cachedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedAt');
+    });
+  }
+
+  QueryBuilder<TideCache, String?, QQueryOperations> cachedDataJsonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedDataJson');
+    });
+  }
+
+  QueryBuilder<TideCache, DateTime?, QQueryOperations> expiresAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<TideCache, double?, QQueryOperations> latProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lat');
+    });
+  }
+
+  QueryBuilder<TideCache, String?, QQueryOperations> locationKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'locationKey');
+    });
+  }
+
+  QueryBuilder<TideCache, double?, QQueryOperations> lonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lon');
     });
   }
 }

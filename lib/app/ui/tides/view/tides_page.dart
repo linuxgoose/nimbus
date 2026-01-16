@@ -1,0 +1,881 @@
+import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:nimbus/app/api/tides_api.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/main.dart';
+import 'package:intl/intl.dart';
+import 'package:geocoding/geocoding.dart';
+
+class TidesPage extends StatefulWidget {
+  const TidesPage({super.key});
+
+  @override
+  State<TidesPage> createState() => _TidesPageState();
+}
+
+class _TidesPageState extends State<TidesPage> {
+  final TidesAPI _tidesAPI = TidesAPI();
+  TideLocation? _selectedLocation;
+  Map<String, dynamic>? _tideData;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrimaryLocation();
+  }
+
+  Future<void> _loadPrimaryLocation() async {
+    setState(() => _isLoading = true);
+
+    // Get primary tide location or use current location
+    final locations = isar.tideLocations
+        .getAllSync([])
+        .whereType<TideLocation>()
+        .toList();
+    _selectedLocation =
+        locations.where((l) => l.isPrimary).firstOrNull ??
+        locations.firstOrNull;
+
+    if (_selectedLocation == null) {
+      // Use current weather location as default
+      final lat = settings.location ? locationCache.lat : 51.5074;
+      final lon = settings.location ? locationCache.lon : -0.1278;
+
+      _selectedLocation = TideLocation(
+        name: 'Current Location',
+        lat: lat,
+        lon: lon,
+        isPrimary: true,
+      );
+    }
+
+    await _fetchTideData();
+  }
+
+  Future<void> _fetchTideData() async {
+    if (_selectedLocation == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Check for cached data first
+      final cached = _getCachedTideData(
+        _selectedLocation!.lat!,
+        _selectedLocation!.lon!,
+      );
+
+      if (cached != null) {
+        setState(() {
+          _tideData = cached;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Fetch new data if no valid cache
+      final data = await _tidesAPI.getTideData(
+        _selectedLocation!.lat!,
+        _selectedLocation!.lon!,
+        apiKey: settings.tidesApiKey,
+        useDummyData: settings.useDummyTides,
+      );
+
+      // Cache the fetched data
+      _cacheTideData(_selectedLocation!.lat!, _selectedLocation!.lon!, data);
+
+      setState(() {
+        _tideData = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Map<String, dynamic>? _getCachedTideData(double lat, double lon) {
+    final locationKey = '${lat}_${lon}';
+    final cache = isar.tideCaches
+        .getAllSync([])
+        .whereType<TideCache>()
+        .where((c) => c.locationKey == locationKey)
+        .firstOrNull;
+
+    if (cache == null) return null;
+
+    // Check if cache is expired (older than 24 hours)
+    if (cache.expiresAt != null && DateTime.now().isAfter(cache.expiresAt!)) {
+      // Delete expired cache
+      isar.writeTxnSync(() {
+        isar.tideCaches.deleteSync(cache.id);
+      });
+      return null;
+    }
+
+    // Return cached data
+    if (cache.cachedDataJson != null) {
+      return jsonDecode(cache.cachedDataJson!) as Map<String, dynamic>;
+    }
+
+    return null;
+  }
+
+  void _cacheTideData(double lat, double lon, Map<String, dynamic> data) {
+    final now = DateTime.now();
+    final expiresAt = now.add(const Duration(hours: 24));
+    final locationKey = '${lat}_${lon}';
+
+    // Delete existing cache for this location
+    final existing = isar.tideCaches
+        .getAllSync([])
+        .whereType<TideCache>()
+        .where((c) => c.locationKey == locationKey)
+        .firstOrNull;
+
+    isar.writeTxnSync(() {
+      if (existing != null) {
+        isar.tideCaches.deleteSync(existing.id);
+      }
+
+      // Store new cache
+      isar.tideCaches.putSync(
+        TideCache(
+          locationKey: locationKey,
+          lat: lat,
+          lon: lon,
+          cachedDataJson: jsonEncode(data),
+          cachedAt: now,
+          expiresAt: expiresAt,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tides'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.mapPin),
+            onPressed: _showLocationPicker,
+            tooltip: 'Select Location',
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.refreshCw),
+            onPressed: _fetchTideData,
+            tooltip: 'Refresh',
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _tideData == null
+          ? _buildErrorView()
+          : _buildTideView(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddLocationDialog,
+        child: const Icon(LucideIcons.plus),
+      ),
+    );
+  }
+
+  Widget _buildErrorView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            LucideIcons.triangleAlert,
+            size: 64,
+            color: context.theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Unable to load tide data',
+            style: context.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: _fetchTideData,
+            icon: const Icon(LucideIcons.refreshCw),
+            label: const Text('Try Again'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTideView() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _buildDataSourceWarning(),
+        const SizedBox(height: 16),
+        _buildLocationCard(),
+        const SizedBox(height: 16),
+        _buildCurrentTideCard(),
+        const SizedBox(height: 16),
+        _buildNextTidesCard(),
+        const SizedBox(height: 16),
+        _buildTideChartCard(),
+      ],
+    );
+  }
+
+  Widget _buildDataSourceWarning() {
+    if (!settings.useDummyTides &&
+        settings.tidesApiKey != null &&
+        settings.tidesApiKey!.isNotEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Card(
+      color: context.theme.colorScheme.errorContainer.withOpacity(0.3),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Icon(
+              LucideIcons.triangleAlert,
+              size: 20,
+              color: context.theme.colorScheme.error,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Demo Data Only',
+                    style: context.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: context.theme.colorScheme.onErrorContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Enable real tide data in Settings > Tides',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onErrorContainer,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                LucideIcons.waves,
+                color: context.theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _selectedLocation?.name ?? 'Unknown Location',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${_selectedLocation?.lat?.toStringAsFixed(4)}, ${_selectedLocation?.lon?.toStringAsFixed(4)}',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrentTideCard() {
+    final currentHeight = _tidesAPI.getCurrentTideHeight(_tideData!);
+    final nextTideInfo = _tidesAPI.getNextTideInfo(_tideData!);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.activity,
+                  color: context.theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Current Tide',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Height',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${currentHeight.toStringAsFixed(2)} m',
+                      style: context.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: context.theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        LucideIcons.clock,
+                        size: 16,
+                        color: context.theme.colorScheme.onSecondaryContainer,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        nextTideInfo,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.theme.colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNextTidesCard() {
+    final extremes = _tideData!['extremes'] as List<dynamic>;
+    final now = DateTime.now();
+    final upcomingTides = extremes
+        .where((e) => DateTime.parse(e['date'] as String).isAfter(now))
+        .take(6)
+        .toList();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.chartLine,
+                  color: context.theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Upcoming Tides',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...upcomingTides.map((tide) => _buildTideItem(tide)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTideItem(Map<String, dynamic> tide) {
+    final time = DateTime.parse(tide['date'] as String);
+    final type = tide['type'] as String;
+    final height = (tide['height'] as num).toStringAsFixed(2);
+    final isHigh = type == 'High';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isHigh
+            ? context.theme.colorScheme.primaryContainer.withOpacity(0.3)
+            : context.theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isHigh
+              ? context.theme.colorScheme.primary.withOpacity(0.3)
+              : context.theme.colorScheme.outline.withOpacity(0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isHigh ? LucideIcons.arrowUp : LucideIcons.arrowDown,
+            color: isHigh
+                ? context.theme.colorScheme.primary
+                : context.theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$type Tide',
+                  style: context.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  DateFormat('EEE, MMM d • HH:mm').format(time),
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$height m',
+            style: context.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isHigh ? context.theme.colorScheme.primary : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTideChartCard() {
+    final heights = _tideData!['heights'] as List<dynamic>;
+    final maxHeight = heights
+        .map((h) => h['height'] as num)
+        .reduce((a, b) => a > b ? a : b)
+        .toDouble();
+    final minHeight = heights
+        .map((h) => h['height'] as num)
+        .reduce((a, b) => a < b ? a : b)
+        .toDouble();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.chartLine,
+                  color: context.theme.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Tide Chart (24 hours)',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 200,
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: TideChartPainter(
+                  heights: heights.take(24).toList(),
+                  maxHeight: maxHeight,
+                  minHeight: minHeight,
+                  primaryColor: context.theme.colorScheme.primary,
+                  surfaceColor:
+                      context.theme.colorScheme.surfaceContainerHighest,
+                  textColor: context.theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLocationPicker() {
+    final locations = isar.tideLocations
+        .getAllSync([])
+        .whereType<TideLocation>()
+        .toList();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Select Location', style: context.textTheme.titleLarge),
+            const SizedBox(height: 16),
+            if (locations.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Text('No saved locations'),
+                ),
+              )
+            else
+              ...locations.map(
+                (location) => ListTile(
+                  leading: Icon(
+                    location.isPrimary ? LucideIcons.star : LucideIcons.mapPin,
+                    color: location.isPrimary ? Colors.amber : null,
+                  ),
+                  title: Text(location.name ?? 'Unknown'),
+                  subtitle: Text(
+                    '${location.lat?.toStringAsFixed(4)}, ${location.lon?.toStringAsFixed(4)}',
+                  ),
+                  selected: location.id == _selectedLocation?.id,
+                  onTap: () {
+                    setState(() => _selectedLocation = location);
+                    _fetchTideData();
+                    Navigator.pop(context);
+                  },
+                  trailing: IconButton(
+                    icon: const Icon(LucideIcons.trash2),
+                    onPressed: () async {
+                      await isar.writeTxn(
+                        () => isar.tideLocations.delete(location.id),
+                      );
+                      Navigator.pop(context);
+                      _loadPrimaryLocation();
+                    },
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddLocationDialog() {
+    final nameController = TextEditingController();
+    final latController = TextEditingController();
+    final lonController = TextEditingController();
+    bool isSearching = false;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Add Tide Location'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Location Name',
+                    prefixIcon: const Icon(LucideIcons.mapPin),
+                    suffixIcon: IconButton(
+                      icon: isSearching
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(LucideIcons.search),
+                      onPressed: isSearching
+                          ? null
+                          : () async {
+                              final query = nameController.text.trim();
+                              if (query.isEmpty) return;
+
+                              setDialogState(() => isSearching = true);
+                              try {
+                                final locations = await locationFromAddress(
+                                  query,
+                                );
+                                if (locations.isNotEmpty) {
+                                  final location = locations.first;
+                                  latController.text = location.latitude
+                                      .toStringAsFixed(6);
+                                  lonController.text = location.longitude
+                                      .toStringAsFixed(6);
+                                  setDialogState(() {});
+                                } else {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Location not found'),
+                                      ),
+                                    );
+                                  }
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Error searching: ${e.toString()}',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } finally {
+                                setDialogState(() => isSearching = false);
+                              }
+                            },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: latController,
+                  decoration: const InputDecoration(
+                    labelText: 'Latitude',
+                    prefixIcon: Icon(LucideIcons.navigation),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: lonController,
+                  decoration: const InputDecoration(
+                    labelText: 'Longitude',
+                    prefixIcon: Icon(LucideIcons.navigation),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Tip: Enter a location name (e.g., "Tarn Point UK") and tap search',
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final name = nameController.text.trim();
+                final lat = double.tryParse(latController.text.trim());
+                final lon = double.tryParse(lonController.text.trim());
+
+                if (name.isNotEmpty && lat != null && lon != null) {
+                  final location = TideLocation(
+                    name: name,
+                    lat: lat,
+                    lon: lon,
+                    isPrimary: false,
+                    lastUpdated: DateTime.now(),
+                  );
+
+                  await isar.writeTxn(() => isar.tideLocations.put(location));
+                  Navigator.pop(context);
+                  _loadPrimaryLocation();
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TideChartPainter extends CustomPainter {
+  final List<dynamic> heights;
+  final double maxHeight;
+  final double minHeight;
+  final Color primaryColor;
+  final Color surfaceColor;
+  final Color textColor;
+
+  TideChartPainter({
+    required this.heights,
+    required this.maxHeight,
+    required this.minHeight,
+    required this.primaryColor,
+    required this.surfaceColor,
+    required this.textColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (heights.isEmpty) return;
+
+    // Define margins for axis labels
+    const leftMargin = 40.0;
+    const bottomMargin = 30.0;
+    const rightMargin = 10.0;
+    const topMargin = 10.0;
+
+    final chartWidth = size.width - leftMargin - rightMargin;
+    final chartHeight = size.height - topMargin - bottomMargin;
+
+    final paint = Paint()
+      ..color = primaryColor
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    final fillPaint = Paint()
+      ..color = primaryColor.withOpacity(0.2)
+      ..style = PaintingStyle.fill;
+
+    final axisPaint = Paint()
+      ..color = textColor.withOpacity(0.3)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    final path = Path();
+    final fillPath = Path();
+
+    final heightRange = maxHeight - minHeight;
+    final xStep = chartWidth / (heights.length - 1);
+
+    // Draw Y-axis grid lines and labels
+    final textPainter = TextPainter(
+      textDirection: ui.TextDirection.ltr,
+      textAlign: TextAlign.right,
+    );
+
+    // Draw 5 horizontal grid lines with labels
+    for (int i = 0; i <= 4; i++) {
+      final ratio = i / 4;
+      final y = topMargin + (chartHeight * (1 - ratio));
+      final heightValue = minHeight + (heightRange * ratio);
+
+      // Draw grid line
+      canvas.drawLine(
+        Offset(leftMargin, y),
+        Offset(leftMargin + chartWidth, y),
+        axisPaint,
+      );
+
+      // Draw Y-axis label
+      textPainter.text = TextSpan(
+        text: '${heightValue.toStringAsFixed(1)}m',
+        style: TextStyle(color: textColor.withOpacity(0.6), fontSize: 10),
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(leftMargin - textPainter.width - 5, y - textPainter.height / 2),
+      );
+    }
+
+    // Draw the tide curve
+    for (int i = 0; i < heights.length; i++) {
+      final height = heights[i]['height'] as num;
+      final normalizedHeight = (height - minHeight) / heightRange;
+      final y = topMargin + (chartHeight * (1 - normalizedHeight));
+      final x = leftMargin + (i * xStep);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+        fillPath.moveTo(x, topMargin + chartHeight);
+        fillPath.lineTo(x, y);
+      } else {
+        path.lineTo(x, y);
+        fillPath.lineTo(x, y);
+      }
+    }
+
+    fillPath.lineTo(leftMargin + chartWidth, topMargin + chartHeight);
+    fillPath.close();
+
+    canvas.drawPath(fillPath, fillPaint);
+    canvas.drawPath(path, paint);
+
+    // Draw X-axis labels (time)
+    final timeLabels = [0, 6, 12, 18, 24];
+    for (final hour in timeLabels) {
+      if (hour >= heights.length) continue;
+
+      final x = leftMargin + (hour * xStep);
+      final y = topMargin + chartHeight;
+
+      // Draw tick mark
+      canvas.drawLine(Offset(x, y), Offset(x, y + 5), axisPaint);
+
+      // Draw time label
+      textPainter.text = TextSpan(
+        text: '${hour}h',
+        style: TextStyle(color: textColor.withOpacity(0.6), fontSize: 10),
+      );
+      textPainter.layout();
+      textPainter.paint(canvas, Offset(x - textPainter.width / 2, y + 8));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}

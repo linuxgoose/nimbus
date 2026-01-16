@@ -14,6 +14,9 @@ class Settings {
   bool roundDegree = false;
   bool largeElement = false;
   bool hideMap = false;
+  bool hideTides = false;
+  bool useDummyTides = true;
+  String? tidesApiKey;
   String? widgetBackgroundColor;
   String? widgetTextColor;
   String measurements = 'metric';
@@ -354,4 +357,63 @@ class WeatherCard {
       index: json['index'],
     );
   }
+}
+
+@collection
+class TideLocation {
+  Id id = Isar.autoIncrement;
+  String? name;
+  double? lat;
+  double? lon;
+  bool isPrimary = false;
+  DateTime? lastUpdated;
+
+  TideLocation({
+    this.name,
+    this.lat,
+    this.lon,
+    this.isPrimary = false,
+    this.lastUpdated,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'lat': lat,
+    'lon': lon,
+    'isPrimary': isPrimary,
+    'lastUpdated': lastUpdated?.toIso8601String(),
+  };
+
+  factory TideLocation.fromJson(Map<String, dynamic> json) => TideLocation(
+    name: json['name'] as String?,
+    lat: (json['lat'] as num?)?.toDouble(),
+    lon: (json['lon'] as num?)?.toDouble(),
+    isPrimary: json['isPrimary'] as bool? ?? false,
+    lastUpdated: json['lastUpdated'] != null
+        ? DateTime.parse(json['lastUpdated'] as String)
+        : null,
+  );
+}
+
+@collection
+class TideCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String? locationKey; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  String? cachedDataJson; // Store the entire tide data response as JSON
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 24 hours
+
+  TideCache({
+    this.locationKey,
+    this.lat,
+    this.lon,
+    this.cachedDataJson,
+    this.cachedAt,
+    this.expiresAt,
+  });
 }

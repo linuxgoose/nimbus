@@ -142,6 +142,7 @@ class EnGb {
         'Are you sure you want to purge all locally cached data?',
     'addWidget': 'Configure Widget',
     'hideMap': 'Collapse Map',
+    'hideTides': 'Hide Tides',
     'edit': 'Modify',
     'current': 'Current Weather Display',
     'currentForecastWidget': 'Detailed Weather Display',

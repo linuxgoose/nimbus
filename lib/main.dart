@@ -127,12 +127,35 @@ Future<void> initializeTimeZone() async {
 }
 
 Future<void> initializeIsar() async {
-  isar = await Isar.open([
-    SettingsSchema,
-    MainWeatherCacheSchema,
-    LocationCacheSchema,
-    WeatherCardSchema,
-  ], directory: (await getApplicationSupportDirectory()).path);
+  try {
+    isar = await Isar.open([
+      SettingsSchema,
+      MainWeatherCacheSchema,
+      LocationCacheSchema,
+      WeatherCardSchema,
+      TideLocationSchema,
+      TideCacheSchema,
+    ], directory: (await getApplicationSupportDirectory()).path);
+  } catch (e) {
+    // If schema is invalid (e.g., after adding new collections), delete and recreate
+    final dir = await getApplicationSupportDirectory();
+    final isarFile = File('${dir.path}/default.isar');
+    final isarLockFile = File('${dir.path}/default.isar.lock');
+
+    if (await isarFile.exists()) await isarFile.delete();
+    if (await isarLockFile.exists()) await isarLockFile.delete();
+
+    // Retry opening
+    isar = await Isar.open([
+      SettingsSchema,
+      MainWeatherCacheSchema,
+      LocationCacheSchema,
+      WeatherCardSchema,
+      TideLocationSchema,
+      TideCacheSchema,
+    ], directory: dir.path);
+  }
+
   settings = isar.settings.where().findFirstSync() ?? Settings();
   locationCache =
       isar.locationCaches.where().findFirstSync() ?? LocationCache();
