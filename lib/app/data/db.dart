@@ -479,3 +479,30 @@ class AqiCache {
     this.expiresAt,
   });
 }
+
+@collection
+class RainForecastCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  List<String>? times; // Array of ISO timestamp strings
+  List<double?>? precipitation; // Array of precipitation values in mm
+  String? resolution; // '15min' or 'hourly'
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 30 minutes
+
+  RainForecastCache({
+    required this.locationKey,
+    this.lat,
+    this.lon,
+    this.times,
+    this.precipitation,
+    this.resolution,
+    this.cachedAt,
+    this.expiresAt,
+  });
+}
