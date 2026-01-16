@@ -21,6 +21,7 @@ class Settings {
   String wind = 'kph';
   String pressure = 'hPa';
   String timeformat = '24';
+  String aqiIndex = 'daqi';
   String? language;
   int? timeRange;
   String? timeStart;

@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/main.dart';
 import 'package:dio/dio.dart';
 
 class AqiPage extends StatefulWidget {
@@ -124,14 +125,25 @@ class _AqiPageState extends State<AqiPage> {
 
     final current = aqiData!['current'];
     final europeanAqi = current['european_aqi']?.toInt() ?? 0;
+    final usAqi = current['us_aqi']?.toInt() ?? 0;
     final ukDaqi = _calculateUkDaqi(current);
+
+    // Use settings to determine which AQI to display
+    final useUkDaqi = settings.aqiIndex == 'daqi';
+    final secondaryAqi = useUkDaqi ? ukDaqi : usAqi;
+    final secondaryLabel = useUkDaqi ? 'UK DAQI' : 'US AQI';
 
     return RefreshIndicator(
       onRefresh: _fetchAqiData,
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildMainAqiCard(europeanAqi, ukDaqi),
+          _buildMainAqiCard(
+            europeanAqi,
+            secondaryAqi,
+            secondaryLabel,
+            useUkDaqi,
+          ),
           const Gap(16),
           _buildPollutantsCard(current),
           const Gap(16),
@@ -143,7 +155,12 @@ class _AqiPageState extends State<AqiPage> {
     );
   }
 
-  Widget _buildMainAqiCard(int europeanAqi, int ukDaqi) {
+  Widget _buildMainAqiCard(
+    int europeanAqi,
+    int secondaryAqi,
+    String secondaryLabel,
+    bool useUkDaqi,
+  ) {
     final aqiInfo = _getEuropeanAqiInfo(europeanAqi);
 
     return Card(
@@ -216,23 +233,29 @@ class _AqiPageState extends State<AqiPage> {
                 Column(
                   children: [
                     Text(
-                      'UK DAQI',
+                      secondaryLabel,
                       style: context.textTheme.bodySmall?.copyWith(
                         color: context.theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const Gap(4),
                     Text(
-                      '$ukDaqi',
+                      '$secondaryAqi',
                       style: context.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: _getUkDaqiInfo(ukDaqi)['color'],
+                        color: useUkDaqi
+                            ? _getUkDaqiInfo(secondaryAqi)['color']
+                            : _getUsAqiInfo(secondaryAqi)['color'],
                       ),
                     ),
                     Text(
-                      _getUkDaqiInfo(ukDaqi)['label'],
+                      useUkDaqi
+                          ? _getUkDaqiInfo(secondaryAqi)['label']
+                          : _getUsAqiInfo(secondaryAqi)['label'],
                       style: context.textTheme.bodySmall?.copyWith(
-                        color: _getUkDaqiInfo(ukDaqi)['color'],
+                        color: useUkDaqi
+                            ? _getUkDaqiInfo(secondaryAqi)['color']
+                            : _getUsAqiInfo(secondaryAqi)['color'],
                       ),
                     ),
                   ],
@@ -645,6 +668,26 @@ class _AqiPageState extends State<AqiPage> {
       return {'label': 'High', 'color': const Color(0xFFFF9C31)};
     } else {
       return {'label': 'Very High', 'color': const Color(0xFFFF3131)};
+    }
+  }
+
+  Map<String, dynamic> _getUsAqiInfo(int aqi) {
+    // US Air Quality Index (0-500 scale)
+    if (aqi <= 50) {
+      return {'label': 'Good', 'color': const Color(0xFF00E400)};
+    } else if (aqi <= 100) {
+      return {'label': 'Moderate', 'color': const Color(0xFFFFFF00)};
+    } else if (aqi <= 150) {
+      return {
+        'label': 'Unhealthy for Sensitive',
+        'color': const Color(0xFFFF7E00),
+      };
+    } else if (aqi <= 200) {
+      return {'label': 'Unhealthy', 'color': const Color(0xFFFF0000)};
+    } else if (aqi <= 300) {
+      return {'label': 'Very Unhealthy', 'color': const Color(0xFF8F3F97)};
+    } else {
+      return {'label': 'Hazardous', 'color': const Color(0xFF7E0023)};
     }
   }
 

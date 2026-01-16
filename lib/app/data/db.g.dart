@@ -22,73 +22,78 @@ const SettingsSchema = CollectionSchema(
       name: r'amoledTheme',
       type: IsarType.bool,
     ),
-    r'degrees': PropertySchema(id: 1, name: r'degrees', type: IsarType.string),
-    r'hideMap': PropertySchema(id: 2, name: r'hideMap', type: IsarType.bool),
+    r'aqiIndex': PropertySchema(
+      id: 1,
+      name: r'aqiIndex',
+      type: IsarType.string,
+    ),
+    r'degrees': PropertySchema(id: 2, name: r'degrees', type: IsarType.string),
+    r'hideMap': PropertySchema(id: 3, name: r'hideMap', type: IsarType.bool),
     r'language': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 5, name: r'location', type: IsarType.bool),
+    r'location': PropertySchema(id: 6, name: r'location', type: IsarType.bool),
     r'materialColor': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'notifications',
       type: IsarType.bool,
     ),
-    r'onboard': PropertySchema(id: 9, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 10, name: r'onboard', type: IsarType.bool),
     r'pressure': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 12, name: r'theme', type: IsarType.string),
-    r'timeEnd': PropertySchema(id: 13, name: r'timeEnd', type: IsarType.string),
+    r'theme': PropertySchema(id: 13, name: r'theme', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 14, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 19, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 20, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -112,6 +117,7 @@ int _settingsEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.aqiIndex.length * 3;
   bytesCount += 3 + object.degrees.length * 3;
   {
     final value = object.language;
@@ -163,25 +169,26 @@ void _settingsSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeBool(offsets[0], object.amoledTheme);
-  writer.writeString(offsets[1], object.degrees);
-  writer.writeBool(offsets[2], object.hideMap);
-  writer.writeString(offsets[3], object.language);
-  writer.writeBool(offsets[4], object.largeElement);
-  writer.writeBool(offsets[5], object.location);
-  writer.writeBool(offsets[6], object.materialColor);
-  writer.writeString(offsets[7], object.measurements);
-  writer.writeBool(offsets[8], object.notifications);
-  writer.writeBool(offsets[9], object.onboard);
-  writer.writeString(offsets[10], object.pressure);
-  writer.writeBool(offsets[11], object.roundDegree);
-  writer.writeString(offsets[12], object.theme);
-  writer.writeString(offsets[13], object.timeEnd);
-  writer.writeLong(offsets[14], object.timeRange);
-  writer.writeString(offsets[15], object.timeStart);
-  writer.writeString(offsets[16], object.timeformat);
-  writer.writeString(offsets[17], object.widgetBackgroundColor);
-  writer.writeString(offsets[18], object.widgetTextColor);
-  writer.writeString(offsets[19], object.wind);
+  writer.writeString(offsets[1], object.aqiIndex);
+  writer.writeString(offsets[2], object.degrees);
+  writer.writeBool(offsets[3], object.hideMap);
+  writer.writeString(offsets[4], object.language);
+  writer.writeBool(offsets[5], object.largeElement);
+  writer.writeBool(offsets[6], object.location);
+  writer.writeBool(offsets[7], object.materialColor);
+  writer.writeString(offsets[8], object.measurements);
+  writer.writeBool(offsets[9], object.notifications);
+  writer.writeBool(offsets[10], object.onboard);
+  writer.writeString(offsets[11], object.pressure);
+  writer.writeBool(offsets[12], object.roundDegree);
+  writer.writeString(offsets[13], object.theme);
+  writer.writeString(offsets[14], object.timeEnd);
+  writer.writeLong(offsets[15], object.timeRange);
+  writer.writeString(offsets[16], object.timeStart);
+  writer.writeString(offsets[17], object.timeformat);
+  writer.writeString(offsets[18], object.widgetBackgroundColor);
+  writer.writeString(offsets[19], object.widgetTextColor);
+  writer.writeString(offsets[20], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -192,26 +199,27 @@ Settings _settingsDeserialize(
 ) {
   final object = Settings();
   object.amoledTheme = reader.readBool(offsets[0]);
-  object.degrees = reader.readString(offsets[1]);
-  object.hideMap = reader.readBool(offsets[2]);
+  object.aqiIndex = reader.readString(offsets[1]);
+  object.degrees = reader.readString(offsets[2]);
+  object.hideMap = reader.readBool(offsets[3]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[3]);
-  object.largeElement = reader.readBool(offsets[4]);
-  object.location = reader.readBool(offsets[5]);
-  object.materialColor = reader.readBool(offsets[6]);
-  object.measurements = reader.readString(offsets[7]);
-  object.notifications = reader.readBool(offsets[8]);
-  object.onboard = reader.readBool(offsets[9]);
-  object.pressure = reader.readString(offsets[10]);
-  object.roundDegree = reader.readBool(offsets[11]);
-  object.theme = reader.readStringOrNull(offsets[12]);
-  object.timeEnd = reader.readStringOrNull(offsets[13]);
-  object.timeRange = reader.readLongOrNull(offsets[14]);
-  object.timeStart = reader.readStringOrNull(offsets[15]);
-  object.timeformat = reader.readString(offsets[16]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[17]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[18]);
-  object.wind = reader.readString(offsets[19]);
+  object.language = reader.readStringOrNull(offsets[4]);
+  object.largeElement = reader.readBool(offsets[5]);
+  object.location = reader.readBool(offsets[6]);
+  object.materialColor = reader.readBool(offsets[7]);
+  object.measurements = reader.readString(offsets[8]);
+  object.notifications = reader.readBool(offsets[9]);
+  object.onboard = reader.readBool(offsets[10]);
+  object.pressure = reader.readString(offsets[11]);
+  object.roundDegree = reader.readBool(offsets[12]);
+  object.theme = reader.readStringOrNull(offsets[13]);
+  object.timeEnd = reader.readStringOrNull(offsets[14]);
+  object.timeRange = reader.readLongOrNull(offsets[15]);
+  object.timeStart = reader.readStringOrNull(offsets[16]);
+  object.timeformat = reader.readString(offsets[17]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[18]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[19]);
+  object.wind = reader.readString(offsets[20]);
   return object;
 }
 
@@ -227,40 +235,42 @@ P _settingsDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
-    case 4:
       return (reader.readBool(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
       return (reader.readBool(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
-    case 8:
       return (reader.readBool(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
     case 9:
       return (reader.readBool(offset)) as P;
     case 10:
-      return (reader.readString(offset)) as P;
-    case 11:
       return (reader.readBool(offset)) as P;
+    case 11:
+      return (reader.readString(offset)) as P;
     case 12:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 13:
       return (reader.readStringOrNull(offset)) as P;
     case 14:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 15:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 16:
-      return (reader.readString(offset)) as P;
-    case 17:
       return (reader.readStringOrNull(offset)) as P;
+    case 17:
+      return (reader.readString(offset)) as P;
     case 18:
       return (reader.readStringOrNull(offset)) as P;
     case 19:
+      return (reader.readStringOrNull(offset)) as P;
+    case 20:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -365,6 +375,152 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'amoledTheme', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'aqiIndex',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'aqiIndex',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'aqiIndex',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'aqiIndex',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'aqiIndex',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'aqiIndex',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'aqiIndex',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'aqiIndex',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'aqiIndex', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> aqiIndexIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'aqiIndex', value: ''),
       );
     });
   }
@@ -2293,6 +2449,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByAqiIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aqiIndex', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByAqiIndexDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aqiIndex', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByDegrees() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'degrees', Sort.asc);
@@ -2534,6 +2702,18 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByAmoledThemeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'amoledTheme', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByAqiIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aqiIndex', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByAqiIndexDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aqiIndex', Sort.desc);
     });
   }
 
@@ -2787,6 +2967,14 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByAqiIndex({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'aqiIndex', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByDegrees({
     bool caseSensitive = true,
   }) {
@@ -2941,6 +3129,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> amoledThemeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'amoledTheme');
+    });
+  }
+
+  QueryBuilder<Settings, String, QQueryOperations> aqiIndexProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'aqiIndex');
     });
   }
 

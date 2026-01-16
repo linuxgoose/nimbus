@@ -452,6 +452,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildWindSettingCard(context, setState),
               _buildPressureSettingCard(context, setState),
               _buildTimeFormatSettingCard(context, setState),
+              _buildAqiIndexSettingCard(context, setState),
               const Gap(10),
             ],
           ),
@@ -596,6 +597,25 @@ class _SettingsPageState extends State<SettingsPage> {
     dropdownChange: (String? newValue) {
       isar.writeTxnSync(() {
         settings.timeformat = newValue == '12'.tr ? '12' : '24';
+        isar.settings.putSync(settings);
+      });
+      setState(() {});
+    },
+  );
+
+  Widget _buildAqiIndexSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.wind),
+    text: 'Air Quality Index',
+    dropdown: true,
+    dropdownName: settings.aqiIndex == 'daqi' ? 'UK DAQI' : 'US AQI',
+    dropdownList: <String>['UK DAQI', 'US AQI'],
+    dropdownChange: (String? newValue) {
+      isar.writeTxnSync(() {
+        settings.aqiIndex = newValue == 'UK DAQI' ? 'daqi' : 'us';
         isar.settings.putSync(settings);
       });
       setState(() {});
