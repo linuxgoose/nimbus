@@ -26,6 +26,14 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - 9 customizable color schemes (TITAN, NEXRAD, Weather Channel, Dark Sky, and more)
   - Dynamic legend showing precipitation intensity
   - Location centering and interactive map controls
+- **Tide Predictions:** Comprehensive tide information with:
+  - Interactive 24-hour tide chart with axis labels
+  - Current tide level and status (rising/falling)
+  - Upcoming high and low tide times
+  - Multiple saved locations with geocoding search
+  - Optional real-time data via Stormglass API (10 requests/day free)
+  - 24-hour offline caching to conserve API quota
+  - Toggle between real and dummy data for testing
 - **Detailed Weather Data:** Access comprehensive weather statistics including temperature, humidity, wind speed, precipitation probability, UV index, and more.
 - **Weather Alerts:** Receive timely notifications about significant weather changes and conditions.
 - **Multi-Language Support:** Choose from a wide range of language options.
@@ -43,7 +51,7 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 
 ### Reliable Data Sources
 
-Weather data is powered by [Open-Meteo](https://open-meteo.com/en/docs), providing accurate and up-to-date forecasts. Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking.
+Weather data is powered by [Open-Meteo](https://open-meteo.com/en/docs), providing accurate and up-to-date forecasts. Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day).
 
 ### Get Nimbus
 
