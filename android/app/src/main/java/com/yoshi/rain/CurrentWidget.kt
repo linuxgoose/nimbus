@@ -37,7 +37,8 @@ class CurrentWidget : HomeWidgetProvider() {
                 setTextViewText(R.id.weather_description, widgetData.getString("weather_description", "Unknown") ?: "Unknown")
                 setTextViewText(R.id.weather_wind, widgetData.getString("weather_wind", "--") ?: "--")
                 setTextViewText(R.id.weather_humidity, widgetData.getString("weather_humidity", "--") ?: "--")
-                setTextViewText(R.id.weather_visibility, widgetData.getString("weather_visibility", "--") ?: "--")
+                setTextViewText(R.id.weather_precip, widgetData.getString("weather_precip", "--") ?: "--")
+                setTextViewText(R.id.friendly_summary, widgetData.getString("friendly_summary", "") ?: "")
 
                 // 3. Weather Icon
                 val imagePath = widgetData.getString("weather_icon", null)
@@ -71,11 +72,12 @@ class CurrentWidget : HomeWidgetProvider() {
 
                 val textViews = listOf(
                     R.id.location_text,
+                    R.id.friendly_summary,
                     R.id.weather_degree, 
                     R.id.weather_description,
                     R.id.weather_wind, 
                     R.id.weather_humidity, 
-                    R.id.weather_visibility
+                    R.id.weather_precip
                 )
                 textViews.forEach { setTextColor(it, finalTextColor) }
             }

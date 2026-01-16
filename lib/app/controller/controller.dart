@@ -14,6 +14,7 @@ import 'package:nimbus/app/utils/notification.dart';
 import 'package:nimbus/app/utils/show_snack_bar.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/weather_summary.dart';
 import 'package:nimbus/main.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -657,15 +658,27 @@ class WeatherController extends GetxController {
       final windSpeed =
           '${mainWeatherCache.windspeed10M?[hour]?.round() ?? 0} $speedUnit';
       final humidity = '${mainWeatherCache.relativehumidity2M?[hour] ?? 0}%';
-      final visibilityVal = ((mainWeatherCache.visibility?[hour] ?? 0) / 1000)
-          .round();
-      final visibility = '$visibilityVal km';
+      final precip =
+          '${mainWeatherCache.precipitationProbability?[hour] ?? 0}%';
 
       await HomeWidget.saveWidgetData('weather_degree', degree);
       await HomeWidget.saveWidgetData('weather_description', description);
       await HomeWidget.saveWidgetData('weather_wind', windSpeed);
       await HomeWidget.saveWidgetData('weather_humidity', humidity);
-      await HomeWidget.saveWidgetData('weather_visibility', visibility);
+      await HomeWidget.saveWidgetData('weather_precip', precip);
+
+      // --- Friendly Summary ---
+      final friendlySummary = WeatherSummary().getSummary(
+        weatherCode: mainWeatherCache.weathercode?[hour],
+        temperature: mainWeatherCache.temperature2M?[hour],
+        feelsLike: mainWeatherCache.apparentTemperature?[hour],
+        humidity: mainWeatherCache.relativehumidity2M?[hour],
+        windSpeed: mainWeatherCache.windspeed10M?[hour],
+        precipitationProbability:
+            mainWeatherCache.precipitationProbability?[hour],
+        uvIndex: mainWeatherCache.uvIndex?[hour]?.round(),
+      );
+      await HomeWidget.saveWidgetData('friendly_summary', friendlySummary);
 
       // --- Weather Icon ---
       try {
