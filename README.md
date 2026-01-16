@@ -50,10 +50,3 @@ This project is licensed under the [MIT License](./LICENSE).
 ### Acknowledgements
 
 Nimbus is a fork of [Rain](https://github.com/DarkMooNight/Rain) by DarkMooNight. We extend our gratitude to the original developers and contributors.
-
-### Contributors
-
-<a href='https://github.com/linuxgoose/nimbus/graphs/contributors'>
-    <img src='https://contrib.rocks/image?repo=linuxgoose/nimbus'/>
-</a>
-
