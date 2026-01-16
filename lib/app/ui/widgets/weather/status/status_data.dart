@@ -39,7 +39,7 @@ class StatusData {
             ? '${(speed * (5 / 18)).toPrecision(1)} ${'m/s'.tr}'
             : '$speed ${'kph'.tr}';
       case 'imperial':
-        return '$speed ${'mph'.tr}';
+        return '${(speed * 0.621371).toPrecision(1)} ${'mph'.tr}';
       default:
         return '$speed ${'kph'.tr}';
     }
