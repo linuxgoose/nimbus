@@ -118,12 +118,9 @@ class _MainPageState extends State<MainPage> {
       // to avoid re-fetching on every small UI rebuild.
       future: WeatherAPI().getRawAlerts(lat, lon),
       builder: (context, snapshot) {
-        // 2. Handle the loading state
+        // 2. Handle the loading state - don't show shimmer to avoid layout shift
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MyShimmer(
-            height: 80,
-            margin: EdgeInsets.only(bottom: 15),
-          );
+          return const SizedBox.shrink();
         }
 
         // 3. Handle errors or empty data
