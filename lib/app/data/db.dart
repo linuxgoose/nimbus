@@ -31,7 +31,8 @@ class Settings {
   bool showAlertsOnMainPage = true;
   bool showAlertsOnMap = true;
   String weatherDataSource = 'openmeteo'; // openmeteo, metno, hybrid
-  bool preferMetNoInHybrid = false; // Override Nordic region detection in hybrid mode
+  bool preferMetNoInHybrid =
+      false; // Override Nordic region detection in hybrid mode
   String? language;
   int? timeRange;
   String? timeStart;

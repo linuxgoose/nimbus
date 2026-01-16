@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 /// API Documentation: https://api.met.no/
 class MetNoService {
   static const String _baseUrl = 'https://api.met.no/weatherapi';
-  static const String _userAgent = 'Nimbus Weather App github.com/linuxgoose/nimbus';
+  static const String _userAgent =
+      'Nimbus Weather App github.com/linuxgoose/nimbus';
 
   /// Get location forecast from MET Norway
   /// Uses the compact format for efficiency
@@ -25,10 +26,7 @@ class MetNoService {
 
       final response = await http.get(
         url,
-        headers: {
-          'User-Agent': _userAgent,
-          'Accept': 'application/json',
-        },
+        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -55,16 +53,11 @@ class MetNoService {
     required double lon,
   }) async {
     try {
-      final url = Uri.parse(
-        '$_baseUrl/nowcast/2.0/complete?lat=$lat&lon=$lon',
-      );
+      final url = Uri.parse('$_baseUrl/nowcast/2.0/complete?lat=$lat&lon=$lon');
 
       final response = await http.get(
         url,
-        headers: {
-          'User-Agent': _userAgent,
-          'Accept': 'application/json',
-        },
+        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -99,10 +92,7 @@ class MetNoService {
 
       final response = await http.get(
         url,
-        headers: {
-          'User-Agent': _userAgent,
-          'Accept': 'application/geo+json',
-        },
+        headers: {'User-Agent': _userAgent, 'Accept': 'application/geo+json'},
       );
 
       if (response.statusCode == 200) {
@@ -139,10 +129,7 @@ class MetNoService {
 
       final response = await http.get(
         url,
-        headers: {
-          'User-Agent': _userAgent,
-          'Accept': 'application/json',
-        },
+        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -172,10 +159,7 @@ class MetNoService {
 
       final response = await http.get(
         url,
-        headers: {
-          'User-Agent': _userAgent,
-          'Accept': 'application/json',
-        },
+        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -196,13 +180,13 @@ class MetNoService {
   /// https://en.wikipedia.org/wiki/Dew_point
   static double _calculateDewpoint(double tempC, double relativeHumidity) {
     if (relativeHumidity <= 0) return tempC;
-    
+
     const double a = 17.27;
     const double b = 237.7;
-    
+
     final alpha = ((a * tempC) / (b + tempC)) + log(relativeHumidity / 100.0);
     final dewpoint = (b * alpha) / (a - alpha);
-    
+
     return dewpoint;
   }
 
@@ -212,7 +196,10 @@ class MetNoService {
     if (symbolCode == null) return 0;
 
     // Remove day/night/polar variants
-    final code = symbolCode.replaceAll(RegExp(r'_(day|night|polartwilight)$'), '');
+    final code = symbolCode.replaceAll(
+      RegExp(r'_(day|night|polartwilight)$'),
+      '',
+    );
 
     switch (code) {
       case 'clearsky':
@@ -281,7 +268,7 @@ class MetNoService {
         debugPrint('❌ Invalid properties structure in MET Norway response');
         return null;
       }
-      
+
       final timeseries = properties['timeseries'];
       if (timeseries == null || timeseries is! List || timeseries.isEmpty) {
         debugPrint('❌ No timeseries data in MET Norway response');
@@ -307,28 +294,29 @@ class MetNoService {
           debugPrint('⚠️ Skipping invalid timeseries entry');
           continue;
         }
-        
+
         final time = entry['time'];
         if (time == null || time is! String) continue;
-        
+
         final data = entry['data'];
         if (data == null || data is! Map<String, dynamic>) continue;
-        
+
         final instant = data['instant'];
         if (instant == null || instant is! Map<String, dynamic>) continue;
-        
+
         final details = instant['details'];
         if (details == null || details is! Map<String, dynamic>) continue;
 
         times.add(time);
         final temp = (details['air_temperature'] as num?)?.toDouble() ?? 0.0;
         final speed = (details['wind_speed'] as num?)?.toDouble() ?? 0.0;
-        final direction = (details['wind_from_direction'] as num?)?.toDouble() ?? 0.0;
-        
+        final direction =
+            (details['wind_from_direction'] as num?)?.toDouble() ?? 0.0;
+
         temps.add(temp);
         windSpeed.add(speed);
         windDirection.add(direction);
-        
+
         // MET Norway doesn't provide wind gusts, estimate as 1.4x wind speed
         final gustValue = (details['wind_speed_of_gust'] as num?)?.toDouble();
         if (gustValue == null) {
@@ -336,39 +324,46 @@ class MetNoService {
         } else {
           windGusts.add(gustValue);
         }
-        
+
         humidity.add((details['relative_humidity'] as num?)?.toInt() ?? 0);
-        pressure.add((details['air_pressure_at_sea_level'] as num?)?.toDouble() ?? 1013.0);
+        pressure.add(
+          (details['air_pressure_at_sea_level'] as num?)?.toDouble() ?? 1013.0,
+        );
         cloudCover.add((details['cloud_area_fraction'] as num?)?.toInt() ?? 0);
-        
+
         // Calculate dewpoint from temperature and humidity (Magnus formula)
         // MET Norway doesn't provide dewpoint directly
         final rh = (details['relative_humidity'] as num?)?.toDouble() ?? 0.0;
         final dewpointCalc = _calculateDewpoint(temp, rh);
         dewpoint.add(dewpointCalc);
-        
+
         // MET Norway doesn't provide UV index in instant details
         // It may be in forecast periods, but for now we'll set to 0
         uvIndex.add(0.0);
-        
+
         // Visibility in meters to km
-        final visMeters = (details['visibility'] as num?)?.toDouble() ?? 10000.0;
+        final visMeters =
+            (details['visibility'] as num?)?.toDouble() ?? 10000.0;
         visibility.add(visMeters / 1000.0);
 
         // Get precipitation from next_1_hours or next_6_hours
         double precipAmount = 0.0;
         final next1h = data['next_1_hours'];
         final next6h = data['next_6_hours'];
-        
+
         if (next1h != null && next1h is Map<String, dynamic>) {
           final precipDetails = next1h['details'];
           if (precipDetails != null && precipDetails is Map<String, dynamic>) {
-            precipAmount = (precipDetails['precipitation_amount'] as num?)?.toDouble() ?? 0.0;
+            precipAmount =
+                (precipDetails['precipitation_amount'] as num?)?.toDouble() ??
+                0.0;
           }
         } else if (next6h != null && next6h is Map<String, dynamic>) {
           final precipDetails = next6h['details'];
           if (precipDetails != null && precipDetails is Map<String, dynamic>) {
-            precipAmount = (precipDetails['precipitation_amount'] as num?)?.toDouble() ?? 0.0;
+            precipAmount =
+                (precipDetails['precipitation_amount'] as num?)?.toDouble() ??
+                0.0;
           }
         }
         precipitation.add(precipAmount);
@@ -404,45 +399,54 @@ class MetNoService {
       // Fetch sunrise/sunset data if coordinates provided
       List<String> sunriseData = [];
       List<String> sunsetData = [];
-      
+
       if (lat != null && lon != null && times.isNotEmpty) {
         try {
           final firstDate = DateTime.parse(times.first);
-          
+
           // MET Norway Sunrise API doesn't support 'days' parameter, need to make multiple requests
           for (int i = 0; i < 11; i++) {
             final requestDate = firstDate.add(Duration(days: i));
-            final sunData = await MetNoService.getSunrise(lat: lat, lon: lon, date: requestDate, days: 1);
-            
-            debugPrint('🔍 Day $i: sunData is ${sunData != null ? "not null" : "null"}');
-            
+            final sunData = await MetNoService.getSunrise(
+              lat: lat,
+              lon: lon,
+              date: requestDate,
+              days: 1,
+            );
+
+            debugPrint(
+              '🔍 Day $i: sunData is ${sunData != null ? "not null" : "null"}',
+            );
+
             if (sunData != null && sunData['properties'] != null) {
               final props = sunData['properties'] as Map<String, dynamic>?;
-              debugPrint('🔍 Day $i: props is ${props != null ? "not null" : "null"}');
-              
+              debugPrint(
+                '🔍 Day $i: props is ${props != null ? "not null" : "null"}',
+              );
+
               if (props != null) {
                 // The sunrise/sunset might be objects with time property, not direct strings
                 final sunrise = props['sunrise'];
                 final sunset = props['sunset'];
-                
+
                 String? sunriseStr;
                 String? sunsetStr;
-                
+
                 // Check if sunrise/sunset are strings or objects
                 if (sunrise is String) {
                   sunriseStr = sunrise;
                 } else if (sunrise is Map<String, dynamic>) {
                   sunriseStr = sunrise['time'] as String?;
                 }
-                
+
                 if (sunset is String) {
                   sunsetStr = sunset;
                 } else if (sunset is Map<String, dynamic>) {
                   sunsetStr = sunset['time'] as String?;
                 }
-                
+
                 debugPrint('🔍 Day $i: sunrise=$sunriseStr, sunset=$sunsetStr');
-                
+
                 // Store the full ISO8601 timestamps (converted to local time)
                 if (sunriseStr != null) {
                   try {
@@ -452,7 +456,7 @@ class MetNoService {
                     debugPrint('⚠️ Error parsing sunrise time: $e');
                   }
                 }
-                
+
                 if (sunsetStr != null) {
                   try {
                     final sunsetTime = DateTime.parse(sunsetStr).toLocal();
@@ -463,50 +467,63 @@ class MetNoService {
                 }
               }
             }
-            
+
             // Small delay to avoid rate limiting
             if (i < 10) {
               await Future.delayed(Duration(milliseconds: 100));
             }
           }
-          
+
           if (sunriseData.isNotEmpty && sunsetData.isNotEmpty) {
-            debugPrint('🌅 Fetched ${sunriseData.length} sunrise and ${sunsetData.length} sunset times from MET Norway');
+            debugPrint(
+              '🌅 Fetched ${sunriseData.length} sunrise and ${sunsetData.length} sunset times from MET Norway',
+            );
           }
         } catch (e) {
           debugPrint('⚠️ Could not fetch sunrise/sunset data: $e');
         }
       }
-      
+
       // Extract daily dates to know how many days we need
       final dailyDates = _extractDailyTimes(times);
       final expectedDays = dailyDates.length;
-      
+
       // If we didn't get enough data, fill in with approximations
-      if (sunriseData.length < expectedDays || sunsetData.length < expectedDays) {
-        debugPrint('⚠️ Got ${sunriseData.length} sunrise and ${sunsetData.length} sunset, but need $expectedDays. Filling with approximations.');
+      if (sunriseData.length < expectedDays ||
+          sunsetData.length < expectedDays) {
+        debugPrint(
+          '⚠️ Got ${sunriseData.length} sunrise and ${sunsetData.length} sunset, but need $expectedDays. Filling with approximations.',
+        );
         final approxSunrise = _generateDailySunriseSunset(times, true);
         final approxSunset = _generateDailySunriseSunset(times, false);
-        
+
         // Use real data where available, approximations for the rest
-        while (sunriseData.length < expectedDays && sunriseData.length < approxSunrise.length) {
+        while (sunriseData.length < expectedDays &&
+            sunriseData.length < approxSunrise.length) {
           sunriseData.add(approxSunrise[sunriseData.length]);
         }
-        while (sunsetData.length < expectedDays && sunsetData.length < approxSunset.length) {
+        while (sunsetData.length < expectedDays &&
+            sunsetData.length < approxSunset.length) {
           sunsetData.add(approxSunset[sunsetData.length]);
         }
       }
-      
+
       // Final check - if still empty, use all approximations
       if (sunriseData.isEmpty || sunsetData.isEmpty) {
         debugPrint('⚠️ Using approximated sunrise/sunset times');
         sunriseData = _generateDailySunriseSunset(times, true);
         sunsetData = _generateDailySunriseSunset(times, false);
       }
-      
-      debugPrint('📅 Final sunrise data (first 3): ${sunriseData.take(3).toList()}');
-      debugPrint('📅 Final sunset data (first 3): ${sunsetData.take(3).toList()}');
-      debugPrint('⚠️ If you see HH:mm format errors, please CLEAR CACHE in app settings!');
+
+      debugPrint(
+        '📅 Final sunrise data (first 3): ${sunriseData.take(3).toList()}',
+      );
+      debugPrint(
+        '📅 Final sunset data (first 3): ${sunsetData.take(3).toList()}',
+      );
+      debugPrint(
+        '⚠️ If you see HH:mm format errors, please CLEAR CACHE in app settings!',
+      );
 
       return {
         'hourly': {
@@ -545,7 +562,10 @@ class MetNoService {
           'windspeed_10m_max': _extractDailyMax(times, windSpeed),
           'windgusts_10m_max': _extractDailyMax(times, windGusts),
           'uv_index_max': _extractDailyMax(times, uvIndex),
-          'winddirection_10m_dominant': _extractDailyDominant(times, windDirection),
+          'winddirection_10m_dominant': _extractDailyDominant(
+            times,
+            windDirection,
+          ),
           'sunrise': sunriseData,
           'sunset': sunsetData,
         },
@@ -564,43 +584,61 @@ class MetNoService {
     for (var time in hourlyTimes) {
       try {
         final date = DateTime.parse(time);
-        dailyDates.add('${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}');
+        dailyDates.add(
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+        );
       } catch (e) {
         // Skip invalid dates
       }
     }
     final result = dailyDates.toList();
-    debugPrint('📅 Extracted ${result.length} daily dates from ${hourlyTimes.length} hourly times');
+    debugPrint(
+      '📅 Extracted ${result.length} daily dates from ${hourlyTimes.length} hourly times',
+    );
     return result;
   }
 
   /// Extract daily max values from hourly data
-  static List<double> _extractDailyMax(List<String> times, List<double> values) {
-    debugPrint('🔍 _extractDailyMax called with ${times.length} times and ${values.length} values');
+  static List<double> _extractDailyMax(
+    List<String> times,
+    List<double> values,
+  ) {
+    debugPrint(
+      '🔍 _extractDailyMax called with ${times.length} times and ${values.length} values',
+    );
     final dailyMax = <String, double>{};
     for (var i = 0; i < times.length && i < values.length; i++) {
       try {
         final date = DateTime.parse(times[i]);
-        final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final dateKey =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         if (!dailyMax.containsKey(dateKey) || values[i] > dailyMax[dateKey]!) {
           dailyMax[dateKey] = values[i];
         }
       } catch (e) {
-        debugPrint('⚠️ Error parsing time in _extractDailyMax: $e at index $i: ${times[i]}');
+        debugPrint(
+          '⚠️ Error parsing time in _extractDailyMax: $e at index $i: ${times[i]}',
+        );
       }
     }
     final result = dailyMax.values.toList();
-    debugPrint('📈 _extractDailyMax result: ${result.length} days, values: $result');
+    debugPrint(
+      '📈 _extractDailyMax result: ${result.length} days, values: $result',
+    );
     return result;
   }
 
   /// Extract daily min values from hourly data
-  static List<double> _extractDailyMin(List<String> times, List<double> values) {
+  static List<double> _extractDailyMin(
+    List<String> times,
+    List<double> values,
+  ) {
     final dailyMin = <String, double>{};
     for (var i = 0; i < times.length && i < values.length; i++) {
       try {
         final date = DateTime.parse(times[i]);
-        final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final dateKey =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         if (!dailyMin.containsKey(dateKey) || values[i] < dailyMin[dateKey]!) {
           dailyMin[dateKey] = values[i];
         }
@@ -612,12 +650,16 @@ class MetNoService {
   }
 
   /// Extract daily sum values from hourly data
-  static List<double> _extractDailySum(List<String> times, List<double> values) {
+  static List<double> _extractDailySum(
+    List<String> times,
+    List<double> values,
+  ) {
     final dailySum = <String, double>{};
     for (var i = 0; i < times.length && i < values.length; i++) {
       try {
         final date = DateTime.parse(times[i]);
-        final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final dateKey =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         dailySum[dateKey] = (dailySum[dateKey] ?? 0.0) + values[i];
       } catch (e) {
         // Skip invalid entries
@@ -627,19 +669,24 @@ class MetNoService {
   }
 
   /// Extract most common weather code per day
-  static List<int> _extractDailyWeatherCodes(List<String> times, List<int> codes) {
+  static List<int> _extractDailyWeatherCodes(
+    List<String> times,
+    List<int> codes,
+  ) {
     final dailyCodes = <String, Map<int, int>>{};
     for (var i = 0; i < times.length && i < codes.length; i++) {
       try {
         final date = DateTime.parse(times[i]);
-        final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final dateKey =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         dailyCodes.putIfAbsent(dateKey, () => {});
-        dailyCodes[dateKey]![codes[i]] = (dailyCodes[dateKey]![codes[i]] ?? 0) + 1;
+        dailyCodes[dateKey]![codes[i]] =
+            (dailyCodes[dateKey]![codes[i]] ?? 0) + 1;
       } catch (e) {
         debugPrint('⚠️ Error parsing time for weather code: $e');
       }
     }
-    
+
     // Get most frequent code per day
     final result = dailyCodes.values.map((codeMap) {
       var maxCount = 0;
@@ -652,30 +699,37 @@ class MetNoService {
       });
       return mostFrequentCode;
     }).toList();
-    
-    debugPrint('🌤️ Extracted ${result.length} daily weather codes from ${times.length} hourly entries');
+
+    debugPrint(
+      '🌤️ Extracted ${result.length} daily weather codes from ${times.length} hourly entries',
+    );
     return result;
   }
-  
+
   /// Extract dominant (most frequent) wind direction per day
-  static List<int> _extractDailyDominant(List<String> times, List<double> values) {
+  static List<int> _extractDailyDominant(
+    List<String> times,
+    List<double> values,
+  ) {
     if (times.isEmpty || values.isEmpty) return [];
-    
+
     final dailyDirections = <String, Map<int, int>>{};
-    
+
     for (int i = 0; i < times.length && i < values.length; i++) {
       try {
         final date = DateTime.parse(times[i]);
-        final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        final dateKey =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         final direction = values[i].round();
-        
+
         dailyDirections.putIfAbsent(dateKey, () => {});
-        dailyDirections[dateKey]![direction] = (dailyDirections[dateKey]![direction] ?? 0) + 1;
+        dailyDirections[dateKey]![direction] =
+            (dailyDirections[dateKey]![direction] ?? 0) + 1;
       } catch (e) {
         debugPrint('⚠️ Error parsing time for wind direction: $e');
       }
     }
-    
+
     // Get most frequent direction per day
     final result = dailyDirections.values.map((dirMap) {
       var maxCount = 0;
@@ -688,33 +742,43 @@ class MetNoService {
       });
       return dominantDir;
     }).toList();
-    
+
     return result;
   }
 
   /// Generate sunrise/sunset times (placeholder using reasonable estimates)
   /// MET Norway has a separate Sunrise API, but for now we'll use approximations
-  static List<String> _generateDailySunriseSunset(List<String> times, bool isSunrise) {
+  static List<String> _generateDailySunriseSunset(
+    List<String> times,
+    bool isSunrise,
+  ) {
     final dailyTimes = <String>[];
     final seenDates = <String>{};
-    
+
     for (var time in times) {
       try {
         final date = DateTime.parse(time);
-        final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-        
+        final dateKey =
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
         if (!seenDates.contains(dateKey)) {
           seenDates.add(dateKey);
           // Approximate sunrise at 7 AM, sunset at 7 PM local time
           final hour = isSunrise ? 7 : 19;
-          final approximateTime = DateTime(date.year, date.month, date.day, hour, 0);
+          final approximateTime = DateTime(
+            date.year,
+            date.month,
+            date.day,
+            hour,
+            0,
+          );
           dailyTimes.add(approximateTime.toIso8601String());
         }
       } catch (e) {
         // Skip invalid dates
       }
     }
-    
+
     return dailyTimes;
   }
 }

@@ -179,7 +179,7 @@ Future<void> initializeIsar() async {
     settings.alertMinSeverity = 'all';
     isar.writeTxnSync(() => isar.settings.putSync(settings));
   }
-  
+
   // Initialize weatherDataSource if not set
   if (settings.weatherDataSource.isEmpty) {
     settings.weatherDataSource = 'openmeteo';

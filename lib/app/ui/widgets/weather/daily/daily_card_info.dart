@@ -301,7 +301,7 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     final time = weatherData.time?[hourlyIndex];
     final tempMax = weatherData.temperature2MMax?[index];
     final tempMin = weatherData.temperature2MMin?[index];
-    
+
     // Use apparent temperature if available, otherwise fall back to temperature
     final apparentTempLength = weatherData.apparentTemperature?.length ?? 0;
     final apparentTemp = apparentTempLength > hourlyIndex

@@ -125,7 +125,7 @@ class _DailyContainerState extends State<DailyContainer> {
     if (weatherCodeDaily.isEmpty || index >= weatherCodeDaily.length) {
       return const Expanded(child: SizedBox.shrink());
     }
-    
+
     final weatherCode = weatherCodeDaily[index];
     if (weatherCode == null) {
       return const Expanded(child: SizedBox.shrink());

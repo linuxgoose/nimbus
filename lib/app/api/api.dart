@@ -34,26 +34,29 @@ class WeatherAPI {
 
   Future<MainWeatherCache> getWeatherData(double lat, double lon) async {
     // Check if we should use hybrid/MET Norway service
-    if (settings.weatherDataSource == 'metno' || settings.weatherDataSource == 'hybrid') {
+    if (settings.weatherDataSource == 'metno' ||
+        settings.weatherDataSource == 'hybrid') {
       try {
         debugPrint('🔀 Checking hybrid weather service for $lat, $lon');
         final hybridData = await HybridWeatherService.getWeatherData(
           lat: lat,
           lon: lon,
         );
-        
+
         if (hybridData != null) {
           debugPrint('✅ Using hybrid weather data');
           WeatherDataApi weatherData = WeatherDataApi.fromJson(hybridData);
           return _mapWeatherDataToCache(weatherData);
         } else {
-          debugPrint('⚠️ Hybrid service returned null, falling back to Open-Meteo');
+          debugPrint(
+            '⚠️ Hybrid service returned null, falling back to Open-Meteo',
+          );
         }
       } catch (e) {
         debugPrint('❌ Hybrid service error: $e, falling back to Open-Meteo');
       }
     }
-    
+
     // Default: Use Open-Meteo
     final String urlWeather = _buildWeatherUrl(lat, lon);
     try {
@@ -71,16 +74,19 @@ class WeatherAPI {
   // Optimized method to fetch ONLY alerts for map rendering
   Future<List<dynamic>> getRawAlerts(double lat, double lon) async {
     // Try hybrid service first for MET Norway official alerts
-    if (settings.weatherDataSource == 'metno' || settings.weatherDataSource == 'hybrid') {
+    if (settings.weatherDataSource == 'metno' ||
+        settings.weatherDataSource == 'hybrid') {
       try {
         debugPrint('🚨 Fetching alerts via hybrid service');
         final hybridAlerts = await HybridWeatherService.getWeatherAlerts(
           lat: lat,
           lon: lon,
         );
-        
+
         if (hybridAlerts.isNotEmpty) {
-          debugPrint('✅ Found ${hybridAlerts.length} alerts from hybrid service');
+          debugPrint(
+            '✅ Found ${hybridAlerts.length} alerts from hybrid service',
+          );
           // Store alerts in history
           _storeAlertsInHistory(hybridAlerts, lat, lon);
           return hybridAlerts;
@@ -89,7 +95,7 @@ class WeatherAPI {
         debugPrint('❌ Hybrid alert fetch error: $e');
       }
     }
-    
+
     // Default: Use Open-Meteo alerts
     try {
       final response = await dio.get(
@@ -114,14 +120,16 @@ class WeatherAPI {
   void _storeAlertsInHistory(List<dynamic> alerts, double lat, double lon) {
     try {
       final timestamp = DateTime.now();
-      
+
       for (var alert in alerts) {
         final event = alert['event']?.toString() ?? 'Weather Alert';
-        final severity = (alert['severity']?.toString() ?? 'moderate').toLowerCase();
-        
+        final severity = (alert['severity']?.toString() ?? 'moderate')
+            .toLowerCase();
+
         // Create unique key combining location and event
-        final eventKey = '${lat.toStringAsFixed(4)}_${lon.toStringAsFixed(4)}_${timestamp.millisecondsSinceEpoch}_$event';
-        
+        final eventKey =
+            '${lat.toStringAsFixed(4)}_${lon.toStringAsFixed(4)}_${timestamp.millisecondsSinceEpoch}_$event';
+
         final alertHistory = AlertHistory(
           lat: lat,
           lon: lon,
@@ -130,12 +138,12 @@ class WeatherAPI {
           description: alert['description']?.toString(),
           severity: severity,
         )..eventKey = eventKey;
-        
+
         isar.writeTxnSync(() {
           isar.alertHistorys.putByEventKeySync(alertHistory);
         });
       }
-      
+
       debugPrint('💾 Stored ${alerts.length} alerts in history');
     } catch (e) {
       debugPrint('❌ Error storing alerts in history: $e');
@@ -150,14 +158,15 @@ class WeatherAPI {
     String timezone,
   ) async {
     // Check if we should use hybrid/MET Norway service
-    if (settings.weatherDataSource == 'metno' || settings.weatherDataSource == 'hybrid') {
+    if (settings.weatherDataSource == 'metno' ||
+        settings.weatherDataSource == 'hybrid') {
       try {
         debugPrint('🔀 Checking hybrid weather service for weather card');
         final hybridData = await HybridWeatherService.getWeatherData(
           lat: lat,
           lon: lon,
         );
-        
+
         if (hybridData != null) {
           debugPrint('✅ Using hybrid weather data for card');
           WeatherDataApi weatherData = WeatherDataApi.fromJson(hybridData);
@@ -170,13 +179,15 @@ class WeatherAPI {
             timezone,
           );
         } else {
-          debugPrint('⚠️ Hybrid service returned null, falling back to Open-Meteo');
+          debugPrint(
+            '⚠️ Hybrid service returned null, falling back to Open-Meteo',
+          );
         }
       } catch (e) {
         debugPrint('❌ Hybrid service error: $e, falling back to Open-Meteo');
       }
     }
-    
+
     // Default: Use Open-Meteo
     final String urlWeather = _buildWeatherUrl(lat, lon);
     try {

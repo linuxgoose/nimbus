@@ -58,6 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildAppearanceCard(context),
+        _buildWeatherProviderCard(context),
         _buildFunctionsCard(context),
         _buildTidesCard(context),
         _buildWeatherAlertsCard(context),
@@ -79,6 +80,45 @@ class _SettingsPageState extends State<SettingsPage> {
     icon: const Icon(LucideIcons.paintRoller),
     text: 'appearance'.tr,
     onPressed: () => _showAppearanceBottomSheet(context),
+  );
+
+  Widget _buildWeatherProviderCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.cloudSun),
+    text: 'Weather Provider',
+    onPressed: () => _showWeatherProviderBottomSheet(context),
+  );
+
+  void _showWeatherProviderBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildWeatherProviderTitle(context),
+                  _buildWeatherDataSourceSettingCard(context, setState),
+                  if (settings.weatherDataSource == 'hybrid')
+                    _buildPreferMetNoSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildWeatherProviderTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15),
+    child: Text(
+      'Weather Provider',
+      style: context.textTheme.titleLarge?.copyWith(fontSize: 20),
+    ),
   );
 
   void _showAppearanceBottomSheet(BuildContext context) => showModalBottomSheet(
@@ -862,9 +902,6 @@ class _SettingsPageState extends State<SettingsPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildDataTitle(context),
-              _buildWeatherDataSourceSettingCard(context, setState),
-              if (settings.weatherDataSource == 'hybrid')
-                _buildPreferMetNoSettingCard(context, setState),
               _buildRoundDegreeSettingCard(context, setState),
               _buildDegreesSettingCard(context, setState),
               _buildMeasurementsSettingCard(context, setState),
