@@ -12,10 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="4dp"
-        android:paddingBottom="6dp"
+        android:paddingBottom="2dp"
         android:text="Location, Country"
         android:textColor="#000000"
-        android:textSize="13sp"
+        android:textSize="11sp"
         android:textStyle="bold" />
     
     <LinearLayout
@@ -36,7 +36,7 @@
                 android:id="@+id/hourly_time_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
             <ImageView
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="2dp"
+                android:minHeight="32dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="icon" />
@@ -52,7 +52,7 @@
                 android:id="@+id/hourly_temp_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
@@ -60,7 +60,7 @@
                 android:id="@+id/hourly_wind_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
             <TextView
@@ -83,7 +83,7 @@
                 android:id="@+id/hourly_time_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
             <ImageView
@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="2dp"
+                android:minHeight="32dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="icon" />
@@ -99,7 +99,7 @@
                 android:id="@+id/hourly_temp_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
@@ -107,7 +107,7 @@
                 android:id="@+id/hourly_wind_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
             <TextView
@@ -130,7 +130,7 @@
                 android:id="@+id/hourly_time_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
             <ImageView
@@ -138,7 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="2dp"
+                android:minHeight="32dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="icon" />
@@ -146,7 +146,7 @@
                 android:id="@+id/hourly_temp_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
@@ -154,7 +154,7 @@
                 android:id="@+id/hourly_wind_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
             <TextView
@@ -177,7 +177,7 @@
                 android:id="@+id/hourly_time_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
             <ImageView
@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="2dp"
+                android:minHeight="32dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="icon" />
@@ -193,7 +193,7 @@
                 android:id="@+id/hourly_temp_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
@@ -201,7 +201,7 @@
                 android:id="@+id/hourly_wind_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
             <TextView
@@ -224,7 +224,7 @@
                 android:id="@+id/hourly_time_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
             <ImageView
@@ -232,7 +232,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="2dp"
+                android:minHeight="32dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="icon" />
@@ -240,7 +240,7 @@
                 android:id="@+id/hourly_temp_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
@@ -248,7 +248,7 @@
                 android:id="@+id/hourly_wind_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
             <TextView
@@ -271,7 +271,7 @@
                 android:id="@+id/hourly_time_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
             <ImageView
@@ -279,7 +279,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:padding="2dp"
+                android:minHeight="32dp"
                 android:layout_marginTop="2dp"
                 android:scaleType="fitCenter"
                 android:contentDescription="icon" />
@@ -287,7 +287,7 @@
                 android:id="@+id/hourly_temp_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
@@ -295,7 +295,7 @@
                 android:id="@+id/hourly_wind_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:layout_marginTop="2dp"
                 android:textColor="#000000" />
             <TextView
