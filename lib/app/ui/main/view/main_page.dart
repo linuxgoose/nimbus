@@ -236,14 +236,15 @@ class _MainPageState extends State<MainPage> {
     int dayOfNow,
   ) => Card(
     margin: const EdgeInsets.only(bottom: 15),
+    elevation: 0,
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: SizedBox(
-        height: 135,
+        height: 130,
         child: ScrollablePositionedList.separated(
           key: const PageStorageKey(0),
           separatorBuilder: (BuildContext context, int index) =>
-              const VerticalDivider(width: 10, indent: 40, endIndent: 40),
+              const SizedBox(width: 4),
           scrollDirection: Axis.horizontal,
           itemScrollController: weatherController.itemScrollController,
           itemCount: mainWeather.time!.length,
@@ -262,6 +263,7 @@ class _MainPageState extends State<MainPage> {
     int dayOfNow,
   ) {
     final i24 = (i / 24).floor();
+    final isSelected = i == hourOfDay;
 
     return GestureDetector(
       onTap: () {
@@ -269,14 +271,23 @@ class _MainPageState extends State<MainPage> {
         weatherController.dayOfNow.value = i24;
         setState(() {});
       },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: i == hourOfDay
-              ? context.theme.colorScheme.secondaryContainer
-              : Colors.transparent,
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          color: isSelected
+              ? context.theme.colorScheme.primaryContainer
+              : context.theme.colorScheme.surfaceContainerHighest.withOpacity(
+                  0.3,
+                ),
+          borderRadius: BorderRadius.circular(16),
+          border: isSelected
+              ? Border.all(
+                  color: context.theme.colorScheme.primary.withOpacity(0.5),
+                  width: 1.5,
+                )
+              : null,
         ),
         child: Hourly(
           time: mainWeather.time![i],
@@ -295,24 +306,29 @@ class _MainPageState extends State<MainPage> {
   Widget _buildHourlyDescContainer(
     MainWeatherCache mainWeather,
     int hourOfDay,
-  ) => DescContainer(
-    humidity: mainWeather.relativehumidity2M?[hourOfDay],
-    wind: mainWeather.windspeed10M?[hourOfDay],
-    visibility: mainWeather.visibility?[hourOfDay],
-    feels: mainWeather.apparentTemperature?[hourOfDay],
-    evaporation: mainWeather.evapotranspiration?[hourOfDay],
-    precipitation: mainWeather.precipitation?[hourOfDay],
-    direction: mainWeather.winddirection10M?[hourOfDay],
-    pressure: mainWeather.surfacePressure?[hourOfDay],
-    rain: mainWeather.rain?[hourOfDay],
-    cloudcover: mainWeather.cloudcover?[hourOfDay],
-    windgusts: mainWeather.windgusts10M?[hourOfDay],
-    uvIndex: mainWeather.uvIndex?[hourOfDay],
-    dewpoint2M: mainWeather.dewpoint2M?[hourOfDay],
-    precipitationProbability: mainWeather.precipitationProbability?[hourOfDay],
-    shortwaveRadiation: mainWeather.shortwaveRadiation?[hourOfDay],
-    initiallyExpanded: false,
-    title: 'hourlyVariables'.tr,
+  ) => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    elevation: 0,
+    child: DescContainer(
+      humidity: mainWeather.relativehumidity2M?[hourOfDay],
+      wind: mainWeather.windspeed10M?[hourOfDay],
+      visibility: mainWeather.visibility?[hourOfDay],
+      feels: mainWeather.apparentTemperature?[hourOfDay],
+      evaporation: mainWeather.evapotranspiration?[hourOfDay],
+      precipitation: mainWeather.precipitation?[hourOfDay],
+      direction: mainWeather.winddirection10M?[hourOfDay],
+      pressure: mainWeather.surfacePressure?[hourOfDay],
+      rain: mainWeather.rain?[hourOfDay],
+      cloudcover: mainWeather.cloudcover?[hourOfDay],
+      windgusts: mainWeather.windgusts10M?[hourOfDay],
+      uvIndex: mainWeather.uvIndex?[hourOfDay],
+      dewpoint2M: mainWeather.dewpoint2M?[hourOfDay],
+      precipitationProbability:
+          mainWeather.precipitationProbability?[hourOfDay],
+      shortwaveRadiation: mainWeather.shortwaveRadiation?[hourOfDay],
+      initiallyExpanded: false,
+      title: 'hourlyVariables'.tr,
+    ),
   );
   Widget _buildDailyContainer(WeatherCard weatherCard) => DailyContainer(
     weatherData: weatherCard,

@@ -28,9 +28,17 @@ class _DescWeatherState extends State<DescWeather> {
     onTap: _toggleDescriptionVisibility,
     child: Tooltip(
       message: widget.message,
-      child: SizedBox(
-        height: 90,
+      child: Container(
+        height: 100,
         width: 100,
+        decoration: BoxDecoration(
+          color: context.theme.colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: context.theme.colorScheme.outlineVariant.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
         child: _buildContent(context.textTheme),
       ),
     ),
@@ -38,24 +46,30 @@ class _DescWeatherState extends State<DescWeather> {
 
   void _toggleDescriptionVisibility() => setState(() => hide = !hide);
 
-  Widget _buildContent(TextTheme textTheme) => Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Image.asset(widget.imageName, scale: 20),
-      const Gap(5),
-      Text(
-        widget.value,
-        style: textTheme.labelLarge,
-        overflow: TextOverflow.ellipsis,
-      ),
-      Expanded(
-        child: Text(
-          widget.desc,
-          style: textTheme.bodySmall,
-          overflow: hide ? TextOverflow.ellipsis : TextOverflow.visible,
-          textAlign: TextAlign.center,
+  Widget _buildContent(TextTheme textTheme) => Padding(
+    padding: const EdgeInsets.all(8),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(widget.imageName, scale: 20),
+        const Gap(6),
+        Text(
+          widget.value,
+          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          overflow: TextOverflow.ellipsis,
         ),
-      ),
-    ],
+        const Gap(2),
+        Expanded(
+          child: Text(
+            widget.desc,
+            style: textTheme.bodySmall?.copyWith(
+              color: textTheme.bodySmall?.color?.withOpacity(0.7),
+            ),
+            overflow: hide ? TextOverflow.ellipsis : TextOverflow.visible,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    ),
   );
 }

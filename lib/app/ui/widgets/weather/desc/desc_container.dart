@@ -71,18 +71,40 @@ class _DescContainerState extends State<DescContainer> {
   final message = Message();
 
   @override
-  Widget build(BuildContext context) => Card(
-    margin: const EdgeInsets.only(bottom: 15),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(4),
     child: ExpansionTile(
-      shape: const Border(),
-      title: Text(widget.title, style: context.textTheme.labelLarge),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      collapsedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      backgroundColor: context.theme.colorScheme.surfaceContainerHighest
+          .withOpacity(0.3),
+      collapsedBackgroundColor: Colors.transparent,
+      title: Row(
+        children: [
+          Icon(
+            Icons.thermostat_rounded,
+            size: 20,
+            color: context.theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            widget.title,
+            style: context.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
       initiallyExpanded: widget.initiallyExpanded,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 5),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
           child: Wrap(
             alignment: WrapAlignment.spaceEvenly,
-            spacing: 5,
+            spacing: 8,
+            runSpacing: 8,
             children: _buildWeatherDescriptions(context),
           ),
         ),
