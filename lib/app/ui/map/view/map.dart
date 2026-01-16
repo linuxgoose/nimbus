@@ -447,7 +447,10 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                 mapController: _animatedMapController.mapController,
                 options: MapOptions(
                   backgroundColor: context.theme.colorScheme.surface,
-                  initialCenter: LatLng(mainLocation.lat!, mainLocation.lon!),
+                  initialCenter: LatLng(
+                    mainLocation.lat ?? 51.5074, // Default to London, UK
+                    mainLocation.lon ?? -0.1278,
+                  ),
                   initialZoom: 8,
                   onTap: (_, __) => _hideCard(),
                   onLongPress: (pos, point) => showModalBottomSheet(
@@ -531,7 +534,11 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
                         heroTag: 'home',
                         child: const Icon(IconsaxPlusLinear.home_2),
                         onPressed: () => _resetMapOrientation(
-                          center: LatLng(mainLocation.lat!, mainLocation.lon!),
+                          center: LatLng(
+                            mainLocation.lat ??
+                                51.5074, // Default to London, UK
+                            mainLocation.lon ?? -0.1278,
+                          ),
                           zoom: 8,
                         ),
                       ),
