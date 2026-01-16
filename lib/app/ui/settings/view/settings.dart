@@ -666,6 +666,7 @@ class _SettingsPageState extends State<SettingsPage> {
       {'name': 'currentForecastWidget'.tr, 'class': 'CurrentWidget'},
       {'name': 'hourlyForecastWidget'.tr, 'class': 'HourlyWidget'},
       {'name': 'dailyForecastWidget'.tr, 'class': 'DailyWidget'},
+      {'name': 'smallWidget'.tr, 'class': 'SmallWidget'},
     ];
 
     showModalBottomSheet(

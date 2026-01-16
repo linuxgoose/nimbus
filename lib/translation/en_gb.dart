@@ -147,6 +147,7 @@ class EnGb {
     'currentForecastWidget': 'Detailed Weather Display',
     'hourlyForecastWidget': 'Hourly Forecast Widget',
     'dailyForecastWidget': 'Daily Forecast Widget',
+    'smallWidget': 'Compact Widget',
     // Weather summary translations
     'weatherSummaryClearWarm': 'Beautiful clear skies and warm temperatures.',
     'weatherSummaryClearCool': 'Clear skies with crisp, cool air.',

@@ -597,6 +597,7 @@ class WeatherController extends GetxController {
       HomeWidget.updateWidget(androidName: 'OreoWidget'),
       HomeWidget.updateWidget(androidName: 'HourlyWidget'),
       HomeWidget.updateWidget(androidName: 'DailyWidget'),
+      HomeWidget.updateWidget(androidName: 'SmallWidget'),
     ]);
     return !results.contains(false);
   }
@@ -611,6 +612,7 @@ class WeatherController extends GetxController {
       HomeWidget.updateWidget(androidName: 'OreoWidget'),
       HomeWidget.updateWidget(androidName: 'HourlyWidget'),
       HomeWidget.updateWidget(androidName: 'DailyWidget'),
+      HomeWidget.updateWidget(androidName: 'SmallWidget'),
     ]);
     return !results.contains(false);
   }
@@ -693,6 +695,26 @@ class WeatherController extends GetxController {
         await HomeWidget.saveWidgetData('weather_icon', imagePath);
       } catch (_) {}
 
+      // --- Small Widget Data ---
+      final currentTime = DateFormat.Hm(
+        locale.languageCode,
+      ).format(DateTime.now());
+      await HomeWidget.saveWidgetData('small_location', displayName);
+      await HomeWidget.saveWidgetData('small_time', currentTime);
+      await HomeWidget.saveWidgetData('small_temperature', degree);
+      await HomeWidget.saveWidgetData('small_precipitation', precip);
+      try {
+        final smallIconPath = await getLocalImagePath(
+          StatusWeather().getImageNotification(
+            mainWeatherCache.weathercode?[hour] ?? 0,
+            mainWeatherCache.time?[hour] ?? "",
+            mainWeatherCache.sunrise?[day] ?? "",
+            mainWeatherCache.sunset?[day] ?? "",
+          ),
+        );
+        await HomeWidget.saveWidgetData('small_weather_icon', smallIconPath);
+      } catch (_) {}
+
       // --- Hourly & Daily Forecasting ---
       await _updateHourlyWidget(mainWeatherCache, hour, day);
       await _updateDailyWidget(mainWeatherCache, day);
@@ -702,6 +724,7 @@ class WeatherController extends GetxController {
         HomeWidget.updateWidget(androidName: 'OreoWidget'),
         HomeWidget.updateWidget(androidName: 'HourlyWidget'),
         HomeWidget.updateWidget(androidName: 'DailyWidget'),
+        HomeWidget.updateWidget(androidName: 'SmallWidget'),
       ])).any((result) => result == true);
 
       return updated;
