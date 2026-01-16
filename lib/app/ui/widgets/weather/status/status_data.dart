@@ -39,6 +39,11 @@ class StatusData {
             ? '${(speed * (5 / 18)).toPrecision(1)} ${'m/s'.tr}'
             : '$speed ${'kph'.tr}';
       case 'imperial':
+        // Check if knots is selected specifically
+        if (settings.wind == 'knots') {
+          return '${(speed * 0.539957).toPrecision(1)} ${'knots'.tr}';
+        }
+        // Default imperial is mph
         return '${(speed * 0.621371).toPrecision(1)} ${'mph'.tr}';
       default:
         return '$speed ${'kph'.tr}';

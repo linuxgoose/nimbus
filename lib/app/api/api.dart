@@ -7,17 +7,21 @@ import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/main.dart';
 
 class WeatherAPI {
+  // Base URL updated to exclude the '?' to handle queryParameters cleanly via Dio
   final Dio dio = Dio()
-    ..options.baseUrl = 'https://api.open-meteo.com/v1/forecast?';
+    ..options.baseUrl = 'https://api.open-meteo.com/v1/forecast';
   final Dio dioLocation = Dio();
 
+  // Added alerts=true and models=gem_global for boundary/polygon data
   static const String _weatherParams =
       'hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation,rain,weathercode,surface_pressure,visibility,evapotranspiration,windspeed_10m,winddirection_10m,windgusts_10m,cloudcover,uv_index,dewpoint_2m,precipitation_probability,shortwave_radiation'
       '&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,uv_index_max,rain_sum,winddirection_10m_dominant'
-      '&forecast_days=12&timezone=auto';
+      '&forecast_days=12&timezone=auto'
+      '&alerts=true' // Required for weather warnings
+      '&models=gem_global'; // Best model for global alert polygons
 
   String _buildWeatherUrl(double lat, double lon) {
-    String url = 'latitude=$lat&longitude=$lon&$_weatherParams';
+    String url = '?latitude=$lat&longitude=$lon&$_weatherParams';
     if (settings.measurements == 'imperial') {
       url += '&windspeed_unit=mph&precipitation_unit=inch';
     }
@@ -38,6 +42,28 @@ class WeatherAPI {
         print(e);
       }
       rethrow;
+    }
+  }
+
+  // Optimized method to fetch ONLY alerts for map rendering
+  Future<List<dynamic>> getRawAlerts(double lat, double lon) async {
+    try {
+      final response = await dio.get(
+        '',
+        queryParameters: {
+          'latitude': lat,
+          'longitude': lon,
+          'models': 'gem_global',
+          'alerts': 'true',
+          'forecast_days': 1, // Minimize payload for map refresh
+        },
+      );
+      return response.data['alerts'] ?? [];
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        print("Alert Fetch Error: $e");
+      }
+      return [];
     }
   }
 

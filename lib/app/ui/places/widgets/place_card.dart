@@ -26,8 +26,8 @@ class PlaceCard extends StatefulWidget {
   final List<DateTime> timeDaily;
   final String district;
   final String city;
-  final List<int> weather;
-  final List<double> degree;
+  final List<int?> weather;
+  final List<double?> degree;
   final String timezone;
 
   @override
@@ -78,7 +78,7 @@ class _PlaceCardState extends State<PlaceCard> {
           children: [
             Text(
               statusData.getDegree(
-                widget.degree[currentTimeIndex].round().toInt(),
+                (widget.degree[currentTimeIndex] ?? 0).round().toInt(),
               ),
               style: context.textTheme.titleLarge?.copyWith(
                 fontSize: 22,

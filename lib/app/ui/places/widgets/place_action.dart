@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/api.dart';
 import 'package:nimbus/app/api/city_api.dart';
 import 'package:nimbus/app/controller/controller.dart';
@@ -185,7 +185,7 @@ class _PlaceActionState extends State<PlaceAction>
           elevation: kTextFieldElevation,
           labelText: 'search'.tr,
           type: TextInputType.text,
-          icon: const Icon(IconsaxPlusLinear.global_search),
+          icon: const Icon(LucideIcons.mapPlus),
           controller: _controller,
           margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
           focusNode: _focusNode,
@@ -244,7 +244,7 @@ class _PlaceActionState extends State<PlaceAction>
     controller: _controllerLat,
     labelText: 'lat'.tr,
     type: TextInputType.number,
-    icon: const Icon(IconsaxPlusLinear.location),
+    icon: const Icon(LucideIcons.mapPin),
     onChanged: (value) {
       controller.lat.value = value;
       setState(() {});
@@ -258,7 +258,7 @@ class _PlaceActionState extends State<PlaceAction>
     controller: _controllerLon,
     labelText: 'lon'.tr,
     type: TextInputType.number,
-    icon: const Icon(IconsaxPlusLinear.location),
+    icon: const Icon(LucideIcons.mapPin),
     onChanged: (value) {
       controller.lon.value = value;
       setState(() {});
@@ -272,7 +272,7 @@ class _PlaceActionState extends State<PlaceAction>
     controller: _controllerCity,
     labelText: 'city'.tr,
     type: TextInputType.name,
-    icon: const Icon(IconsaxPlusLinear.building_3),
+    icon: const Icon(LucideIcons.building),
     onChanged: (value) {
       controller.city.value = value;
       setState(() {});
@@ -286,7 +286,7 @@ class _PlaceActionState extends State<PlaceAction>
     controller: _controllerDistrict,
     labelText: 'district'.tr,
     type: TextInputType.streetAddress,
-    icon: const Icon(IconsaxPlusLinear.global),
+    icon: const Icon(LucideIcons.globe),
     onChanged: (value) {
       controller.district.value = value;
       setState(() {});

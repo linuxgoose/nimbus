@@ -3553,7 +3553,7 @@ MainWeatherCache _mainWeatherCacheDeserialize(
     sunrise: reader.readStringList(offsets[14]),
     sunset: reader.readStringList(offsets[15]),
     surfacePressure: reader.readDoubleOrNullList(offsets[16]),
-    temperature2M: reader.readDoubleList(offsets[17]),
+    temperature2M: reader.readDoubleOrNullList(offsets[17]),
     temperature2MMax: reader.readDoubleOrNullList(offsets[18]),
     temperature2MMin: reader.readDoubleOrNullList(offsets[19]),
     time: reader.readStringList(offsets[20]),
@@ -3563,7 +3563,7 @@ MainWeatherCache _mainWeatherCacheDeserialize(
     uvIndex: reader.readDoubleOrNullList(offsets[24]),
     uvIndexMax: reader.readDoubleOrNullList(offsets[25]),
     visibility: reader.readDoubleOrNullList(offsets[26]),
-    weathercode: reader.readLongList(offsets[27]),
+    weathercode: reader.readLongOrNullList(offsets[27]),
     weathercodeDaily: reader.readLongOrNullList(offsets[28]),
     winddirection10M: reader.readLongOrNullList(offsets[29]),
     winddirection10MDominant: reader.readLongOrNullList(offsets[30]),
@@ -3618,7 +3618,7 @@ P _mainWeatherCacheDeserializeProp<P>(
     case 16:
       return (reader.readDoubleOrNullList(offset)) as P;
     case 17:
-      return (reader.readDoubleList(offset)) as P;
+      return (reader.readDoubleOrNullList(offset)) as P;
     case 18:
       return (reader.readDoubleOrNullList(offset)) as P;
     case 19:
@@ -3638,7 +3638,7 @@ P _mainWeatherCacheDeserializeProp<P>(
     case 26:
       return (reader.readDoubleOrNullList(offset)) as P;
     case 27:
-      return (reader.readLongList(offset)) as P;
+      return (reader.readLongOrNullList(offset)) as P;
     case 28:
       return (reader.readLongOrNullList(offset)) as P;
     case 29:
@@ -6854,7 +6854,25 @@ extension MainWeatherCacheQueryFilter
   }
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
-  temperature2MElementEqualTo(double value, {double epsilon = Query.epsilon}) {
+  temperature2MElementIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNull(property: r'temperature2M'),
+      );
+    });
+  }
+
+  QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
+  temperature2MElementIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNotNull(property: r'temperature2M'),
+      );
+    });
+  }
+
+  QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
+  temperature2MElementEqualTo(double? value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -6869,7 +6887,7 @@ extension MainWeatherCacheQueryFilter
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
   temperature2MElementGreaterThan(
-    double value, {
+    double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
@@ -6888,7 +6906,7 @@ extension MainWeatherCacheQueryFilter
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
   temperature2MElementLessThan(
-    double value, {
+    double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
@@ -6907,8 +6925,8 @@ extension MainWeatherCacheQueryFilter
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
   temperature2MElementBetween(
-    double lower,
-    double upper, {
+    double? lower,
+    double? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     double epsilon = Query.epsilon,
@@ -8408,7 +8426,25 @@ extension MainWeatherCacheQueryFilter
   }
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
-  weathercodeElementEqualTo(int value) {
+  weathercodeElementIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNull(property: r'weathercode'),
+      );
+    });
+  }
+
+  QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
+  weathercodeElementIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNotNull(property: r'weathercode'),
+      );
+    });
+  }
+
+  QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
+  weathercodeElementEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'weathercode', value: value),
@@ -8417,7 +8453,7 @@ extension MainWeatherCacheQueryFilter
   }
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
-  weathercodeElementGreaterThan(int value, {bool include = false}) {
+  weathercodeElementGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -8430,7 +8466,7 @@ extension MainWeatherCacheQueryFilter
   }
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
-  weathercodeElementLessThan(int value, {bool include = false}) {
+  weathercodeElementLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -8444,8 +8480,8 @@ extension MainWeatherCacheQueryFilter
 
   QueryBuilder<MainWeatherCache, MainWeatherCache, QAfterFilterCondition>
   weathercodeElementBetween(
-    int lower,
-    int upper, {
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -10125,7 +10161,7 @@ extension MainWeatherCacheQueryProperty
     });
   }
 
-  QueryBuilder<MainWeatherCache, List<double>?, QQueryOperations>
+  QueryBuilder<MainWeatherCache, List<double?>?, QQueryOperations>
   temperature2MProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'temperature2M');
@@ -10194,7 +10230,7 @@ extension MainWeatherCacheQueryProperty
     });
   }
 
-  QueryBuilder<MainWeatherCache, List<int>?, QQueryOperations>
+  QueryBuilder<MainWeatherCache, List<int?>?, QQueryOperations>
   weathercodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'weathercode');
@@ -10263,13 +10299,14 @@ const LocationCacheSchema = CollectionSchema(
   id: 6756051892239209721,
   properties: {
     r'city': PropertySchema(id: 0, name: r'city', type: IsarType.string),
+    r'country': PropertySchema(id: 1, name: r'country', type: IsarType.string),
     r'district': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'district',
       type: IsarType.string,
     ),
-    r'lat': PropertySchema(id: 2, name: r'lat', type: IsarType.double),
-    r'lon': PropertySchema(id: 3, name: r'lon', type: IsarType.double),
+    r'lat': PropertySchema(id: 3, name: r'lat', type: IsarType.double),
+    r'lon': PropertySchema(id: 4, name: r'lon', type: IsarType.double),
   },
 
   estimateSize: _locationCacheEstimateSize,
@@ -10300,6 +10337,12 @@ int _locationCacheEstimateSize(
     }
   }
   {
+    final value = object.country;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.district;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -10315,9 +10358,10 @@ void _locationCacheSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.city);
-  writer.writeString(offsets[1], object.district);
-  writer.writeDouble(offsets[2], object.lat);
-  writer.writeDouble(offsets[3], object.lon);
+  writer.writeString(offsets[1], object.country);
+  writer.writeString(offsets[2], object.district);
+  writer.writeDouble(offsets[3], object.lat);
+  writer.writeDouble(offsets[4], object.lon);
 }
 
 LocationCache _locationCacheDeserialize(
@@ -10328,9 +10372,10 @@ LocationCache _locationCacheDeserialize(
 ) {
   final object = LocationCache(
     city: reader.readStringOrNull(offsets[0]),
-    district: reader.readStringOrNull(offsets[1]),
-    lat: reader.readDoubleOrNull(offsets[2]),
-    lon: reader.readDoubleOrNull(offsets[3]),
+    country: reader.readStringOrNull(offsets[1]),
+    district: reader.readStringOrNull(offsets[2]),
+    lat: reader.readDoubleOrNull(offsets[3]),
+    lon: reader.readDoubleOrNull(offsets[4]),
   );
   object.id = id;
   return object;
@@ -10348,8 +10393,10 @@ P _locationCacheDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
       return (reader.readDoubleOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -10616,6 +10663,165 @@ extension LocationCacheQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'city', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'country'),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'country'),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'country',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'country',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'country',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'country', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterFilterCondition>
+  countryIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'country', value: ''),
       );
     });
   }
@@ -11043,6 +11249,18 @@ extension LocationCacheQuerySortBy
     });
   }
 
+  QueryBuilder<LocationCache, LocationCache, QAfterSortBy> sortByCountry() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'country', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterSortBy> sortByCountryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'country', Sort.desc);
+    });
+  }
+
   QueryBuilder<LocationCache, LocationCache, QAfterSortBy> sortByDistrict() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'district', Sort.asc);
@@ -11092,6 +11310,18 @@ extension LocationCacheQuerySortThenBy
   QueryBuilder<LocationCache, LocationCache, QAfterSortBy> thenByCityDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'city', Sort.desc);
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterSortBy> thenByCountry() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'country', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LocationCache, LocationCache, QAfterSortBy> thenByCountryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'country', Sort.desc);
     });
   }
 
@@ -11155,6 +11385,14 @@ extension LocationCacheQueryWhereDistinct
     });
   }
 
+  QueryBuilder<LocationCache, LocationCache, QDistinct> distinctByCountry({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'country', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<LocationCache, LocationCache, QDistinct> distinctByDistrict({
     bool caseSensitive = true,
   }) {
@@ -11187,6 +11425,12 @@ extension LocationCacheQueryProperty
   QueryBuilder<LocationCache, String?, QQueryOperations> cityProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'city');
+    });
+  }
+
+  QueryBuilder<LocationCache, String?, QQueryOperations> countryProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'country');
     });
   }
 
@@ -11733,7 +11977,7 @@ WeatherCard _weatherCardDeserialize(
     sunrise: reader.readStringList(offsets[19]),
     sunset: reader.readStringList(offsets[20]),
     surfacePressure: reader.readDoubleOrNullList(offsets[21]),
-    temperature2M: reader.readDoubleList(offsets[22]),
+    temperature2M: reader.readDoubleOrNullList(offsets[22]),
     temperature2MMax: reader.readDoubleOrNullList(offsets[23]),
     temperature2MMin: reader.readDoubleOrNullList(offsets[24]),
     time: reader.readStringList(offsets[25]),
@@ -11743,7 +11987,7 @@ WeatherCard _weatherCardDeserialize(
     uvIndex: reader.readDoubleOrNullList(offsets[29]),
     uvIndexMax: reader.readDoubleOrNullList(offsets[30]),
     visibility: reader.readDoubleOrNullList(offsets[31]),
-    weathercode: reader.readLongList(offsets[32]),
+    weathercode: reader.readLongOrNullList(offsets[32]),
     weathercodeDaily: reader.readLongOrNullList(offsets[33]),
     winddirection10M: reader.readLongOrNullList(offsets[34]),
     winddirection10MDominant: reader.readLongOrNullList(offsets[35]),
@@ -11808,7 +12052,7 @@ P _weatherCardDeserializeProp<P>(
     case 21:
       return (reader.readDoubleOrNullList(offset)) as P;
     case 22:
-      return (reader.readDoubleList(offset)) as P;
+      return (reader.readDoubleOrNullList(offset)) as P;
     case 23:
       return (reader.readDoubleOrNullList(offset)) as P;
     case 24:
@@ -11828,7 +12072,7 @@ P _weatherCardDeserializeProp<P>(
     case 31:
       return (reader.readDoubleOrNullList(offset)) as P;
     case 32:
-      return (reader.readLongList(offset)) as P;
+      return (reader.readLongOrNullList(offset)) as P;
     case 33:
       return (reader.readLongOrNullList(offset)) as P;
     case 34:
@@ -15628,7 +15872,25 @@ extension WeatherCardQueryFilter
   }
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
-  temperature2MElementEqualTo(double value, {double epsilon = Query.epsilon}) {
+  temperature2MElementIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNull(property: r'temperature2M'),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
+  temperature2MElementIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNotNull(property: r'temperature2M'),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
+  temperature2MElementEqualTo(double? value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -15643,7 +15905,7 @@ extension WeatherCardQueryFilter
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
   temperature2MElementGreaterThan(
-    double value, {
+    double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
@@ -15662,7 +15924,7 @@ extension WeatherCardQueryFilter
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
   temperature2MElementLessThan(
-    double value, {
+    double? value, {
     bool include = false,
     double epsilon = Query.epsilon,
   }) {
@@ -15681,8 +15943,8 @@ extension WeatherCardQueryFilter
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
   temperature2MElementBetween(
-    double lower,
-    double upper, {
+    double? lower,
+    double? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     double epsilon = Query.epsilon,
@@ -17183,7 +17445,25 @@ extension WeatherCardQueryFilter
   }
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
-  weathercodeElementEqualTo(int value) {
+  weathercodeElementIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNull(property: r'weathercode'),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
+  weathercodeElementIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.elementIsNotNull(property: r'weathercode'),
+      );
+    });
+  }
+
+  QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
+  weathercodeElementEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'weathercode', value: value),
@@ -17192,7 +17472,7 @@ extension WeatherCardQueryFilter
   }
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
-  weathercodeElementGreaterThan(int value, {bool include = false}) {
+  weathercodeElementGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -17205,7 +17485,7 @@ extension WeatherCardQueryFilter
   }
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
-  weathercodeElementLessThan(int value, {bool include = false}) {
+  weathercodeElementLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -17219,8 +17499,8 @@ extension WeatherCardQueryFilter
 
   QueryBuilder<WeatherCard, WeatherCard, QAfterFilterCondition>
   weathercodeElementBetween(
-    int lower,
-    int upper, {
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -19058,7 +19338,7 @@ extension WeatherCardQueryProperty
     });
   }
 
-  QueryBuilder<WeatherCard, List<double>?, QQueryOperations>
+  QueryBuilder<WeatherCard, List<double?>?, QQueryOperations>
   temperature2MProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'temperature2M');
@@ -19125,7 +19405,7 @@ extension WeatherCardQueryProperty
     });
   }
 
-  QueryBuilder<WeatherCard, List<int>?, QQueryOperations>
+  QueryBuilder<WeatherCard, List<int?>?, QQueryOperations>
   weathercodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'weathercode');

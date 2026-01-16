@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/ui/places/widgets/place_card_list.dart';
 import 'package:nimbus/app/ui/widgets/text_form.dart';
@@ -47,8 +47,14 @@ class _PlaceListState extends State<PlaceList> {
   Widget _buildEmptyState(BuildContext context) => Center(
     child: SingleChildScrollView(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/icons/City.png', scale: 6),
+          Icon(
+            LucideIcons.mapPinned,
+            size: 80,
+            color: context.theme.colorScheme.primary.withOpacity(0.5),
+          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: Get.size.width * 0.8,
             child: Text(
@@ -80,7 +86,7 @@ class _PlaceListState extends State<PlaceList> {
     child: MyTextForm(
       labelText: 'search'.tr,
       type: TextInputType.text,
-      icon: const Icon(IconsaxPlusLinear.search_normal_1, size: 20),
+      icon: const Icon(LucideIcons.search, size: 20),
       controller: searchTasks,
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       onChanged: applyFilter,
@@ -88,7 +94,7 @@ class _PlaceListState extends State<PlaceList> {
           ? IconButton(
               onPressed: clearSearch,
               icon: const Icon(
-                IconsaxPlusLinear.close_circle,
+                LucideIcons.circleX,
                 color: Colors.grey,
                 size: 20,
               ),

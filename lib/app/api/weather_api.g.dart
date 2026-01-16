@@ -23,10 +23,10 @@ Map<String, dynamic> _$WeatherDataApiToJson(_WeatherDataApi instance) =>
 _Hourly _$HourlyFromJson(Map<String, dynamic> json) => _Hourly(
   time: (json['time'] as List<dynamic>?)?.map((e) => e as String).toList(),
   weatherCode: (json['weathercode'] as List<dynamic>?)
-      ?.map((e) => (e as num).toInt())
+      ?.map((e) => (e as num?)?.toInt())
       .toList(),
   temperature2M: (json['temperature_2m'] as List<dynamic>?)
-      ?.map((e) => (e as num).toDouble())
+      ?.map((e) => (e as num?)?.toDouble())
       .toList(),
   apparentTemperature: (json['apparent_temperature'] as List<dynamic>?)
       ?.map((e) => (e as num?)?.toDouble())

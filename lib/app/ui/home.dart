@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:isar_community/isar.dart';
 import 'package:nimbus/app/api/api.dart';
 import 'package:nimbus/app/api/city_api.dart';
@@ -89,13 +89,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ? _buildSearchField(labelLarge)
             : Obx(() {
                 final location = weatherController.location;
-                final city = location.city;
-                final district = location.district;
+                // Add fallbacks to empty strings to prevent null pointer exceptions
+                final city = location.city ?? '';
+                final district = location.district ?? '';
+
                 return Text(
                   weatherController.isLoading.isFalse
-                      ? district!.isEmpty
-                            ? '$city'
-                            : city!.isEmpty
+                      ? district.isEmpty
+                            ? city
+                            : city.isEmpty
                             ? district
                             : city == district
                             ? city
@@ -203,12 +205,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       }
       setState(() {});
     },
-    icon: Icon(
-      visible
-          ? IconsaxPlusLinear.close_circle
-          : IconsaxPlusLinear.search_normal_1,
-      size: 18,
-    ),
+    icon: Icon(visible ? LucideIcons.circleX : LucideIcons.search, size: 18),
   );
 
   @override
@@ -226,7 +223,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     () => const SelectGeolocation(isStart: false),
                     transition: Transition.downToUp,
                   ),
-                  icon: const Icon(IconsaxPlusLinear.global_search, size: 18),
+                  icon: const Icon(LucideIcons.mapPlus, size: 18),
                 )
               : null,
           title: _buildAppBarTitle(
@@ -247,24 +244,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           selectedIndex: tabIndex,
           destinations: [
             NavigationDestination(
-              icon: const Icon(IconsaxPlusLinear.cloud_sunny),
-              selectedIcon: const Icon(IconsaxPlusBold.cloud_sunny),
+              icon: const Icon(LucideIcons.cloudSun),
+              selectedIcon: const Icon(LucideIcons.cloudSun),
               label: 'name'.tr,
             ),
             NavigationDestination(
-              icon: const Icon(IconsaxPlusLinear.buildings),
-              selectedIcon: const Icon(IconsaxPlusBold.buildings),
+              icon: const Icon(LucideIcons.mapPinned),
+              selectedIcon: const Icon(LucideIcons.mapPinned),
               label: 'cities'.tr,
             ),
             if (!settings.hideMap)
               NavigationDestination(
-                icon: const Icon(IconsaxPlusLinear.map),
-                selectedIcon: const Icon(IconsaxPlusBold.map),
+                icon: const Icon(LucideIcons.map),
+                selectedIcon: const Icon(LucideIcons.map),
                 label: 'map'.tr,
               ),
             NavigationDestination(
-              icon: const Icon(IconsaxPlusLinear.category),
-              selectedIcon: const Icon(IconsaxPlusBold.category),
+              icon: const Icon(LucideIcons.settings),
+              selectedIcon: const Icon(LucideIcons.settings),
               label: 'settings_full'.tr,
             ),
           ],
@@ -278,7 +275,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   builder: (BuildContext context) =>
                       const PlaceAction(edit: false),
                 ),
-                child: const Icon(IconsaxPlusLinear.add),
+                child: const Icon(LucideIcons.plus),
               )
             : null,
       ),

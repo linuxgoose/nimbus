@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/ui/geolocation.dart';
 import 'package:nimbus/app/ui/widgets/button.dart';
 import 'package:nimbus/main.dart';
@@ -114,7 +115,8 @@ class DotIndicator extends StatelessWidget {
 }
 
 class Onboard {
-  final String image, title, description;
+  final String title, description;
+  final IconData image;
 
   Onboard({
     required this.image,
@@ -125,17 +127,17 @@ class Onboard {
 
 final List<Onboard> data = [
   Onboard(
-    image: 'assets/icons/Rain.png',
+    image: LucideIcons.cloudRain, // Replaced Rain.png
     title: 'name'.tr,
     description: 'description'.tr,
   ),
   Onboard(
-    image: 'assets/icons/Design.png',
+    image: LucideIcons.palette, // Replaced Design.png
     title: 'name2'.tr,
     description: 'description2'.tr,
   ),
   Onboard(
-    image: 'assets/icons/Team.png',
+    image: LucideIcons.users, // Replaced Team.png
     title: 'name3'.tr,
     description: 'description3'.tr,
   ),
@@ -149,7 +151,8 @@ class OnboardContent extends StatelessWidget {
     required this.description,
   });
 
-  final String image, title, description;
+  final IconData image;
+  final String title, description;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -158,7 +161,8 @@ class OnboardContent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(image, scale: 5),
+            Icon(image, size: 80),
+            const Gap(20),
             Text(
               title,
               style: context.textTheme.titleLarge?.copyWith(

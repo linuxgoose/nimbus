@@ -7,8 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:http_cache_file_store/http_cache_file_store.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
@@ -66,13 +65,14 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildLicenseCard(context),
         _buildVersionCard(context),
         _buildGitHubCard(context),
+        _buildSupportCard(context),
         _buildOpenMeteoText(context),
       ],
     ),
   );
 
   Widget _buildAppearanceCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.brush_1),
+    icon: const Icon(LucideIcons.paintRoller),
     text: 'appearance'.tr,
     onPressed: () => _showAppearanceBottomSheet(context),
   );
@@ -111,7 +111,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildThemeSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(
         elevation: 4,
-        icon: const Icon(IconsaxPlusLinear.moon),
+        icon: const Icon(LucideIcons.moon),
         text: 'theme'.tr,
         dropdown: true,
         dropdownName: settings.theme?.tr,
@@ -144,7 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.mobile),
+    icon: const Icon(LucideIcons.tabletSmartphone),
     text: 'amoledTheme'.tr,
     switcher: true,
     value: settings.amoledTheme,
@@ -159,7 +159,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.colorfilter),
+    icon: const Icon(LucideIcons.blend),
     text: 'materialColor'.tr,
     switcher: true,
     value: settings.materialColor,
@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.additem),
+    icon: const Icon(LucideIcons.expand),
     text: 'largeElement'.tr,
     switcher: true,
     value: settings.largeElement,
@@ -187,7 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildFunctionsCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.code_1),
+    icon: const Icon(LucideIcons.chartSpline),
     text: 'functions'.tr,
     onPressed: () => _showFunctionsBottomSheet(context),
   );
@@ -229,7 +229,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.map),
+    icon: const Icon(LucideIcons.mapPin),
     text: 'location'.tr,
     switcher: true,
     value: settings.location,
@@ -288,7 +288,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.notification_1),
+    icon: const Icon(LucideIcons.bellDot),
     text: 'notifications'.tr,
     switcher: true,
     value: settings.notifications,
@@ -329,7 +329,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.notification_status),
+    icon: const Icon(LucideIcons.bellRing),
     text: 'timeRange'.tr,
     dropdown: true,
     dropdownName: '$timeRange',
@@ -352,7 +352,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.timer_start),
+    icon: const Icon(LucideIcons.timer),
     text: 'timeStart'.tr,
     info: true,
     infoSettings: true,
@@ -391,7 +391,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildTimeEndSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(
         elevation: 4,
-        icon: const Icon(IconsaxPlusLinear.timer_pause),
+        icon: const Icon(LucideIcons.timerOff),
         text: 'timeEnd'.tr,
         info: true,
         infoSettings: true,
@@ -430,7 +430,7 @@ class _SettingsPageState extends State<SettingsPage> {
       );
 
   Widget _buildDataCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.d_square),
+    icon: const Icon(LucideIcons.slidersHorizontal),
     text: 'data'.tr,
     onPressed: () => _showDataBottomSheet(context),
   );
@@ -473,7 +473,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.cloud_notif),
+    icon: const Icon(LucideIcons.thermometerSun),
     text: 'roundDegree'.tr,
     switcher: true,
     value: settings.roundDegree,
@@ -488,7 +488,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildDegreesSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(
         elevation: 4,
-        icon: const Icon(IconsaxPlusLinear.sun_1),
+        icon: const Icon(LucideIcons.sun),
         text: 'degrees'.tr,
         dropdown: true,
         dropdownName: settings.degrees.tr,
@@ -512,7 +512,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.rulerpen),
+    icon: const Icon(LucideIcons.pencilRuler),
     text: 'measurements'.tr,
     dropdown: true,
     dropdownName: settings.measurements.tr,
@@ -532,17 +532,35 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildWindSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(
         elevation: 4,
-        icon: const Icon(IconsaxPlusLinear.wind),
+        icon: const Icon(LucideIcons.wind),
         text: 'wind'.tr,
         dropdown: true,
         dropdownName: settings.wind.tr,
-        dropdownList: <String>['kph'.tr, 'm/s'.tr],
+        // Dynamically show units based on measurement system
+        dropdownList: settings.measurements == 'imperial'
+            ? <String>['mph'.tr, 'knots'.tr]
+            : <String>['kph'.tr, 'm/s'.tr],
         dropdownChange: (String? newValue) async {
+          if (newValue == null) return;
+
           isar.writeTxnSync(() {
-            settings.wind = newValue == 'kph'.tr ? 'kph' : 'm/s';
+            // Map translated value back to internal keys
+            if (newValue == 'mph'.tr) {
+              settings.wind = 'mph';
+            } else if (newValue == 'knots'.tr)
+              settings.wind = 'knots';
+            else if (newValue == 'm/s'.tr)
+              settings.wind = 'm/s';
+            else
+              settings.wind = 'kph';
+
             isar.settings.putSync(settings);
           });
+
           setState(() {});
+
+          // Refresh the widget to show the new unit
+          Get.find<WeatherController>().updateWidget();
         },
       );
 
@@ -551,7 +569,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.ruler),
+    icon: const Icon(LucideIcons.gauge),
     text: 'pressure'.tr,
     dropdown: true,
     dropdownName: settings.pressure.tr,
@@ -570,7 +588,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.clock_1),
+    icon: const Icon(LucideIcons.clock),
     text: 'timeformat'.tr,
     dropdown: true,
     dropdownName: settings.timeformat.tr,
@@ -585,7 +603,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildWidgetCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.setting_3),
+    icon: const Icon(LucideIcons.settings2300),
     text: 'widget'.tr,
     onPressed: () => _showWidgetBottomSheet(context),
   );
@@ -625,31 +643,77 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.add_square),
+    icon: const Icon(LucideIcons.squarePlus),
     text: 'addWidget'.tr,
     onPressed: () async {
       if (!Platform.isAndroid) return;
 
+      // Check for OS support
       final supported = await HomeWidget.isRequestPinWidgetSupported() ?? false;
       if (!supported) {
         showSnackBar(content: 'addWidgetLauncher'.tr);
         return;
       }
 
-      await HomeWidget.requestPinWidget(
-        name: androidWidgetName,
-        androidName: androidWidgetName,
-        qualifiedAndroidName: 'com.yoshi.rain.OreoWidget',
-      );
+      // Show selection menu
+      _showWidgetPicker(context);
     },
   );
+
+  void _showWidgetPicker(BuildContext context) {
+    final List<Map<String, String>> availableWidgets = [
+      {'name': 'current'.tr, 'class': 'OreoWidget'},
+      {'name': 'currentForecastWidget'.tr, 'class': 'CurrentWidget'},
+      {'name': 'hourlyForecastWidget'.tr, 'class': 'HourlyWidget'},
+      {'name': 'dailyForecastWidget'.tr, 'class': 'DailyWidget'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'addWidget'.tr,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              const Divider(),
+              ...availableWidgets.map(
+                (widget) => ListTile(
+                  leading: const Icon(LucideIcons.layoutDashboard),
+                  title: Text(widget['name']!),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await HomeWidget.requestPinWidget(
+                      name: widget['class']!,
+                      androidName: widget['class']!,
+                      qualifiedAndroidName: 'com.yoshi.rain.${widget['class']}',
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Widget _buildWidgetBackgroundSettingCard(
     BuildContext context,
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.bucket_square),
+    icon: const Icon(LucideIcons.swatchBook),
     text: 'widgetBackground'.tr,
     info: true,
     infoWidget: CircleAvatar(
@@ -709,7 +773,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildColorPickerButton(BuildContext context) => IconButton(
-    icon: const Icon(IconsaxPlusLinear.tick_square),
+    icon: const Icon(LucideIcons.pipette),
     onPressed: () {
       if (colorBackground == null) {
         return;
@@ -725,7 +789,7 @@ class _SettingsPageState extends State<SettingsPage> {
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.text_block),
+    icon: const Icon(LucideIcons.pipette),
     text: 'widgetText'.tr,
     info: true,
     infoWidget: CircleAvatar(
@@ -785,7 +849,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildTextColorPickerButton(BuildContext context) => IconButton(
-    icon: const Icon(IconsaxPlusLinear.tick_square),
+    icon: const Icon(LucideIcons.check),
     onPressed: () {
       if (colorText == null) {
         return;
@@ -797,7 +861,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildMapCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.map),
+    icon: const Icon(LucideIcons.map),
     text: 'map'.tr,
     onPressed: () => _showMapBottomSheet(context),
   );
@@ -834,7 +898,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildHideMapSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(
         elevation: 4,
-        icon: const Icon(IconsaxPlusLinear.location_slash),
+        icon: const Icon(LucideIcons.eyeOff),
         text: 'hideMap'.tr,
         switcher: true,
         value: settings.hideMap,
@@ -851,7 +915,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildClearCacheStoreSettingCard(BuildContext context) => SettingCard(
     elevation: 4,
-    icon: const Icon(IconsaxPlusLinear.trash_square),
+    icon: const Icon(LucideIcons.trash),
     text: 'clearCacheStore'.tr,
     onPressed: () => _showClearCacheStoreDialog(context),
   );
@@ -893,7 +957,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildLanguageCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.language_square),
+    icon: const Icon(LucideIcons.languages),
     text: 'language'.tr,
     info: true,
     infoSettings: true,
@@ -956,7 +1020,7 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildLicenseCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.document),
+    icon: const Icon(LucideIcons.file),
     text: 'license'.tr,
     onPressed: () => Get.to(
       () => LicensePage(
@@ -977,17 +1041,24 @@ class _SettingsPageState extends State<SettingsPage> {
   );
 
   Widget _buildVersionCard(BuildContext context) => SettingCard(
-    icon: const Icon(IconsaxPlusLinear.hierarchy_square_2),
+    icon: const Icon(LucideIcons.gitBranch),
     text: 'version'.tr,
     info: true,
     infoWidget: _TextInfo(info: '$appVersion'),
   );
 
   Widget _buildGitHubCard(BuildContext context) => SettingCard(
-    icon: const Icon(LineAwesomeIcons.github),
+    icon: const Icon(LucideIcons.github),
     text: '${'project'.tr} GitHub',
     onPressed: () =>
         weatherController.urlLauncher('https://github.com/linuxgoose/nimbus'),
+  );
+
+  Widget _buildSupportCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.mail),
+    text: 'Contact Support', // TODO: Need to do translations
+    onPressed: () =>
+        weatherController.urlLauncher('mailto:support@linuxgoose.com'),
   );
 
   Widget _buildOpenMeteoText(BuildContext context) => Padding(

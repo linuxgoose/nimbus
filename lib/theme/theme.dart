@@ -60,8 +60,6 @@ ThemeData _buildTheme({
       ?.copyWith(brightness: brightness, surface: color)
       .harmonized();
 
-  final bool isDark = brightness == Brightness.dark;
-
   return baseTheme.copyWith(
     brightness: brightness,
     colorScheme: harmonizedColorScheme,

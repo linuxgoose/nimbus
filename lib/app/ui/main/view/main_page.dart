@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:nimbus/app/api/api.dart'; // Import to use WeatherAPI
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/ui/widgets/weather/daily/daily_card_list.dart';
@@ -92,12 +94,115 @@ class _MainPageState extends State<MainPage> {
         tempMax,
         tempMin,
       ),
+      // --- REAL API ALERT WIDGET ---
+      _buildWeatherAlert(),
+      // ----------------------------
       _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
       _buildSunsetSunriseWidget(sunrise, sunset),
       _buildHourlyDescContainer(mainWeather, hourOfDay),
       _buildDailyContainer(weatherCard),
     ],
   );
+
+  Widget _buildWeatherAlert() {
+    final lat = weatherController.location.lat;
+    final lon = weatherController.location.lon;
+
+    // 1. Safety check: If coordinates are missing, return an empty space immediately.
+    if (lat == null || lon == null) return const SizedBox.shrink();
+
+    return FutureBuilder<List<dynamic>>(
+      // Note: In a real app, you might want to store this future in a variable
+      // to avoid re-fetching on every small UI rebuild.
+      future: WeatherAPI().getRawAlerts(lat, lon),
+      builder: (context, snapshot) {
+        // 2. Handle the loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const MyShimmer(
+            height: 80,
+            margin: EdgeInsets.only(bottom: 15),
+          );
+        }
+
+        // 3. Handle errors or empty data
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        try {
+          final alert = snapshot.data!.first;
+          // 4. Use null-coalescing (??) to ensure no property access crashes the app
+          final String alertTitle =
+              alert['event']?.toString() ?? "Weather Warning";
+          final String alertDesc =
+              alert['description']?.toString() ?? "No description provided.";
+          final String severity = (alert['severity']?.toString() ?? 'moderate')
+              .toLowerCase();
+
+          Color warningColor;
+          switch (severity) {
+            case 'extreme':
+              warningColor = Colors.red;
+              break;
+            case 'severe':
+              warningColor = Colors.orange;
+              break;
+            case 'moderate':
+              warningColor = Colors.amber.shade700;
+              break;
+            default:
+              warningColor = Colors.blue;
+          }
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 15, top: 5),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: warningColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: warningColor.withOpacity(0.5),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(IconsaxPlusLinear.danger, color: warningColor, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        alertTitle,
+                        style: context.textTheme.titleSmall?.copyWith(
+                          color: warningColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        alertDesc,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        } catch (e) {
+          // 5. Catch-all for parsing errors to prevent the screen from going red
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
 
   Widget _buildNowWidget(
     MainWeatherCache mainWeather,

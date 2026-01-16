@@ -3,8 +3,37 @@ import 'package:get/get.dart';
 const assetImageRoot = 'assets/images/';
 
 class StatusWeather {
+  /// Centralized logic to handle Dark Mode icon switching
+  String _adjustForDarkMode(String path) {
+    if (Get.isDarkMode && path.isNotEmpty) {
+      // List of icons that have a corresponding '-w.png' version
+      const whiteIconsAvailable = [
+        'wi-night-clear',
+        'wi-sun',
+        'wi-full-moon',
+        'wi-moon',
+        'wi-cloud',
+        'wi-cloudy-day',
+        'wi-day-clear',
+        'wi-night-cloudy',
+        'wi-night-rain',
+        'wi-day-rain',
+        'wi-fog',
+      ];
+
+      // Extract filename without path and extension for exact matching
+      // e.g., "assets/images/wi-day-rain.png" -> "wi-day-rain"
+      String fileName = path.split('/').last.replaceAll('.png', '');
+
+      if (whiteIconsAvailable.contains(fileName)) {
+        return path.replaceAll('.png', '-w.png');
+      }
+    }
+    return path;
+  }
+
   String getImageNow(
-    int weather,
+    int? weather,
     String time,
     String timeDay,
     String timeNight,
@@ -16,10 +45,12 @@ class StatusWeather {
     _getDayNightImagePaths,
   );
 
-  String getImageNowDaily(int? weather) => _getDailyImage(weather);
+  // Updated to include Dark Mode check
+  String getImageNowDaily(int? weather) =>
+      _adjustForDarkMode(_getDailyImage(weather));
 
   String getImageToday(
-    int weather,
+    int? weather,
     String time,
     String timeDay,
     String timeNight,
@@ -31,12 +62,14 @@ class StatusWeather {
     _getTodayImagePaths,
   );
 
-  String getImage7Day(int? weather) => _getDailyImage(weather, isDay: true);
+  // Updated to include Dark Mode check
+  String getImage7Day(int? weather) =>
+      _adjustForDarkMode(_getDailyImage(weather, isDay: true));
 
   String getText(int? weather) => _getWeatherText(weather);
 
   String getImageNotification(
-    int weather,
+    int? weather,
     String time,
     String timeDay,
     String timeNight,
@@ -49,7 +82,7 @@ class StatusWeather {
   );
 
   String _getImageBasedOnTime(
-    int weather,
+    int? weather,
     String time,
     String timeDay,
     String timeNight,
@@ -79,35 +112,7 @@ class StatusWeather {
 
     String path = imagePaths[weather]?[isDayTime] ?? '';
 
-    // If Dark Mode is active, try to use the white (-w) version
-    if (Get.isDarkMode && path.isNotEmpty) {
-      // 1. Define which icons actually have a white (-w) version
-      // Add the base names of your white icons to this list
-      const whiteIconsAvailable = [
-        'wi-night-clear',
-        'wi-sun',
-        'wi-full-moon',
-        'wi-moon',
-        'wi-cloud',
-        'wi-cloudy-day',
-        'wi-day-clear',
-        'wi-night-cloudy',
-        'wi-night-rain',
-        'wi-day-rain',
-        'wi-fog',
-      ];
-
-      // 2. Check if the current path contains one of those names
-      bool hasWhiteVersion = whiteIconsAvailable.any(
-        (name) => path.contains(name),
-      );
-
-      if (hasWhiteVersion) {
-        path = path.replaceAll('.png', '-w.png');
-      }
-    }
-
-    return path;
+    return _adjustForDarkMode(path);
   }
 
   String _getDailyImage(int? weather, {bool isDay = false}) {
@@ -134,7 +139,7 @@ class StatusWeather {
       case 80:
       case 81:
       case 82:
-        return '${assetImageRoot}rain${isDay ? '_day' : ''}.png';
+        return '$assetImageRoot${isDay ? 'wi-day-rain' : 'wi-night-rain'}.png';
       case 71:
       case 73:
       case 75:

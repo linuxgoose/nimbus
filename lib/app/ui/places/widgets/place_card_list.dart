@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/ui/places/view/place_info.dart';
@@ -86,7 +86,7 @@ class _PlaceCardListState extends State<PlaceCardList> {
     alignment: Alignment.centerRight,
     child: const Padding(
       padding: EdgeInsets.only(right: 15),
-      child: Icon(IconsaxPlusLinear.trash_square, color: Colors.red),
+      child: Icon(LucideIcons.trash, color: Colors.red),
     ),
   );
 

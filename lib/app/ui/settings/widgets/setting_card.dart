@@ -70,24 +70,32 @@ class SettingCard extends StatelessWidget {
     child: Switch(value: value!, onChanged: onChange),
   );
 
-  Widget _buildDropdownWidget() => DropdownButton<String>(
-    icon: const Padding(
-      padding: EdgeInsets.only(left: 7),
-      child: Icon(IconsaxPlusLinear.arrow_down),
-    ),
-    iconSize: 15,
-    alignment: AlignmentDirectional.centerEnd,
-    borderRadius: const BorderRadius.all(Radius.circular(15)),
-    underline: Container(),
-    value: dropdownName,
-    items: dropdownList!
-        .map<DropdownMenuItem<String>>(
-          (String value) =>
-              DropdownMenuItem<String>(value: value, child: Text(value)),
-        )
-        .toList(),
-    onChanged: dropdownChange,
-  );
+  Widget _buildDropdownWidget() {
+    // FIX: Check if the current name is actually in the list.
+    // If not, fallback to the first item in the list to prevent the error.
+    final String effectiveValue = dropdownList!.contains(dropdownName)
+        ? dropdownName!
+        : dropdownList!.first;
+
+    return DropdownButton<String>(
+      icon: const Padding(
+        padding: EdgeInsets.only(left: 7),
+        child: Icon(IconsaxPlusLinear.arrow_down),
+      ),
+      iconSize: 15,
+      alignment: AlignmentDirectional.centerEnd,
+      borderRadius: const BorderRadius.all(Radius.circular(15)),
+      underline: Container(),
+      value: effectiveValue, // Use the sanitized value here
+      items: dropdownList!
+          .map<DropdownMenuItem<String>>(
+            (String value) =>
+                DropdownMenuItem<String>(value: value, child: Text(value)),
+          )
+          .toList(),
+      onChanged: dropdownChange,
+    );
+  }
 
   Widget _buildInfoWidget() {
     if (infoSettings) {

@@ -18,8 +18,8 @@ class Hourly extends StatefulWidget {
   final String time;
   final String timeDay;
   final String timeNight;
-  final int weather;
-  final double degree;
+  final int? weather;
+  final double? degree;
 
   @override
   State<Hourly> createState() => _HourlyState();
@@ -65,7 +65,7 @@ class _HourlyState extends State<Hourly> {
   );
 
   Widget _buildTemperatureText(TextTheme textTheme) => Text(
-    statusData.getDegree(widget.degree.round()),
+    statusData.getDegree((widget.degree ?? 0).round()),
     style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
   );
 }

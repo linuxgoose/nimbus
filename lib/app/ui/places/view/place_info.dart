@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/ui/places/widgets/place_action.dart';
@@ -86,7 +86,7 @@ class _PlaceInfoState extends State<PlaceInfo> {
     automaticallyImplyLeading: false,
     leading: IconButton(
       onPressed: () => Get.back(),
-      icon: const Icon(IconsaxPlusLinear.arrow_left_3, size: 20),
+      icon: const Icon(LucideIcons.arrowLeft, size: 20),
     ),
     title: Text(
       weatherCard.district!.isNotEmpty
@@ -110,7 +110,7 @@ class _PlaceInfoState extends State<PlaceInfo> {
           getTime();
           setState(() {});
         },
-        icon: Icon(IconsaxPlusLinear.edit, size: 18),
+        icon: Icon(LucideIcons.pencil, size: 18),
       ),
     ],
   );

@@ -22,8 +22,8 @@ class Now extends StatefulWidget {
   final String time;
   final String timeDay;
   final String timeNight;
-  final int weather;
-  final double degree;
+  final int? weather;
+  final double? degree;
   final double tempMax;
   final double tempMin;
   final double feels;
@@ -105,10 +105,10 @@ class _NowState extends State<Now> {
 
   Widget _buildTemperatureText(
     BuildContext context,
-    double degree,
+    double? degree,
     double? fontSize,
   ) => Text(
-    '${roundDegree ? degree.round() : degree}',
+    '${roundDegree ? (degree ?? 0).round() : (degree ?? 0)}',
     style: context.textTheme.displayLarge?.copyWith(
       fontSize: fontSize,
       fontWeight: FontWeight.w800,
@@ -116,10 +116,10 @@ class _NowState extends State<Now> {
     ),
   );
 
-  Widget _buildTemperatureCompactText(BuildContext context, double degree) =>
+  Widget _buildTemperatureCompactText(BuildContext context, double? degree) =>
       Text(
         statusData.getDegree(
-          roundDegree ? widget.degree.round() : widget.degree,
+          roundDegree ? (widget.degree ?? 0).round() : (widget.degree ?? 0),
         ),
         style: context.textTheme.displayMedium?.copyWith(
           fontWeight: FontWeight.w800,
