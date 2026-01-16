@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/api.dart'; // Import to use WeatherAPI
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
@@ -12,6 +13,7 @@ import 'package:nimbus/app/ui/widgets/weather/now.dart';
 import 'package:nimbus/app/ui/widgets/shimmer.dart';
 import 'package:nimbus/app/ui/widgets/weather/sunset_sunrise.dart';
 import 'package:nimbus/app/ui/radar/view/radar_page.dart';
+import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -99,6 +101,7 @@ class _MainPageState extends State<MainPage> {
       _buildWeatherAlert(),
       // ----------------------------
       _buildRadarTile(),
+      _buildAqiTile(),
       _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
       _buildSunsetSunriseWidget(sunrise, sunset),
       _buildHourlyDescContainer(mainWeather, hourOfDay),
@@ -355,6 +358,59 @@ class _MainPageState extends State<MainPage> {
                   const SizedBox(height: 4),
                   Text(
                     'View live precipitation and radar imagery',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              IconsaxPlusLinear.arrow_right_3,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildAqiTile() => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () =>
+          Get.to(() => const AqiPage(), transition: Transition.downToUp),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                LucideIcons.wind,
+                size: 32,
+                color: context.theme.colorScheme.onSecondaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Air Quality',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Check air quality index and pollen levels',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.onSurfaceVariant,
                     ),
