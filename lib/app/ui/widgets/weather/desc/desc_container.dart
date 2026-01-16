@@ -122,12 +122,13 @@ class _DescContainerState extends State<DescContainer> {
     final weatherData = [
       {
         'value': statusData.getDegree(widget.apparentTemperatureMin?.round()),
-        'imageName': 'assets/images/cold.png',
+        'imageName':
+            'assets/images/wi-snowflake${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'apparentTemperatureMin'.tr,
       },
       {
         'value': statusData.getDegree(widget.apparentTemperatureMax?.round()),
-        'imageName': 'assets/images/hot.png',
+        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'apparentTemperatureMax'.tr,
       },
       {
@@ -138,33 +139,38 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': '${widget.windDirection10MDominant}°',
-        'imageName': 'assets/images/windsock.png',
+        'imageName':
+            'assets/images/wi-wind-direction${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'direction'.tr,
         'message': message.getDirection(widget.windDirection10MDominant),
       },
       {
         'value': statusData.getSpeed(widget.windSpeed10MMax?.round()),
-        'imageName': 'assets/images/wind.png',
+        'imageName':
+            'assets/images/wi-wind-speed${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'wind'.tr,
       },
       {
         'value': statusData.getSpeed(widget.windGusts10MMax?.round()),
-        'imageName': 'assets/images/windgusts.png',
+        'imageName':
+            'assets/images/wi-wind-gust${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'windgusts'.tr,
       },
       {
         'value': '${widget.precipitationProbabilityMax}%',
-        'imageName': 'assets/images/precipitation_probability.png',
+        'imageName':
+            'assets/images/wi-umbrella${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitationProbability'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.rainSum),
-        'imageName': 'assets/images/water.png',
+        'imageName': 'assets/images/wi-rain${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'rain'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.precipitationSum),
-        'imageName': 'assets/images/rainfall.png',
+        'imageName':
+            'assets/images/wi-precipitation${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitation'.tr,
       },
       {
@@ -186,18 +192,21 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': '${widget.direction}°',
-        'imageName': 'assets/images/windsock.png',
+        'imageName':
+            'assets/images/wi-wind-direction${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'direction'.tr,
         'message': message.getDirection(widget.direction),
       },
       {
         'value': statusData.getSpeed(widget.wind?.round()),
-        'imageName': 'assets/images/wind.png',
+        'imageName':
+            'assets/images/wi-wind-speed${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'wind'.tr,
       },
       {
         'value': statusData.getSpeed(widget.windgusts?.round()),
-        'imageName': 'assets/images/windgusts.png',
+        'imageName':
+            'assets/images/wi-wind-gust${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'windgusts'.tr,
       },
       {
@@ -207,17 +216,19 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': statusData.getPrecipitation(widget.precipitation),
-        'imageName': 'assets/images/rainfall.png',
+        'imageName':
+            'assets/images/wi-precipitation${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitation'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.rain),
-        'imageName': 'assets/images/water.png',
+        'imageName': 'assets/images/wi-rain${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'rain'.tr,
       },
       {
         'value': '${widget.precipitationProbability}%',
-        'imageName': 'assets/images/precipitation_probability.png',
+        'imageName':
+            'assets/images/wi-umbrella${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitationProbability'.tr,
       },
       {

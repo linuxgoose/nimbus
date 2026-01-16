@@ -19,6 +19,7 @@ class StatusWeather {
         'wi-night-rain',
         'wi-day-rain',
         'wi-fog',
+        'wi-wind-direction',
       ];
 
       // Extract filename without path and extension for exact matching
