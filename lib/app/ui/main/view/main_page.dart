@@ -129,7 +129,7 @@ class _MainPageState extends State<MainPage> {
       _buildWeatherAlert(),
       // ----------------------------
       _buildRadarTile(),
-      _buildAqiTile(),
+      if (!settings.hideAqi) _buildAqiTile(),
       if (!settings.hideTides) _buildTidesTile(),
       _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
       _buildSunsetSunriseWidget(sunrise, sunset),

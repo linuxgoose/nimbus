@@ -15,6 +15,7 @@ class Settings {
   bool largeElement = false;
   bool hideMap = false;
   bool hideTides = false;
+  bool hideAqi = false;
   bool useDummyTides = true;
   String? tidesApiKey;
   String? widgetBackgroundColor;

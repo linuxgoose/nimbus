@@ -33,102 +33,103 @@ const SettingsSchema = CollectionSchema(
       type: IsarType.string,
     ),
     r'degrees': PropertySchema(id: 3, name: r'degrees', type: IsarType.string),
-    r'hideMap': PropertySchema(id: 4, name: r'hideMap', type: IsarType.bool),
+    r'hideAqi': PropertySchema(id: 4, name: r'hideAqi', type: IsarType.bool),
+    r'hideMap': PropertySchema(id: 5, name: r'hideMap', type: IsarType.bool),
     r'hideTides': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'hideTides',
       type: IsarType.bool,
     ),
     r'language': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 8, name: r'location', type: IsarType.bool),
+    r'location': PropertySchema(id: 9, name: r'location', type: IsarType.bool),
     r'materialColor': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'notifications',
       type: IsarType.bool,
     ),
-    r'onboard': PropertySchema(id: 12, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 13, name: r'onboard', type: IsarType.bool),
     r'pressure': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 18, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 19, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 20, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 21, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyTides': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 27, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 28, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -214,30 +215,31 @@ void _settingsSerialize(
   writer.writeBool(offsets[1], object.amoledTheme);
   writer.writeString(offsets[2], object.aqiIndex);
   writer.writeString(offsets[3], object.degrees);
-  writer.writeBool(offsets[4], object.hideMap);
-  writer.writeBool(offsets[5], object.hideTides);
-  writer.writeString(offsets[6], object.language);
-  writer.writeBool(offsets[7], object.largeElement);
-  writer.writeBool(offsets[8], object.location);
-  writer.writeBool(offsets[9], object.materialColor);
-  writer.writeString(offsets[10], object.measurements);
-  writer.writeBool(offsets[11], object.notifications);
-  writer.writeBool(offsets[12], object.onboard);
-  writer.writeString(offsets[13], object.pressure);
-  writer.writeBool(offsets[14], object.roundDegree);
-  writer.writeBool(offsets[15], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[16], object.showAlertsOnMap);
-  writer.writeBool(offsets[17], object.showDummyAlerts);
-  writer.writeString(offsets[18], object.theme);
-  writer.writeString(offsets[19], object.tidesApiKey);
-  writer.writeString(offsets[20], object.timeEnd);
-  writer.writeLong(offsets[21], object.timeRange);
-  writer.writeString(offsets[22], object.timeStart);
-  writer.writeString(offsets[23], object.timeformat);
-  writer.writeBool(offsets[24], object.useDummyTides);
-  writer.writeString(offsets[25], object.widgetBackgroundColor);
-  writer.writeString(offsets[26], object.widgetTextColor);
-  writer.writeString(offsets[27], object.wind);
+  writer.writeBool(offsets[4], object.hideAqi);
+  writer.writeBool(offsets[5], object.hideMap);
+  writer.writeBool(offsets[6], object.hideTides);
+  writer.writeString(offsets[7], object.language);
+  writer.writeBool(offsets[8], object.largeElement);
+  writer.writeBool(offsets[9], object.location);
+  writer.writeBool(offsets[10], object.materialColor);
+  writer.writeString(offsets[11], object.measurements);
+  writer.writeBool(offsets[12], object.notifications);
+  writer.writeBool(offsets[13], object.onboard);
+  writer.writeString(offsets[14], object.pressure);
+  writer.writeBool(offsets[15], object.roundDegree);
+  writer.writeBool(offsets[16], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[17], object.showAlertsOnMap);
+  writer.writeBool(offsets[18], object.showDummyAlerts);
+  writer.writeString(offsets[19], object.theme);
+  writer.writeString(offsets[20], object.tidesApiKey);
+  writer.writeString(offsets[21], object.timeEnd);
+  writer.writeLong(offsets[22], object.timeRange);
+  writer.writeString(offsets[23], object.timeStart);
+  writer.writeString(offsets[24], object.timeformat);
+  writer.writeBool(offsets[25], object.useDummyTides);
+  writer.writeString(offsets[26], object.widgetBackgroundColor);
+  writer.writeString(offsets[27], object.widgetTextColor);
+  writer.writeString(offsets[28], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -251,31 +253,32 @@ Settings _settingsDeserialize(
   object.amoledTheme = reader.readBool(offsets[1]);
   object.aqiIndex = reader.readString(offsets[2]);
   object.degrees = reader.readString(offsets[3]);
-  object.hideMap = reader.readBool(offsets[4]);
-  object.hideTides = reader.readBool(offsets[5]);
+  object.hideAqi = reader.readBool(offsets[4]);
+  object.hideMap = reader.readBool(offsets[5]);
+  object.hideTides = reader.readBool(offsets[6]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[6]);
-  object.largeElement = reader.readBool(offsets[7]);
-  object.location = reader.readBool(offsets[8]);
-  object.materialColor = reader.readBool(offsets[9]);
-  object.measurements = reader.readString(offsets[10]);
-  object.notifications = reader.readBool(offsets[11]);
-  object.onboard = reader.readBool(offsets[12]);
-  object.pressure = reader.readString(offsets[13]);
-  object.roundDegree = reader.readBool(offsets[14]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[15]);
-  object.showAlertsOnMap = reader.readBool(offsets[16]);
-  object.showDummyAlerts = reader.readBool(offsets[17]);
-  object.theme = reader.readStringOrNull(offsets[18]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[19]);
-  object.timeEnd = reader.readStringOrNull(offsets[20]);
-  object.timeRange = reader.readLongOrNull(offsets[21]);
-  object.timeStart = reader.readStringOrNull(offsets[22]);
-  object.timeformat = reader.readString(offsets[23]);
-  object.useDummyTides = reader.readBool(offsets[24]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[25]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[26]);
-  object.wind = reader.readString(offsets[27]);
+  object.language = reader.readStringOrNull(offsets[7]);
+  object.largeElement = reader.readBool(offsets[8]);
+  object.location = reader.readBool(offsets[9]);
+  object.materialColor = reader.readBool(offsets[10]);
+  object.measurements = reader.readString(offsets[11]);
+  object.notifications = reader.readBool(offsets[12]);
+  object.onboard = reader.readBool(offsets[13]);
+  object.pressure = reader.readString(offsets[14]);
+  object.roundDegree = reader.readBool(offsets[15]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[16]);
+  object.showAlertsOnMap = reader.readBool(offsets[17]);
+  object.showDummyAlerts = reader.readBool(offsets[18]);
+  object.theme = reader.readStringOrNull(offsets[19]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[20]);
+  object.timeEnd = reader.readStringOrNull(offsets[21]);
+  object.timeRange = reader.readLongOrNull(offsets[22]);
+  object.timeStart = reader.readStringOrNull(offsets[23]);
+  object.timeformat = reader.readString(offsets[24]);
+  object.useDummyTides = reader.readBool(offsets[25]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[26]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[27]);
+  object.wind = reader.readString(offsets[28]);
   return object;
 }
 
@@ -299,23 +302,23 @@ P _settingsDeserializeProp<P>(
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
-    case 7:
       return (reader.readBool(offset)) as P;
+    case 7:
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
       return (reader.readBool(offset)) as P;
     case 9:
       return (reader.readBool(offset)) as P;
     case 10:
-      return (reader.readString(offset)) as P;
-    case 11:
       return (reader.readBool(offset)) as P;
+    case 11:
+      return (reader.readString(offset)) as P;
     case 12:
       return (reader.readBool(offset)) as P;
     case 13:
-      return (reader.readString(offset)) as P;
-    case 14:
       return (reader.readBool(offset)) as P;
+    case 14:
+      return (reader.readString(offset)) as P;
     case 15:
       return (reader.readBool(offset)) as P;
     case 16:
@@ -323,24 +326,26 @@ P _settingsDeserializeProp<P>(
     case 17:
       return (reader.readBool(offset)) as P;
     case 18:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 19:
       return (reader.readStringOrNull(offset)) as P;
     case 20:
       return (reader.readStringOrNull(offset)) as P;
     case 21:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 23:
-      return (reader.readString(offset)) as P;
-    case 24:
-      return (reader.readBool(offset)) as P;
-    case 25:
       return (reader.readStringOrNull(offset)) as P;
+    case 24:
+      return (reader.readString(offset)) as P;
+    case 25:
+      return (reader.readBool(offset)) as P;
     case 26:
       return (reader.readStringOrNull(offset)) as P;
     case 27:
+      return (reader.readStringOrNull(offset)) as P;
+    case 28:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -878,6 +883,16 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'degrees', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> hideAqiEqualTo(
+    bool value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hideAqi', value: value),
       );
     });
   }
@@ -2911,6 +2926,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAqi() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAqi', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAqiDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAqi', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideMap() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideMap', Sort.asc);
@@ -3252,6 +3279,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAqi() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAqi', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAqiDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAqi', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideMap() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideMap', Sort.asc);
@@ -3590,6 +3629,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByHideAqi() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideAqi');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByHideMap() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hideMap');
@@ -3792,6 +3837,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, String, QQueryOperations> degreesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'degrees');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> hideAqiProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideAqi');
     });
   }
 

@@ -61,6 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildFunctionsCard(context),
         _buildTidesCard(context),
         _buildWeatherAlertsCard(context),
+        _buildAqiCard(context),
         _buildDataCard(context),
         _buildWidgetCard(context),
         _buildMapCard(context),
@@ -233,6 +234,52 @@ class _SettingsPageState extends State<SettingsPage> {
     text: 'Weather Alerts',
     onPressed: () => _showWeatherAlertsBottomSheet(context),
   );
+
+  Widget _buildAqiCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.wind),
+    text: 'Air Quality Index',
+    onPressed: () => _showAqiBottomSheet(context),
+  );
+
+  void _showAqiBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildAqiTitle(context),
+              _buildHideAqiSettingCard(context, setState),
+              _buildAqiIndexSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildAqiTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Air Quality Index', style: context.textTheme.headlineSmall),
+  );
+
+  Widget _buildHideAqiSettingCard(BuildContext context, StateSetter setState) =>
+      SettingCard(
+        elevation: 4,
+        icon: const Icon(LucideIcons.eyeOff),
+        text: 'Hide Air Quality Index',
+        switcher: true,
+        value: settings.hideAqi,
+        onChange: (value) {
+          settings.hideAqi = value;
+          isar.writeTxnSync(() => isar.settings.putSync(settings));
+          setState(() {});
+        },
+      );
 
   void _showWeatherAlertsBottomSheet(BuildContext context) =>
       showModalBottomSheet(
@@ -635,7 +682,6 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildWindSettingCard(context, setState),
               _buildPressureSettingCard(context, setState),
               _buildTimeFormatSettingCard(context, setState),
-              _buildAqiIndexSettingCard(context, setState),
               const Gap(10),
             ],
           ),
