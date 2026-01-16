@@ -22,6 +22,7 @@ class Settings {
   String pressure = 'hPa';
   String timeformat = '24';
   String aqiIndex = 'daqi';
+  bool showDummyAlerts = false;
   String? language;
   int? timeRange;
   String? timeStart;

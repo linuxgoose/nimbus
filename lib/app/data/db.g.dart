@@ -66,34 +66,39 @@ const SettingsSchema = CollectionSchema(
       name: r'roundDegree',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 13, name: r'theme', type: IsarType.string),
-    r'timeEnd': PropertySchema(id: 14, name: r'timeEnd', type: IsarType.string),
+    r'showDummyAlerts': PropertySchema(
+      id: 13,
+      name: r'showDummyAlerts',
+      type: IsarType.bool,
+    ),
+    r'theme': PropertySchema(id: 14, name: r'theme', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 15, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 20, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 21, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -181,14 +186,15 @@ void _settingsSerialize(
   writer.writeBool(offsets[10], object.onboard);
   writer.writeString(offsets[11], object.pressure);
   writer.writeBool(offsets[12], object.roundDegree);
-  writer.writeString(offsets[13], object.theme);
-  writer.writeString(offsets[14], object.timeEnd);
-  writer.writeLong(offsets[15], object.timeRange);
-  writer.writeString(offsets[16], object.timeStart);
-  writer.writeString(offsets[17], object.timeformat);
-  writer.writeString(offsets[18], object.widgetBackgroundColor);
-  writer.writeString(offsets[19], object.widgetTextColor);
-  writer.writeString(offsets[20], object.wind);
+  writer.writeBool(offsets[13], object.showDummyAlerts);
+  writer.writeString(offsets[14], object.theme);
+  writer.writeString(offsets[15], object.timeEnd);
+  writer.writeLong(offsets[16], object.timeRange);
+  writer.writeString(offsets[17], object.timeStart);
+  writer.writeString(offsets[18], object.timeformat);
+  writer.writeString(offsets[19], object.widgetBackgroundColor);
+  writer.writeString(offsets[20], object.widgetTextColor);
+  writer.writeString(offsets[21], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -212,14 +218,15 @@ Settings _settingsDeserialize(
   object.onboard = reader.readBool(offsets[10]);
   object.pressure = reader.readString(offsets[11]);
   object.roundDegree = reader.readBool(offsets[12]);
-  object.theme = reader.readStringOrNull(offsets[13]);
-  object.timeEnd = reader.readStringOrNull(offsets[14]);
-  object.timeRange = reader.readLongOrNull(offsets[15]);
-  object.timeStart = reader.readStringOrNull(offsets[16]);
-  object.timeformat = reader.readString(offsets[17]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[18]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[19]);
-  object.wind = reader.readString(offsets[20]);
+  object.showDummyAlerts = reader.readBool(offsets[13]);
+  object.theme = reader.readStringOrNull(offsets[14]);
+  object.timeEnd = reader.readStringOrNull(offsets[15]);
+  object.timeRange = reader.readLongOrNull(offsets[16]);
+  object.timeStart = reader.readStringOrNull(offsets[17]);
+  object.timeformat = reader.readString(offsets[18]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[19]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[20]);
+  object.wind = reader.readString(offsets[21]);
   return object;
 }
 
@@ -257,20 +264,22 @@ P _settingsDeserializeProp<P>(
     case 12:
       return (reader.readBool(offset)) as P;
     case 13:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 14:
       return (reader.readStringOrNull(offset)) as P;
     case 15:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 16:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 17:
-      return (reader.readString(offset)) as P;
-    case 18:
       return (reader.readStringOrNull(offset)) as P;
+    case 18:
+      return (reader.readString(offset)) as P;
     case 19:
       return (reader.readStringOrNull(offset)) as P;
     case 20:
+      return (reader.readStringOrNull(offset)) as P;
+    case 21:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1249,6 +1258,15 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'roundDegree', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  showDummyAlertsEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'showDummyAlerts', value: value),
       );
     });
   }
@@ -2593,6 +2611,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowDummyAlerts() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showDummyAlerts', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowDummyAlertsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showDummyAlerts', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByTheme() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'theme', Sort.asc);
@@ -2861,6 +2891,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowDummyAlerts() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showDummyAlerts', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowDummyAlertsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'showDummyAlerts', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByTheme() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'theme', Sort.asc);
@@ -3049,6 +3091,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByShowDummyAlerts() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'showDummyAlerts');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByTheme({
     bool caseSensitive = true,
   }) {
@@ -3201,6 +3249,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> roundDegreeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'roundDegree');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> showDummyAlertsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'showDummyAlerts');
     });
   }
 

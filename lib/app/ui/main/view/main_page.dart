@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/api.dart'; // Import to use WeatherAPI
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/main.dart';
 import 'package:nimbus/app/ui/widgets/weather/daily/daily_card_list.dart';
 import 'package:nimbus/app/ui/widgets/weather/daily/daily_container.dart';
 import 'package:nimbus/app/ui/widgets/weather/desc/desc_container.dart';
@@ -39,7 +39,34 @@ class _MainPageState extends State<MainPage> {
         final mainWeather = weatherController.mainWeather;
         final weatherCard = WeatherCard.fromJson(mainWeather.toJson());
         final hourOfDay = weatherController.hourOfDay.value;
-        final dayOfNow = weatherController.dayOfNow.value;
+        var dayOfNow = weatherController.dayOfNow.value;
+
+        // Ensure dayOfNow is within valid bounds for all arrays
+        final sunriseLen = mainWeather.sunrise?.length ?? 0;
+        final sunsetLen = mainWeather.sunset?.length ?? 0;
+        final tempMaxLen = mainWeather.temperature2MMax?.length ?? 0;
+        final tempMinLen = mainWeather.temperature2MMin?.length ?? 0;
+
+        if (sunriseLen == 0 ||
+            sunsetLen == 0 ||
+            tempMaxLen == 0 ||
+            tempMinLen == 0) {
+          return _buildLoadingView();
+        }
+
+        final maxDayIndex =
+            [
+              sunriseLen,
+              sunsetLen,
+              tempMaxLen,
+              tempMinLen,
+            ].reduce((a, b) => a < b ? a : b) -
+            1;
+
+        if (maxDayIndex < 0 || dayOfNow > maxDayIndex || dayOfNow < 0) {
+          dayOfNow = 0;
+        }
+
         final sunrise = mainWeather.sunrise![dayOfNow];
         final sunset = mainWeather.sunset![dayOfNow];
         final tempMax = mainWeather.temperature2MMax![dayOfNow];
@@ -110,30 +137,36 @@ class _MainPageState extends State<MainPage> {
   );
 
   Widget _buildWeatherAlert() {
+    // Check if dummy alerts should be shown
+    if (settings.showDummyAlerts) {
+      return _buildDummyAlert();
+    }
+
+    // Otherwise show real API alerts
     final lat = weatherController.location.lat;
     final lon = weatherController.location.lon;
 
-    // 1. Safety check: If coordinates are missing, return an empty space immediately.
+    // Safety check: If coordinates are missing, return an empty space immediately.
     if (lat == null || lon == null) return const SizedBox.shrink();
 
     return FutureBuilder<List<dynamic>>(
-      // Note: In a real app, you might want to store this future in a variable
-      // to avoid re-fetching on every small UI rebuild.
       future: WeatherAPI().getRawAlerts(lat, lon),
       builder: (context, snapshot) {
-        // 2. Handle the loading state - don't show shimmer to avoid layout shift
+        // Handle the loading state - don't show shimmer to avoid layout shift
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox.shrink();
         }
 
-        // 3. Handle errors or empty data
+        // Handle errors or empty data
         if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
           return const SizedBox.shrink();
         }
 
         try {
-          final alert = snapshot.data!.first;
-          // 4. Use null-coalescing (??) to ensure no property access crashes the app
+          final alerts = snapshot.data!;
+          if (alerts.isEmpty) return const SizedBox.shrink();
+
+          final alert = alerts.first;
           final String alertTitle =
               alert['event']?.toString() ?? "Weather Warning";
           final String alertDesc =
@@ -156,53 +189,62 @@ class _MainPageState extends State<MainPage> {
               warningColor = Colors.blue;
           }
 
-          return Container(
-            margin: const EdgeInsets.only(bottom: 15, top: 5),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: warningColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: warningColor.withOpacity(0.5),
-                width: 1,
-              ),
-            ),
-            child: Row(
+          return _buildAlertContainer(alertTitle, alertDesc, warningColor);
+        } catch (e) {
+          // Catch-all for parsing errors to prevent the screen from going red
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
+
+  Widget _buildDummyAlert() {
+    return _buildAlertContainer(
+      'Severe Flood Warning',
+      'Flooding is expected in low-lying areas near rivers and streams. Residents should prepare for possible evacuations and avoid travel through affected areas.',
+      Colors.orange,
+    );
+  }
+
+  Widget _buildAlertContainer(String title, String description, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15, top: 5),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: color.withOpacity(0.5), width: 1),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(LucideIcons.triangleAlert, color: color, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(LucideIcons.triangleAlert, color: warningColor, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        alertTitle,
-                        style: context.textTheme.titleSmall?.copyWith(
-                          color: warningColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        alertDesc,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: context.theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                Text(
+                  title,
+                  style: context.textTheme.titleSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-          );
-        } catch (e) {
-          // 5. Catch-all for parsing errors to prevent the screen from going red
-          return const SizedBox.shrink();
-        }
-      },
+          ),
+        ],
+      ),
     );
   }
 

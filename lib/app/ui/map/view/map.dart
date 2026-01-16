@@ -163,15 +163,22 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     setState(() {
       _warningPolygons.clear();
       _warningLabels.clear();
-      // To see the dummy warning, uncomment the line below:
-      //_addDummyCumbriaWarning();
     });
 
+    // Check if dummy alerts should be shown
+    if (settings.showDummyAlerts) {
+      _addDummyCumbriaWarning();
+      return;
+    }
+
+    // Otherwise, fetch real alerts from API
     try {
       final lat = weatherController.location.lat;
       final lon = weatherController.location.lon;
 
-      final List alerts = await WeatherAPI().getRawAlerts(lat!, lon!);
+      if (lat == null || lon == null) return;
+
+      final List alerts = await WeatherAPI().getRawAlerts(lat, lon);
 
       for (var alert in alerts) {
         if (alert['boundaries'] != null) {
@@ -298,8 +305,14 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       child: _buildStyleMarkers(
         weatherCard.weathercode![hourOfDay],
         weatherCard.time![hourOfDay],
-        weatherCard.sunrise![dayOfNow],
-        weatherCard.sunset![dayOfNow],
+        weatherCard.sunrise![dayOfNow.clamp(
+          0,
+          (weatherCard.sunrise?.length ?? 1) - 1,
+        )],
+        weatherCard.sunset![dayOfNow.clamp(
+          0,
+          (weatherCard.sunset?.length ?? 1) - 1,
+        )],
         weatherCard.temperature2M?[hourOfDay],
       ),
     ),
@@ -310,10 +323,23 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       weatherCardList.time!,
       weatherCardList.timezone!,
     );
-    final dayOfNow = weatherController.getDay(
+    var dayOfNow = weatherController.getDay(
       weatherCardList.timeDaily!,
       weatherCardList.timezone!,
     );
+
+    // Ensure dayOfNow is within bounds
+    final maxDayIndex =
+        [
+          weatherCardList.sunrise?.length ?? 0,
+          weatherCardList.sunset?.length ?? 0,
+        ].reduce((a, b) => a < b ? a : b) -
+        1;
+
+    if (dayOfNow > maxDayIndex || dayOfNow < 0) {
+      dayOfNow = 0;
+    }
+
     return Marker(
       height: 50,
       width: 100,

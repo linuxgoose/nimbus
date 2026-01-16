@@ -453,6 +453,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildPressureSettingCard(context, setState),
               _buildTimeFormatSettingCard(context, setState),
               _buildAqiIndexSettingCard(context, setState),
+              _buildDummyAlertsSettingCard(context, setState),
               const Gap(10),
             ],
           ),
@@ -618,6 +619,22 @@ class _SettingsPageState extends State<SettingsPage> {
         settings.aqiIndex = newValue == 'UK DAQI' ? 'daqi' : 'us';
         isar.settings.putSync(settings);
       });
+      setState(() {});
+    },
+  );
+
+  Widget _buildDummyAlertsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.triangleAlert),
+    text: 'Show Dummy Weather Alerts',
+    switcher: true,
+    value: settings.showDummyAlerts,
+    onChange: (value) {
+      settings.showDummyAlerts = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
     },
   );

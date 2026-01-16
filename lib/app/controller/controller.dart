@@ -209,6 +209,29 @@ class WeatherController extends GetxController {
       return;
     }
 
+    // Validate cache data integrity
+    final sunriseLen = mainWeatherCache.sunrise?.length ?? 0;
+    final sunsetLen = mainWeatherCache.sunset?.length ?? 0;
+    final tempMaxLen = mainWeatherCache.temperature2MMax?.length ?? 0;
+    final tempMinLen = mainWeatherCache.temperature2MMin?.length ?? 0;
+
+    // If arrays have mismatched lengths or are suspiciously large, clear cache
+    if (sunriseLen == 0 ||
+        sunsetLen == 0 ||
+        tempMaxLen == 0 ||
+        tempMinLen == 0 ||
+        sunriseLen > 100 ||
+        sunsetLen > 100 ||
+        tempMaxLen > 100 ||
+        tempMinLen > 100 ||
+        (sunriseLen - sunsetLen).abs() > 5 ||
+        (sunriseLen - tempMaxLen).abs() > 5) {
+      debugPrint('Cache data corrupted, clearing cache...');
+      await deleteAll(false);
+      isLoading.value = false;
+      return;
+    }
+
     _mainWeather.value = mainWeatherCache;
     _location.value = locationCache;
 
@@ -472,7 +495,11 @@ class WeatherController extends GetxController {
     try {
       final location = tz.getLocation(timezone);
       final nowDay = tz.TZDateTime.now(location).day;
-      return time.indexWhere((t) => t?.day == nowDay);
+      final index = time.indexWhere((t) => t?.day == nowDay);
+      // Ensure the index is valid and not -1
+      if (index < 0) return 0;
+      // Clamp the index to a reasonable range (max 16 days for daily data)
+      return index.clamp(0, 15);
     } catch (e) {
       return 0;
     }

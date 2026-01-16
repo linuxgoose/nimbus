@@ -126,7 +126,7 @@ class EnGb {
     'shortwaveRadiation': 'Shortwave Radiation',
     'W/m2': 'W/m²',
     'roundDegree': 'Round Temperature Values',
-    'settings_full': 'System Settings',
+    'settings_full': 'Settings',
     'cities': 'Locations',
     'searchMethod': 'Search by name or current coordinates',
     'done': 'Complete',
