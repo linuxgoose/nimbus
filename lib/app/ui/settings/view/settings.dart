@@ -59,6 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildAppearanceCard(context),
         _buildFunctionsCard(context),
         _buildTidesCard(context),
+        _buildWeatherAlertsCard(context),
         _buildDataCard(context),
         _buildWidgetCard(context),
         _buildMapCard(context),
@@ -224,6 +225,40 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildTidesTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.all(20),
     child: Text('Tides', style: context.textTheme.headlineSmall),
+  );
+
+  Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.triangleAlert),
+    text: 'Weather Alerts',
+    onPressed: () => _showWeatherAlertsBottomSheet(context),
+  );
+
+  void _showWeatherAlertsBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildWeatherAlertsTitle(context),
+                  _buildDummyAlertsSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildWeatherAlertsTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Weather Alerts', style: context.textTheme.headlineSmall),
   );
 
   void _showFunctionsBottomSheet(BuildContext context) => showModalBottomSheet(
@@ -596,7 +631,6 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildPressureSettingCard(context, setState),
               _buildTimeFormatSettingCard(context, setState),
               _buildAqiIndexSettingCard(context, setState),
-              _buildDummyAlertsSettingCard(context, setState),
               const Gap(10),
             ],
           ),
