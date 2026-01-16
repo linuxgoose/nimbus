@@ -1,19 +1,42 @@
 # MET Norway Integration
 
 ## Overview
-Nimbus now supports three weather data sources:
+Nimbus now supports three weather data sources with a dedicated Weather Provider settings section:
 1. **Open-Meteo** - Global coverage, simple API (default)
 2. **MET Norway** - Better Nordic forecasts, official alerts
 3. **Hybrid** - Best of both worlds (intelligent source selection)
 
+The Weather Provider settings have been moved to their own dedicated section for better organization.
+
 ## Features Implemented
 
-### 1. Weather Data Source Selection
-- Settings dropdown allows choosing between Open-Meteo, MET Norway, or Hybrid mode
-- Located in Settings → Data → Weather Data Source
-- Automatically clears cache and refreshes weather when changed
+### 1. Weather Provider Settings Section
+New dedicated settings section (Settings → Weather Provider) containing:
+- **Weather Data Source**: Dropdown to choose between Open-Meteo, MET Norway, or Hybrid mode
+- **Prefer MET Norway**: Toggle (visible in Hybrid mode only) to override automatic region detection
+- **Show 6-Hour Rain Forecast**: Toggle to display/hide the rain prediction chart
+- Automatically clears cache and refreshes weather when source is changed
 
-### 2. MET Norway Service (`metno_service.dart`)
+### 2. 6-Hour Rain Forecast Chart (`rain_forecast_chart.dart`)
+High-resolution precipitation predictions:
+- **Data Source**: Always uses Open-Meteo's specialized minutely/15-minute API endpoint
+- **Resolution**: 15-minute intervals (falls back to hourly if unavailable)
+- **Interactive Chart**: 
+  - Line graph with precipitation intensity (mm) over time
+  - Touch tooltips showing exact time and precipitation values
+  - Auto-scaling Y-axis based on precipitation amount
+  - Clean X-axis with strategic label placement (start, middle, end)
+- **Caching**: 30-minute offline cache (`RainForecastCacheSchema`)
+  - Location-based cache keys using rounded coordinates
+  - Expired cache used as fallback when offline
+  - Automatic cache updates on new data fetch
+- **UI/UX**:
+  - Resolution badge showing "15-min data" or "Hourly data"
+  - Loading states and error handling with retry button
+  - "No precipitation expected" message when applicable
+  - Blue gradient fill under curve for visual appeal
+
+### 3. MET Norway Service (`metno_service.dart`)
 Comprehensive API integration with:
 - **Location Forecast**: Global weather forecasts (9 days)
 - **Nowcast**: 2-hour precipitation forecast (Nordic only, 5-min updates)
@@ -119,19 +142,30 @@ MET Norway provides superior data for:
 ## Testing
 
 ### To Test MET Norway Mode
-1. Go to Settings → Data → Weather Data Source
-2. Select "MET Norway"
+1. Go to Settings → Weather Provider
+2. Select "MET Norway" from Weather Data Source dropdown
 3. Navigate to a Nordic location (e.g., Oslo, Stockholm)
 4. Weather data should load from MET Norway
 
 ### To Test Hybrid Mode
-1. Go to Settings → Data → Weather Data Source
-2. Select "Hybrid (Best of Both)"
+1. Go to Settings → Weather Provider
+2. Select "Hybrid (Best of Both)" from Weather Data Source dropdown
 3. Test with both Nordic and non-Nordic locations
 4. Verify appropriate source is used (check debug logs)
+5. Toggle "Prefer MET Norway" to override automatic region detection
+
+### To Test Rain Forecast
+1. Go to Settings → Weather Provider
+2. Ensure "Show 6-Hour Rain Forecast" is enabled
+3. Return to main weather page
+4. Rain forecast chart should appear between weather alerts and radar tile
+5. Chart shows next 6 hours of precipitation data
+6. Works offline after initial fetch (30-minute cache)
 
 ## Debug Output
 The implementation includes extensive debug logging:
+- `🌧️` - Rain forecast fetching
+- `💾` - Rain forecast caching
 - `🌐` - Hybrid service location detection
 - `🇳🇴` - MET Norway primary source
 - `🌍` - Open-Meteo primary source
@@ -142,17 +176,21 @@ The implementation includes extensive debug logging:
 - `⚠️` - Warnings and fallbacks
 - `❌` - Errors
 
-Check console for: "Hybrid Service", "MET Norway", "Using hybrid weather data"
+Check console for: "Rain forecast", "Hybrid Service", "MET Norway", "Using hybrid weather data"
 
 ## Files Modified
-1. `/lib/app/data/db.dart` - Added `weatherDataSource` setting
-2. `/lib/app/ui/settings/view/settings.dart` - Added dropdown UI
+1. `/lib/app/data/db.dart` - Added `weatherDataSource`, `preferMetNoInHybrid`, and `showRainForecast` settings
+2. `/lib/app/ui/settings/view/settings.dart` - Created dedicated Weather Provider settings section
 3. `/lib/app/api/api.dart` - Integrated hybrid service
-4. `/lib/main.dart` - Initialize weatherDataSource default
+4. `/lib/main.dart` - Initialize weatherDataSource default and added RainForecastCacheSchema
+5. `/lib/app/ui/main/view/main_page.dart` - Added rain forecast chart integration
 
 ## Files Created
 1. `/lib/app/services/metno_service.dart` - MET Norway API wrapper
 2. `/lib/app/services/hybrid_weather_service.dart` - Intelligent source selector
+3. `/lib/app/services/rain_forecast_service.dart` - Rain forecast API with caching
+4. `/lib/app/ui/widgets/weather/rain_forecast_chart.dart` - Interactive rain chart widget
+5. `/lib/app/data/db.dart` (addition) - RainForecastCache collection for offline storage
 
 ## Future Enhancements
 - [ ] Add MET Norway tide predictions (Tidalwater API)

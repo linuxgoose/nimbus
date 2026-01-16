@@ -20,6 +20,13 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 - **Current Weather Conditions:** Stay up-to-date with real-time weather in your area.
 - **Hourly Forecasts:** Plan your day with detailed hourly weather predictions.
 - **7-Day Outlook:** Get a complete week-long weather forecast at your fingertips.
+- **6-Hour Rain Forecast:** High-resolution precipitation predictions using Open-Meteo's specialized minutely/15-minute data:
+  - Interactive chart with precipitation intensity over time
+  - 15-minute resolution data when available (hourly fallback)
+  - Touch tooltips showing exact precipitation values
+  - 30-minute offline caching for improved performance
+  - Always uses Open-Meteo regardless of weather provider setting
+  - Toggleable in Settings → Weather Provider
 - **Live Weather Radar:** Interactive radar map with animated precipitation overlays powered by RainViewer:
   - Real-time precipitation visualization
   - Animated playback with timeline controls
@@ -53,7 +60,11 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 - **Flexible Units:** Switch between metric and imperial measurement systems.
 - **Temperature Preferences:** Choose Celsius or Fahrenheit display.
 - **Time Format Options:** Select 12-hour or 24-hour time display.
-- **Weather Data Source Selection:** Choose between Open-Meteo, MET Norway, or Hybrid mode.
+- **Weather Provider Selection:** Dedicated settings section for weather data sources:
+  - Choose between Open-Meteo, MET Norway, or Hybrid mode
+  - Option to prefer MET Norway in Hybrid mode (override automatic region detection)
+  - Toggle 6-hour rain forecast chart visibility
+  - Located in Settings → Weather Provider
 - **Customisable Notifications:** Stay informed with configurable weather alerts with minimum severity filtering.
 - **Home Screen Widgets:** Quick weather access with customisable widgets including:
   - Current weather widget with friendly summaries
@@ -77,9 +88,9 @@ Weather data is powered by **multiple sources** for optimal accuracy and coverag
   - Enhanced short-term precipitation forecasting
   - Official government weather warnings when available
 
-Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day).
+Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day). Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data.
 
-**Data Source Selection**: Choose your preferred weather data source in Settings → Data → Weather Data Source:
+**Weather Provider Selection**: Choose your preferred weather data source in Settings → Weather Provider:
 - **Open-Meteo**: Global coverage (default)
 - **MET Norway**: Best for Nordic countries
 - **Hybrid**: Automatically selects the best source for your location
