@@ -32,7 +32,7 @@
             android:gravity="center_horizontal"
             android:paddingVertical="4dp">
             <TextView android:id="@+id/daily_date_0" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="9sp" android:gravity="center" android:textColor="#000000" android:textStyle="bold" />
-            <ImageView android:id="@+id/daily_icon_0" android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="2dp" android:scaleType="fitCenter" />
+            <ImageView android:id="@+id/daily_icon_0" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="32dp" android:layout_marginTop="2dp" android:scaleType="fitCenter" android:contentDescription="weather icon" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
                 <TextView android:id="@+id/daily_max_0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textStyle="bold" android:textColor="#000000" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="9sp" android:textColor="#666666" android:layout_marginHorizontal="1dp" />
@@ -50,7 +50,7 @@
             android:gravity="center_horizontal"
             android:paddingVertical="4dp">
             <TextView android:id="@+id/daily_date_1" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="9sp" android:gravity="center" android:textColor="#000000" android:textStyle="bold" />
-            <ImageView android:id="@+id/daily_icon_1" android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="2dp" android:scaleType="fitCenter" />
+            <ImageView android:id="@+id/daily_icon_1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="32dp" android:layout_marginTop="2dp" android:scaleType="fitCenter" android:contentDescription="weather icon" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
                 <TextView android:id="@+id/daily_max_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textStyle="bold" android:textColor="#000000" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="9sp" android:textColor="#666666" android:layout_marginHorizontal="1dp" />
@@ -68,7 +68,7 @@
             android:gravity="center_horizontal"
             android:paddingVertical="4dp">
             <TextView android:id="@+id/daily_date_2" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="9sp" android:gravity="center" android:textColor="#000000" android:textStyle="bold" />
-            <ImageView android:id="@+id/daily_icon_2" android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="2dp" android:scaleType="fitCenter" />
+            <ImageView android:id="@+id/daily_icon_2" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="32dp" android:layout_marginTop="2dp" android:scaleType="fitCenter" android:contentDescription="weather icon" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
                 <TextView android:id="@+id/daily_max_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textStyle="bold" android:textColor="#000000" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="9sp" android:textColor="#666666" android:layout_marginHorizontal="1dp" />
@@ -86,7 +86,7 @@
             android:gravity="center_horizontal"
             android:paddingVertical="4dp">
             <TextView android:id="@+id/daily_date_3" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="9sp" android:gravity="center" android:textColor="#000000" android:textStyle="bold" />
-            <ImageView android:id="@+id/daily_icon_3" android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="2dp" android:scaleType="fitCenter" />
+            <ImageView android:id="@+id/daily_icon_3" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="32dp" android:layout_marginTop="2dp" android:scaleType="fitCenter" android:contentDescription="weather icon" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
                 <TextView android:id="@+id/daily_max_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textStyle="bold" android:textColor="#000000" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="9sp" android:textColor="#666666" android:layout_marginHorizontal="1dp" />
@@ -104,7 +104,7 @@
             android:gravity="center_horizontal"
             android:paddingVertical="4dp">
             <TextView android:id="@+id/daily_date_4" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="9sp" android:gravity="center" android:textColor="#000000" android:textStyle="bold" />
-            <ImageView android:id="@+id/daily_icon_4" android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="2dp" android:scaleType="fitCenter" />
+            <ImageView android:id="@+id/daily_icon_4" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="32dp" android:layout_marginTop="2dp" android:scaleType="fitCenter" android:contentDescription="weather icon" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
                 <TextView android:id="@+id/daily_max_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textStyle="bold" android:textColor="#000000" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="9sp" android:textColor="#666666" android:layout_marginHorizontal="1dp" />
@@ -122,7 +122,7 @@
             android:gravity="center_horizontal"
             android:paddingVertical="4dp">
             <TextView android:id="@+id/daily_date_5" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="9sp" android:gravity="center" android:textColor="#000000" android:textStyle="bold" />
-            <ImageView android:id="@+id/daily_icon_5" android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="2dp" android:scaleType="fitCenter" />
+            <ImageView android:id="@+id/daily_icon_5" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:minHeight="32dp" android:layout_marginTop="2dp" android:scaleType="fitCenter" android:contentDescription="weather icon" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
                 <TextView android:id="@+id/daily_max_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:textStyle="bold" android:textColor="#000000" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="9sp" android:textColor="#666666" android:layout_marginHorizontal="1dp" />

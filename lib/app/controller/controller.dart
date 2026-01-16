@@ -806,8 +806,11 @@ class WeatherController extends GetxController {
               sunset ?? "",
             ),
           );
+          debugPrint("Daily Widget Icon $i: $imagePath");
           await HomeWidget.saveWidgetData('daily_icon_$i', imagePath);
-        } catch (_) {}
+        } catch (e) {
+          debugPrint("Daily Widget Icon Error $i: $e");
+        }
       }
       await HomeWidget.updateWidget(androidName: 'DailyWidget');
     } catch (e) {

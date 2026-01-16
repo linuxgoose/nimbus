@@ -39,6 +39,8 @@ class DailyWidget : HomeWidgetProvider() {
                 val wind = widgetData.getString("daily_wind_$i", null)
                 val precip = widgetData.getString("daily_precip_$i", null)
 
+                android.util.Log.d("DailyWidget", "Day $i - date: $date, icon path: $icon")
+
                 val dateViewId = context.resources.getIdentifier("daily_date_$i", "id", context.packageName)
                 val maxViewId = context.resources.getIdentifier("daily_max_$i", "id", context.packageName)
                 val minViewId = context.resources.getIdentifier("daily_min_$i", "id", context.packageName)
@@ -62,12 +64,22 @@ class DailyWidget : HomeWidgetProvider() {
                 
                 if (icon != null) {
                     try {
-                        val bitmap = BitmapFactory.decodeFile(icon)
+                        android.util.Log.d("DailyWidget", "Loading icon $i from: $icon")
+                        val options = BitmapFactory.Options().apply {
+                            inJustDecodeBounds = true
+                            BitmapFactory.decodeFile(icon, this)
+                            inSampleSize = calculateInSampleSize(this, 100, 100)
+                            inJustDecodeBounds = false
+                        }
+                        val bitmap = BitmapFactory.decodeFile(icon, options)
                         if (bitmap != null) {
                             remoteViews.setImageViewBitmap(iconViewId, bitmap)
+                            android.util.Log.d("DailyWidget", "Successfully loaded icon $i")
+                        } else {
+                            android.util.Log.e("DailyWidget", "Bitmap is null for icon $i")
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("DailyWidget", "Error loading bitmap", e)
+                        android.util.Log.e("DailyWidget", "Error loading bitmap $i", e)
                     }
                 }
             }
@@ -113,6 +125,19 @@ class DailyWidget : HomeWidgetProvider() {
 
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
         }
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        val (height: Int, width: Int) = options.outHeight to options.outWidth
+        var inSampleSize = 1
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
     }
 
     private fun isDarkMode(context: Context): Boolean {
