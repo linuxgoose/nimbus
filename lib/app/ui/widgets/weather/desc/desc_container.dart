@@ -211,7 +211,8 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': statusData.getPrecipitation(widget.evaporation?.abs()),
-        'imageName': 'assets/images/evaporation.png',
+        'imageName':
+            'assets/images/wi-raindrops${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'evaporation'.tr,
       },
       {
