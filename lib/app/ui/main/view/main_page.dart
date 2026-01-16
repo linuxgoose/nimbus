@@ -221,6 +221,10 @@ class _MainPageState extends State<MainPage> {
     timeNight: sunset,
     tempMax: tempMax,
     tempMin: tempMin,
+    humidity: mainWeather.relativehumidity2M?[hourOfDay],
+    windSpeed: mainWeather.windspeed10M?[hourOfDay],
+    precipitationProbability: mainWeather.precipitationProbability?[hourOfDay],
+    uvIndex: mainWeather.uvIndex?[hourOfDay]?.round(),
   );
 
   Widget _buildHourlyList(

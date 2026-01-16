@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/weather_summary.dart';
 import 'package:nimbus/main.dart';
 
 class Now extends StatefulWidget {
@@ -17,6 +18,10 @@ class Now extends StatefulWidget {
     required this.tempMax,
     required this.tempMin,
     required this.feels,
+    this.humidity,
+    this.windSpeed,
+    this.precipitationProbability,
+    this.uvIndex,
   });
 
   final String time;
@@ -27,6 +32,10 @@ class Now extends StatefulWidget {
   final double tempMax;
   final double tempMin;
   final double feels;
+  final int? humidity;
+  final double? windSpeed;
+  final int? precipitationProbability;
+  final int? uvIndex;
 
   @override
   State<Now> createState() => _NowState();
@@ -35,6 +44,7 @@ class Now extends StatefulWidget {
 class _NowState extends State<Now> {
   final statusWeather = StatusWeather();
   final statusData = StatusData();
+  final weatherSummary = WeatherSummary();
 
   @override
   Widget build(BuildContext context) => largeElement
@@ -53,6 +63,16 @@ class _NowState extends State<Now> {
           statusWeather.getText(widget.weather),
           style: context.textTheme.titleLarge,
         ),
+        if (_buildWeatherSummary().isNotEmpty) const Gap(8),
+        if (_buildWeatherSummary().isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              _buildWeatherSummary(),
+              style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ),
         const Gap(5),
         _buildDateText(context),
       ],
@@ -76,6 +96,16 @@ class _NowState extends State<Now> {
                   statusWeather.getText(widget.weather),
                   style: context.textTheme.titleLarge?.copyWith(fontSize: 20),
                 ),
+                if (_buildWeatherSummary().isNotEmpty) const Gap(4),
+                if (_buildWeatherSummary().isNotEmpty)
+                  Text(
+                    _buildWeatherSummary(),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: Colors.grey,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 _buildFeelsLikeText(context),
                 const Gap(30),
                 _buildTemperatureCompactText(context, widget.degree),
@@ -158,5 +188,15 @@ class _NowState extends State<Now> {
         style: context.textTheme.labelLarge,
       ),
     ],
+  );
+
+  String _buildWeatherSummary() => weatherSummary.getSummary(
+    weatherCode: widget.weather,
+    temperature: widget.degree,
+    feelsLike: widget.feels,
+    humidity: widget.humidity,
+    windSpeed: widget.windSpeed,
+    precipitationProbability: widget.precipitationProbability,
+    uvIndex: widget.uvIndex,
   );
 }
