@@ -20,12 +20,12 @@ class Settings {
   String? tidesApiKey;
   String? widgetBackgroundColor;
   String? widgetTextColor;
-  String measurements = 'metric';
   String degrees = 'celsius';
-  String wind = 'kph';
   String pressure = 'hPa';
   String timeformat = '24';
   String aqiIndex = 'daqi';
+  String measurements = 'imperial';
+  String wind = 'mph';
   bool showDummyAlerts = false;
   String alertMinSeverity = 'all'; // all, moderate, severe, extreme
   bool showAlertsOnMainPage = true;
