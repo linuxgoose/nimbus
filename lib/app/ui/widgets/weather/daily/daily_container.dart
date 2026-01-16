@@ -121,6 +121,11 @@ class _DailyContainerState extends State<DailyContainer> {
     int index,
     TextStyle? labelLarge,
   ) {
+    // Safety check for empty list or out of bounds
+    if (weatherCodeDaily.isEmpty || index >= weatherCodeDaily.length) {
+      return const Expanded(child: SizedBox.shrink());
+    }
+    
     final weatherCode = weatherCodeDaily[index];
     if (weatherCode == null) {
       return const Expanded(child: SizedBox.shrink());

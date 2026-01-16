@@ -15,6 +15,7 @@ class StatusWeather {
         'wi-cloud',
         'wi-cloudy-day',
         'wi-day-clear',
+        'wi-day-clear-512',
         'wi-night-cloudy',
         'wi-night-rain',
         'wi-day-rain',
@@ -128,14 +129,14 @@ class StatusWeather {
 
     switch (weather) {
       case 0:
-        return '$assetImageRoot${isDay ? 'wi-day-clear' : 'wi-sun'}$sizePrefix.png';
+        return '$assetImageRoot${isDay ? 'wi-day-clear-512' : 'wi-sun'}.png';
       case 1:
       case 2:
       case 3:
-        return '$assetImageRoot${isDay ? 'wi-cloud' : 'wi-cloud'}$sizePrefix.png';
+        return '$assetImageRoot${isDay ? 'wi-cloud' : 'wi-cloud'}.png';
       case 45:
       case 48:
-        return '${assetImageRoot}fog${isDay ? '_day' : ''}$sizePrefix.png';
+        return '${assetImageRoot}fog${isDay ? '_day' : ''}.png';
       case 51:
       case 53:
       case 55:
@@ -149,18 +150,18 @@ class StatusWeather {
       case 80:
       case 81:
       case 82:
-        return '$assetImageRoot${isDay ? 'wi-day-rain-512' : 'wi-night-rain-512'}$sizePrefix.png';
+        return '$assetImageRoot${isDay ? 'wi-day-rain-512' : 'wi-night-rain-512'}.png';
       case 71:
       case 73:
       case 75:
       case 77:
       case 85:
       case 86:
-        return '$assetImageRoot${isDay ? 'wi-day-snow' : 'wi-night-snow'}$sizePrefix.png';
+        return '$assetImageRoot${isDay ? 'wi-day-snow' : 'wi-night-snow'}.png';
       case 95:
       case 96:
       case 99:
-        return '${assetImageRoot}thunder${isDay ? '_day' : ''}$sizePrefix.png';
+        return '${assetImageRoot}thunder${isDay ? '_day' : ''}.png';
       default:
         return '';
     }

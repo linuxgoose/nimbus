@@ -633,8 +633,8 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             TextButton(
               onPressed: () {
-                final count = isar.writeTxnSync(() {
-                  return isar.tideCaches.clearSync();
+                isar.writeTxnSync(() {
+                  isar.tideCaches.clearSync();
                 });
                 Navigator.pop(context);
                 // ignore: void_checks
@@ -724,8 +724,8 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             TextButton(
               onPressed: () {
-                final count = isar.writeTxnSync(() {
-                  return isar.aqiCaches.clearSync();
+                isar.writeTxnSync(() {
+                  isar.aqiCaches.clearSync();
                 });
                 Navigator.pop(context);
                 // ignore: void_checks
@@ -862,6 +862,9 @@ class _SettingsPageState extends State<SettingsPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildDataTitle(context),
+              _buildWeatherDataSourceSettingCard(context, setState),
+              if (settings.weatherDataSource == 'hybrid')
+                _buildPreferMetNoSettingCard(context, setState),
               _buildRoundDegreeSettingCard(context, setState),
               _buildDegreesSettingCard(context, setState),
               _buildMeasurementsSettingCard(context, setState),
@@ -884,6 +887,53 @@ class _SettingsPageState extends State<SettingsPage> {
     ),
   );
 
+  Widget _buildWeatherDataSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.cloudSun),
+    text: 'Weather Data Source',
+    dropdown: true,
+    dropdownName: _getDataSourceDisplayName(settings.weatherDataSource),
+    dropdownList: <String>['Open-Meteo', 'MET Norway', 'Hybrid (Best of Both)'],
+    dropdownChange: (String? newValue) async {
+      if (newValue == null) return;
+      String sourceValue;
+      switch (newValue) {
+        case 'MET Norway':
+          sourceValue = 'metno';
+          break;
+        case 'Hybrid (Best of Both)':
+          sourceValue = 'hybrid';
+          break;
+        default:
+          sourceValue = 'openmeteo';
+      }
+      isar.writeTxnSync(() {
+        settings.weatherDataSource = sourceValue;
+        isar.settings.putSync(settings);
+      });
+
+      // Clear cache and refresh data
+      await weatherController.deleteAll(false);
+      await weatherController.setLocation();
+      await weatherController.updateCacheCard(true);
+      setState(() {});
+    },
+  );
+
+  String _getDataSourceDisplayName(String source) {
+    switch (source) {
+      case 'metno':
+        return 'MET Norway';
+      case 'hybrid':
+        return 'Hybrid (Best of Both)';
+      default:
+        return 'Open-Meteo';
+    }
+  }
+
   Widget _buildRoundDegreeSettingCard(
     BuildContext context,
     StateSetter setState,
@@ -897,6 +947,26 @@ class _SettingsPageState extends State<SettingsPage> {
       settings.roundDegree = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       MyApp.updateAppState(context, newRoundDegree: value);
+      setState(() {});
+    },
+  );
+
+  Widget _buildPreferMetNoSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.mapPin),
+    text: 'Prefer MET Norway',
+    switcher: true,
+    value: settings.preferMetNoInHybrid,
+    onChange: (value) async {
+      settings.preferMetNoInHybrid = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      // Clear cache and refresh weather data
+      await weatherController.deleteAll(false);
+      await weatherController.setLocation();
+      await weatherController.updateCacheCard(true);
       setState(() {});
     },
   );

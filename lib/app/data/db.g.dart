@@ -67,69 +67,79 @@ const SettingsSchema = CollectionSchema(
       type: IsarType.bool,
     ),
     r'onboard': PropertySchema(id: 13, name: r'onboard', type: IsarType.bool),
-    r'pressure': PropertySchema(
+    r'preferMetNoInHybrid': PropertySchema(
       id: 14,
+      name: r'preferMetNoInHybrid',
+      type: IsarType.bool,
+    ),
+    r'pressure': PropertySchema(
+      id: 15,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 19, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 20, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 21, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 22, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyTides': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
+    r'weatherDataSource': PropertySchema(
+      id: 27,
+      name: r'weatherDataSource',
+      type: IsarType.string,
+    ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 26,
+      id: 28,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 27,
+      id: 29,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 28, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 30, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -189,6 +199,7 @@ int _settingsEstimateSize(
     }
   }
   bytesCount += 3 + object.timeformat.length * 3;
+  bytesCount += 3 + object.weatherDataSource.length * 3;
   {
     final value = object.widgetBackgroundColor;
     if (value != null) {
@@ -225,21 +236,23 @@ void _settingsSerialize(
   writer.writeString(offsets[11], object.measurements);
   writer.writeBool(offsets[12], object.notifications);
   writer.writeBool(offsets[13], object.onboard);
-  writer.writeString(offsets[14], object.pressure);
-  writer.writeBool(offsets[15], object.roundDegree);
-  writer.writeBool(offsets[16], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[17], object.showAlertsOnMap);
-  writer.writeBool(offsets[18], object.showDummyAlerts);
-  writer.writeString(offsets[19], object.theme);
-  writer.writeString(offsets[20], object.tidesApiKey);
-  writer.writeString(offsets[21], object.timeEnd);
-  writer.writeLong(offsets[22], object.timeRange);
-  writer.writeString(offsets[23], object.timeStart);
-  writer.writeString(offsets[24], object.timeformat);
-  writer.writeBool(offsets[25], object.useDummyTides);
-  writer.writeString(offsets[26], object.widgetBackgroundColor);
-  writer.writeString(offsets[27], object.widgetTextColor);
-  writer.writeString(offsets[28], object.wind);
+  writer.writeBool(offsets[14], object.preferMetNoInHybrid);
+  writer.writeString(offsets[15], object.pressure);
+  writer.writeBool(offsets[16], object.roundDegree);
+  writer.writeBool(offsets[17], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[18], object.showAlertsOnMap);
+  writer.writeBool(offsets[19], object.showDummyAlerts);
+  writer.writeString(offsets[20], object.theme);
+  writer.writeString(offsets[21], object.tidesApiKey);
+  writer.writeString(offsets[22], object.timeEnd);
+  writer.writeLong(offsets[23], object.timeRange);
+  writer.writeString(offsets[24], object.timeStart);
+  writer.writeString(offsets[25], object.timeformat);
+  writer.writeBool(offsets[26], object.useDummyTides);
+  writer.writeString(offsets[27], object.weatherDataSource);
+  writer.writeString(offsets[28], object.widgetBackgroundColor);
+  writer.writeString(offsets[29], object.widgetTextColor);
+  writer.writeString(offsets[30], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -264,21 +277,23 @@ Settings _settingsDeserialize(
   object.measurements = reader.readString(offsets[11]);
   object.notifications = reader.readBool(offsets[12]);
   object.onboard = reader.readBool(offsets[13]);
-  object.pressure = reader.readString(offsets[14]);
-  object.roundDegree = reader.readBool(offsets[15]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[16]);
-  object.showAlertsOnMap = reader.readBool(offsets[17]);
-  object.showDummyAlerts = reader.readBool(offsets[18]);
-  object.theme = reader.readStringOrNull(offsets[19]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[20]);
-  object.timeEnd = reader.readStringOrNull(offsets[21]);
-  object.timeRange = reader.readLongOrNull(offsets[22]);
-  object.timeStart = reader.readStringOrNull(offsets[23]);
-  object.timeformat = reader.readString(offsets[24]);
-  object.useDummyTides = reader.readBool(offsets[25]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[26]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[27]);
-  object.wind = reader.readString(offsets[28]);
+  object.preferMetNoInHybrid = reader.readBool(offsets[14]);
+  object.pressure = reader.readString(offsets[15]);
+  object.roundDegree = reader.readBool(offsets[16]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[17]);
+  object.showAlertsOnMap = reader.readBool(offsets[18]);
+  object.showDummyAlerts = reader.readBool(offsets[19]);
+  object.theme = reader.readStringOrNull(offsets[20]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[21]);
+  object.timeEnd = reader.readStringOrNull(offsets[22]);
+  object.timeRange = reader.readLongOrNull(offsets[23]);
+  object.timeStart = reader.readStringOrNull(offsets[24]);
+  object.timeformat = reader.readString(offsets[25]);
+  object.useDummyTides = reader.readBool(offsets[26]);
+  object.weatherDataSource = reader.readString(offsets[27]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[28]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[29]);
+  object.wind = reader.readString(offsets[30]);
   return object;
 }
 
@@ -318,9 +333,9 @@ P _settingsDeserializeProp<P>(
     case 13:
       return (reader.readBool(offset)) as P;
     case 14:
-      return (reader.readString(offset)) as P;
-    case 15:
       return (reader.readBool(offset)) as P;
+    case 15:
+      return (reader.readString(offset)) as P;
     case 16:
       return (reader.readBool(offset)) as P;
     case 17:
@@ -328,24 +343,28 @@ P _settingsDeserializeProp<P>(
     case 18:
       return (reader.readBool(offset)) as P;
     case 19:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 20:
       return (reader.readStringOrNull(offset)) as P;
     case 21:
       return (reader.readStringOrNull(offset)) as P;
     case 22:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 23:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 24:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 25:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 26:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 27:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 28:
+      return (reader.readStringOrNull(offset)) as P;
+    case 29:
+      return (reader.readStringOrNull(offset)) as P;
+    case 30:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1329,6 +1348,15 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'onboard', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  preferMetNoInHybridEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'preferMetNoInHybrid', value: value),
       );
     });
   }
@@ -2404,6 +2432,147 @@ extension SettingsQueryFilter
   }
 
   QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'weatherDataSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'weatherDataSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'weatherDataSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'weatherDataSource',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'weatherDataSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'weatherDataSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'weatherDataSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'weatherDataSource',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'weatherDataSource', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherDataSourceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'weatherDataSource', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
   widgetBackgroundColorIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -3046,6 +3215,19 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByPreferMetNoInHybrid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'preferMetNoInHybrid', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByPreferMetNoInHybridDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'preferMetNoInHybrid', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByPressure() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pressure', Sort.asc);
@@ -3188,6 +3370,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByUseDummyTidesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'useDummyTides', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByWeatherDataSource() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherDataSource', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByWeatherDataSourceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherDataSource', Sort.desc);
     });
   }
 
@@ -3411,6 +3605,19 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByPreferMetNoInHybrid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'preferMetNoInHybrid', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByPreferMetNoInHybridDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'preferMetNoInHybrid', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByPressure() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'pressure', Sort.asc);
@@ -3556,6 +3763,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByWeatherDataSource() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherDataSource', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByWeatherDataSourceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherDataSource', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByWidgetBackgroundColor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'widgetBackgroundColor', Sort.asc);
@@ -3693,6 +3912,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByPreferMetNoInHybrid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'preferMetNoInHybrid');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByPressure({
     bool caseSensitive = true,
   }) {
@@ -3774,6 +3999,17 @@ extension SettingsQueryWhereDistinct
   QueryBuilder<Settings, Settings, QDistinct> distinctByUseDummyTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'useDummyTides');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByWeatherDataSource({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'weatherDataSource',
+        caseSensitive: caseSensitive,
+      );
     });
   }
 
@@ -3900,6 +4136,12 @@ extension SettingsQueryProperty
     });
   }
 
+  QueryBuilder<Settings, bool, QQueryOperations> preferMetNoInHybridProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'preferMetNoInHybrid');
+    });
+  }
+
   QueryBuilder<Settings, String, QQueryOperations> pressureProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'pressure');
@@ -3970,6 +4212,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> useDummyTidesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'useDummyTides');
+    });
+  }
+
+  QueryBuilder<Settings, String, QQueryOperations> weatherDataSourceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherDataSource');
     });
   }
 

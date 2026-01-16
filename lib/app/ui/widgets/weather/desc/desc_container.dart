@@ -155,7 +155,7 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': widget.uvIndexMax?.round(),
-        'imageName': 'assets/images/uv.png',
+        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'uvIndex'.tr,
         'message': message.getUvIndex(widget.uvIndexMax?.round()),
       },

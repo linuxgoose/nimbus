@@ -315,9 +315,11 @@ class _MainPageState extends State<MainPage> {
     double tempMin,
   ) => Now(
     time: mainWeather.time![hourOfDay],
-    weather: mainWeather.weathercode![hourOfDay],
+    weather: mainWeather.weathercode?[hourOfDay] ?? 0,
     degree: mainWeather.temperature2M![hourOfDay],
-    feels: mainWeather.apparentTemperature![hourOfDay]!,
+    feels:
+        (mainWeather.apparentTemperature?[hourOfDay] ??
+        mainWeather.temperature2M![hourOfDay])!,
     timeDay: sunrise,
     timeNight: sunset,
     tempMax: tempMax,
@@ -390,10 +392,10 @@ class _MainPageState extends State<MainPage> {
         ),
         child: Hourly(
           time: mainWeather.time![i],
-          weather: mainWeather.weathercode![i],
+          weather: mainWeather.weathercode?[i] ?? 0,
           degree: mainWeather.temperature2M![i],
-          timeDay: mainWeather.sunrise![i24],
-          timeNight: mainWeather.sunset![i24],
+          timeDay: mainWeather.sunrise?[i24] ?? '',
+          timeNight: mainWeather.sunset?[i24] ?? '',
         ),
       ),
     );

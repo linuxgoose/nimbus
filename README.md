@@ -35,14 +35,26 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - 24-hour offline caching to conserve API quota
   - Toggle between real and dummy data for testing
 - **Detailed Weather Data:** Access comprehensive weather statistics including temperature, humidity, wind speed, precipitation probability, UV index, and more.
-- **Weather Alerts:** Receive timely notifications about significant weather changes and conditions.
+- **Weather Alerts:** Receive timely notifications about significant weather changes and conditions, including:
+  - Official government weather warnings via MET Norway MetAlerts (Nordic region)
+  - Global weather alerts via Open-Meteo
+  - Location-based filtering (150km radius)
+  - Alert history tracking with severity levels
+- **Air Quality Index (AQI):** Monitor air quality with:
+  - Real-time AQI data for your location
+  - Multiple AQI standards (US EPA and European CAQI)
+  - Pollutant breakdowns (PM2.5, PM10, O₃, NO₂, SO₂, CO)
+  - Color-coded health recommendations
+  - 1-hour caching to reduce API calls
+  - Manual cache inspection and clearing
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.
 - **Multiple Locations:** Add and manage weather for multiple cities.
 - **Flexible Units:** Switch between metric and imperial measurement systems.
 - **Temperature Preferences:** Choose Celsius or Fahrenheit display.
 - **Time Format Options:** Select 12-hour or 24-hour time display.
-- **Customisable Notifications:** Stay informed with configurable weather alerts.
+- **Weather Data Source Selection:** Choose between Open-Meteo, MET Norway, or Hybrid mode.
+- **Customisable Notifications:** Stay informed with configurable weather alerts with minimum severity filtering.
 - **Home Screen Widgets:** Quick weather access with customisable widgets including:
   - Current weather widget with friendly summaries
   - Hourly forecast widget (6 hours)
@@ -51,7 +63,26 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 
 ### Reliable Data Sources
 
-Weather data is powered by [Open-Meteo](https://open-meteo.com/en/docs), providing accurate and up-to-date forecasts. Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day).
+Weather data is powered by **multiple sources** for optimal accuracy and coverage:
+
+- **[Open-Meteo](https://open-meteo.com/en/docs)**: Primary weather data provider with global coverage, offering accurate forecasts, historical data, and weather alerts.
+- **[MET Norway](https://api.met.no/)**: Official weather service from the Norwegian Meteorological Institute, providing:
+  - Superior forecast accuracy for Nordic countries (Norway, Sweden, Finland, Denmark, Iceland)
+  - Official weather alerts (MetAlerts) from national meteorological services
+  - High-precision Nowcast with 2-hour precipitation forecasts (5-minute updates)
+  - Specialized radar imagery for Nordic region
+- **Hybrid Mode**: Intelligent data source selection that automatically uses:
+  - MET Norway for Nordic locations (54°N-72°N, 4°W-32°E)
+  - Open-Meteo for global locations
+  - Enhanced short-term precipitation forecasting
+  - Official government weather warnings when available
+
+Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day).
+
+**Data Source Selection**: Choose your preferred weather data source in Settings → Data → Weather Data Source:
+- **Open-Meteo**: Global coverage (default)
+- **MET Norway**: Best for Nordic countries
+- **Hybrid**: Automatically selects the best source for your location
 
 ### Get Nimbus
 
