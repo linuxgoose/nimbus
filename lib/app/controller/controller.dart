@@ -604,6 +604,7 @@ class WeatherController extends GetxController {
           .where()
           .findFirstSync();
       final locationCache = isarWidget.locationCaches.where().findFirstSync();
+      final speedUnit = settings.wind;
 
       if (mainWeatherCache == null) return false;
 
@@ -629,7 +630,8 @@ class WeatherController extends GetxController {
       final description = StatusWeather().getText(
         mainWeatherCache.weathercode![hour],
       );
-      final windSpeed = '${mainWeatherCache.windspeed10M?[hour]?.round()} km/h';
+      final windSpeed =
+          '${mainWeatherCache.windspeed10M?[hour]?.round()} $speedUnit';
       final humidity = '${mainWeatherCache.relativehumidity2M?[hour]}%';
       final visibilityVal = ((mainWeatherCache.visibility?[hour] ?? 0) / 1000)
           .round();
@@ -677,6 +679,7 @@ class WeatherController extends GetxController {
     int currentDay,
   ) async {
     try {
+      final speedUnit = settings.wind;
       for (int i = 0; i < 6; i++) {
         final hourIndex = currentHour + i;
         if (hourIndex >= mainWeatherCache.time!.length) break;
@@ -696,7 +699,7 @@ class WeatherController extends GetxController {
           ).format(DateTime.parse(time));
 
           final tempStr = '${temp.round()}°';
-          final windStr = '${wind.round()} km/h';
+          final windStr = '${wind.round()} $speedUnit';
 
           await HomeWidget.saveWidgetData('hourly_time_$i', timeFormat);
           await HomeWidget.saveWidgetData('hourly_temp_$i', tempStr);
