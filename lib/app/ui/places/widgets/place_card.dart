@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_weather.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:timezone/standalone.dart' as tz;
 
 class PlaceCard extends StatefulWidget {
@@ -26,8 +26,8 @@ class PlaceCard extends StatefulWidget {
   final List<DateTime> timeDaily;
   final String district;
   final String city;
-  final List<int> weather;
-  final List<double> degree;
+  final List<int?> weather;
+  final List<double?> degree;
   final String timezone;
 
   @override
@@ -69,41 +69,39 @@ class _PlaceCardState extends State<PlaceCard> {
     BuildContext context,
     int currentTimeIndex,
     int currentDayIndex,
-  ) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                statusData.getDegree(
-                  widget.degree[currentTimeIndex].round().toInt(),
-                ),
-                style: context.textTheme.titleLarge?.copyWith(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
+  ) => Expanded(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              statusData.getDegree(
+                (widget.degree[currentTimeIndex] ?? 0).round().toInt(),
               ),
-              const Gap(7),
-              Text(
-                statusWeather.getText(widget.weather[currentTimeIndex]),
-                style: context.textTheme.titleMedium?.copyWith(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w400,
-                ),
+              style: context.textTheme.titleLarge?.copyWith(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
               ),
-            ],
-          ),
-          const Gap(10),
-          _buildLocationText(),
-          const Gap(5),
-          _buildCurrentTimeText(context),
-        ],
-      ),
-    );
-  }
+            ),
+            const Gap(7),
+            Text(
+              statusWeather.getText(widget.weather[currentTimeIndex]),
+              style: context.textTheme.titleMedium?.copyWith(
+                color: Colors.grey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+        const Gap(10),
+        _buildLocationText(),
+        const Gap(5),
+        _buildCurrentTimeText(context),
+      ],
+    ),
+  );
 
   Widget _buildLocationText() {
     String locationText;
@@ -126,30 +124,25 @@ class _PlaceCardState extends State<PlaceCard> {
     );
   }
 
-  Widget _buildCurrentTimeText(BuildContext context) {
-    return StreamBuilder(
-      stream: Stream.periodic(const Duration(seconds: 1)),
-      builder: (context, snapshot) {
-        return Text(
-          '${'time'.tr}: ${statusData.getTimeFormatTz(tz.TZDateTime.now(tz.getLocation(widget.timezone)))}',
-          style: context.textTheme.titleMedium?.copyWith(
-            color: Colors.grey,
-            fontWeight: FontWeight.w400,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildWeatherImage(int currentTimeIndex, int currentDayIndex) {
-    return Image.asset(
-      statusWeather.getImageNow(
-        widget.weather[currentTimeIndex],
-        widget.time[currentTimeIndex],
-        widget.timeDay[currentDayIndex],
-        widget.timeNight[currentDayIndex],
+  Widget _buildCurrentTimeText(BuildContext context) => StreamBuilder(
+    stream: Stream.periodic(const Duration(seconds: 1)),
+    builder: (context, snapshot) => Text(
+      '${'time'.tr}: ${statusData.getTimeFormatTz(tz.TZDateTime.now(tz.getLocation(widget.timezone)))}',
+      style: context.textTheme.titleMedium?.copyWith(
+        color: Colors.grey,
+        fontWeight: FontWeight.w400,
       ),
-      scale: 6.5,
-    );
-  }
+    ),
+  );
+
+  Widget _buildWeatherImage(int currentTimeIndex, int currentDayIndex) =>
+      Image.asset(
+        statusWeather.getImageNow(
+          widget.weather[currentTimeIndex],
+          widget.time[currentTimeIndex],
+          widget.timeDay[currentDayIndex],
+          widget.timeNight[currentDayIndex],
+        ),
+        scale: 6.5,
+      );
 }

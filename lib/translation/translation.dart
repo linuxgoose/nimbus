@@ -1,35 +1,48 @@
 import 'package:get/get.dart';
-import 'package:rain/translation/bn_in.dart';
-import 'package:rain/translation/cs_cz.dart';
-import 'package:rain/translation/da_dk.dart';
-import 'package:rain/translation/de_de.dart';
-import 'package:rain/translation/en_us.dart';
-import 'package:rain/translation/es_es.dart';
-import 'package:rain/translation/fa_ir.dart';
-import 'package:rain/translation/fr_fr.dart';
-import 'package:rain/translation/ga_ie.dart';
-import 'package:rain/translation/hi_in.dart';
-import 'package:rain/translation/hu_hu.dart';
-import 'package:rain/translation/it_it.dart';
-import 'package:rain/translation/ka_ge.dart';
-import 'package:rain/translation/ko_kr.dart';
-import 'package:rain/translation/nl_nl.dart';
-import 'package:rain/translation/pl_pl.dart';
-import 'package:rain/translation/pt_br.dart';
-import 'package:rain/translation/pt_pt.dart';
-import 'package:rain/translation/ro_ro.dart';
-import 'package:rain/translation/ru_ru.dart';
-import 'package:rain/translation/sk_sk.dart';
-import 'package:rain/translation/tr_tr.dart';
-import 'package:rain/translation/ur_pk.dart';
-import 'package:rain/translation/zh_ch.dart';
-import 'package:rain/translation/zh_tw.dart';
+import 'package:nimbus/translation/ar_sa.dart';
+import 'package:nimbus/translation/as_in.dart';
+import 'package:nimbus/translation/bn_in.dart';
+import 'package:nimbus/translation/cs_cz.dart';
+import 'package:nimbus/translation/da_dk.dart';
+import 'package:nimbus/translation/de_de.dart';
+import 'package:nimbus/translation/en_gb.dart';
+import 'package:nimbus/translation/es_es.dart';
+import 'package:nimbus/translation/fa_ir.dart';
+import 'package:nimbus/translation/fr_fr.dart';
+import 'package:nimbus/translation/ga_ie.dart';
+import 'package:nimbus/translation/gu_in.dart';
+import 'package:nimbus/translation/he_il.dart';
+import 'package:nimbus/translation/hi_in.dart';
+import 'package:nimbus/translation/hu_hu.dart';
+import 'package:nimbus/translation/it_it.dart';
+import 'package:nimbus/translation/ka_ge.dart';
+import 'package:nimbus/translation/kn_in.dart';
+import 'package:nimbus/translation/ko_kr.dart';
+import 'package:nimbus/translation/ml_in.dart';
+import 'package:nimbus/translation/mr_in.dart';
+import 'package:nimbus/translation/nl_nl.dart';
+import 'package:nimbus/translation/or_in.dart';
+import 'package:nimbus/translation/pa_in.dart';
+import 'package:nimbus/translation/pl_pl.dart';
+import 'package:nimbus/translation/pt_br.dart';
+import 'package:nimbus/translation/pt_pt.dart';
+import 'package:nimbus/translation/ro_ro.dart';
+import 'package:nimbus/translation/ru_ru.dart';
+import 'package:nimbus/translation/sk_sk.dart';
+import 'package:nimbus/translation/ta_in.dart';
+import 'package:nimbus/translation/te_in.dart';
+import 'package:nimbus/translation/tr_tr.dart';
+import 'package:nimbus/translation/ur_pk.dart';
+import 'package:nimbus/translation/zh_ch.dart';
+import 'package:nimbus/translation/zh_tw.dart';
 
 class Translation extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
+    'ar_SA': ArSa().messages,
+    'as_IN': AsIn().messages,
     'ru_RU': RuRu().messages,
-    'en_US': EnUs().messages,
+    'en_GB': EnGb().messages,
     'fr_FR': FrFr().messages,
     'fa_IR': FaIr().messages,
     'it_IT': ItIt().messages,
@@ -41,6 +54,7 @@ class Translation extends Translations {
     'sk_SK': SkSk().messages,
     'nl_NL': NlNl().messages,
     'hi_IN': HiIn().messages,
+    'he_IL': HeIl().messages,
     'ro_RO': RoRo().messages,
     'zh_CN': ZhCh().messages,
     'zh_TW': ZhTw().messages,
@@ -53,5 +67,13 @@ class Translation extends Translations {
     'hu_HU': HuHu().messages,
     'da_DK': DaDk().messages,
     'ko_KR': KoKr().messages,
+    'gu_IN': GuIn().messages,
+    'kn_IN': KnIn().messages,
+    'ml_IN': MlIn().messages,
+    'mr_IN': MrIn().messages,
+    'or_IN': OrIn().messages,
+    'pa_IN': PaIn().messages,
+    'ta_IN': TaIn().messages,
+    'te_IN': TeIn().messages,
   };
 }

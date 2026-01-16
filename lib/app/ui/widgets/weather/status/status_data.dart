@@ -1,36 +1,23 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/main.dart';
 import 'package:timezone/timezone.dart';
 
 class StatusData {
-  String getDegree(dynamic degree) {
-    return _formatDegree(degree);
-  }
+  String getDegree(dynamic degree) => _formatDegree(degree);
 
-  String getSpeed(int? speed) {
-    return _formatSpeed(speed);
-  }
+  String getSpeed(int? speed) => _formatSpeed(speed);
 
-  String getPressure(int? pressure) {
-    return _formatPressure(pressure);
-  }
+  String getPressure(int? pressure) => _formatPressure(pressure);
 
-  String getVisibility(double? length) {
-    return _formatVisibility(length);
-  }
+  String getVisibility(double? length) => _formatVisibility(length);
 
-  String getPrecipitation(double? precipitation) {
-    return _formatPrecipitation(precipitation);
-  }
+  String getPrecipitation(double? precipitation) =>
+      _formatPrecipitation(precipitation);
 
-  String getTimeFormat(String time) {
-    return _formatTime(time);
-  }
+  String getTimeFormat(String time) => _formatTime(time);
 
-  String getTimeFormatTz(TZDateTime time) {
-    return _formatTimeTz(time);
-  }
+  String getTimeFormatTz(TZDateTime time) => _formatTimeTz(time);
 
   String _formatDegree(dynamic degree) {
     switch (settings.degrees) {
@@ -52,7 +39,12 @@ class StatusData {
             ? '${(speed * (5 / 18)).toPrecision(1)} ${'m/s'.tr}'
             : '$speed ${'kph'.tr}';
       case 'imperial':
-        return '$speed ${'mph'.tr}';
+        // Check if knots is selected specifically
+        if (settings.wind == 'knots') {
+          return '${(speed * 0.539957).toPrecision(1)} ${'knots'.tr}';
+        }
+        // Default imperial is mph
+        return '${(speed * 0.621371).toPrecision(1)} ${'mph'.tr}';
       default:
         return '$speed ${'kph'.tr}';
     }
@@ -79,13 +71,11 @@ class StatusData {
     }
   }
 
-  String _formatMetricVisibility(double length) {
-    return '${length > 1000 ? (length / 1000).round() : (length / 1000).toStringAsFixed(2)} ${'km'.tr}';
-  }
+  String _formatMetricVisibility(double length) =>
+      '${length > 1000 ? (length / 1000).round() : (length / 1000).toStringAsFixed(2)} ${'km'.tr}';
 
-  String _formatImperialVisibility(double length) {
-    return '${length > 5280 ? (length / 5280).round() : (length / 5280).toStringAsFixed(2)} ${'mi'.tr}';
-  }
+  String _formatImperialVisibility(double length) =>
+      '${length > 5280 ? (length / 5280).round() : (length / 5280).toStringAsFixed(2)} ${'mi'.tr}';
 
   String _formatPrecipitation(double? precipitation) {
     if (precipitation == null) return '';

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
-        android:label="Rain"
+        android:label="Nimbus"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:extractNativeLibs="true">
@@ -34,6 +34,7 @@
 
         <receiver
             android:name=".OreoWidget"
+            android:label="Classic Widget"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -41,6 +42,54 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/oreo_widget_info" />
+        </receiver>
+        
+        <receiver
+            android:name=".CurrentWidget"
+            android:label="Current Forecast"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/current_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".HourlyWidget"
+            android:label="Hourly Forecast"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/hourly_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".DailyWidget"
+            android:label="Daily Forecast"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/daily_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".SmallWidget"
+            android:label="Small Widget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/small_widget_info" />
         </receiver>
 
         <receiver android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"

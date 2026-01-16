@@ -4,7 +4,7 @@ part 'weather_api.freezed.dart';
 part 'weather_api.g.dart';
 
 @freezed
-abstract class WeatherDataApi with _$WeatherDataApi {
+sealed class WeatherDataApi with _$WeatherDataApi {
   const factory WeatherDataApi({
     required Hourly hourly,
     required Daily daily,
@@ -16,11 +16,11 @@ abstract class WeatherDataApi with _$WeatherDataApi {
 }
 
 @freezed
-abstract class Hourly with _$Hourly {
+sealed class Hourly with _$Hourly {
   const factory Hourly({
     List<String>? time,
-    @JsonKey(name: 'weathercode') List<int>? weatherCode,
-    @JsonKey(name: 'temperature_2m') List<double>? temperature2M,
+    @JsonKey(name: 'weathercode') List<int?>? weatherCode,
+    @JsonKey(name: 'temperature_2m') List<double?>? temperature2M,
     @JsonKey(name: 'apparent_temperature') List<double?>? apparentTemperature,
     List<double?>? precipitation,
     List<double?>? rain,
@@ -42,11 +42,20 @@ abstract class Hourly with _$Hourly {
   factory Hourly.fromJson(Map<String, dynamic> json) => _$HourlyFromJson(json);
 }
 
-List<DateTime> _dateTimeFromJson(List<dynamic>? json) =>
-    json?.map((x) => DateTime.parse(x)).toList() ?? [];
+List<DateTime>? _dateTimeFromJson(List<dynamic>? json) {
+  if (json == null) return null;
+  return json.map((x) {
+    if (x == null) return DateTime.now();
+    try {
+      return DateTime.parse(x.toString());
+    } catch (e) {
+      return DateTime.now();
+    }
+  }).toList();
+}
 
 @freezed
-abstract class Daily with _$Daily {
+sealed class Daily with _$Daily {
   const factory Daily({
     @JsonKey(fromJson: _dateTimeFromJson) List<DateTime>? time,
     @JsonKey(name: 'weathercode') List<int?>? weatherCode,

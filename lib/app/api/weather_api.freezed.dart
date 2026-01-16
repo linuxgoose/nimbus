@@ -135,10 +135,7 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _WeatherDataApi():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -197,10 +194,7 @@ return $default(_that.hourly,_that.daily,_that.timezone);case _:
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Hourly hourly,  Daily daily,  String timezone)  $default,) {final _that = this;
 switch (_that) {
 case _WeatherDataApi():
-return $default(_that.hourly,_that.daily,_that.timezone);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that.hourly,_that.daily,_that.timezone);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -320,7 +314,7 @@ $DailyCopyWith<$Res> get daily {
 /// @nodoc
 mixin _$Hourly {
 
- List<String>? get time;@JsonKey(name: 'weathercode') List<int>? get weatherCode;@JsonKey(name: 'temperature_2m') List<double>? get temperature2M;@JsonKey(name: 'apparent_temperature') List<double?>? get apparentTemperature; List<double?>? get precipitation; List<double?>? get rain;@JsonKey(name: 'relativehumidity_2m') List<int?>? get relativeHumidity2M;@JsonKey(name: 'surface_pressure') List<double?>? get surfacePressure; List<double?>? get visibility; List<double?>? get evapotranspiration;@JsonKey(name: 'windspeed_10m') List<double?>? get windSpeed10M;@JsonKey(name: 'winddirection_10m') List<int?>? get windDirection10M;@JsonKey(name: 'windgusts_10m') List<double?>? get windGusts10M;@JsonKey(name: 'cloudcover') List<int?>? get cloudCover;@JsonKey(name: 'uv_index') List<double?>? get uvIndex;@JsonKey(name: 'dewpoint_2m') List<double?>? get dewpoint2M;@JsonKey(name: 'precipitation_probability') List<int?>? get precipitationProbability;@JsonKey(name: 'shortwave_radiation') List<double?>? get shortwaveRadiation;
+ List<String>? get time;@JsonKey(name: 'weathercode') List<int?>? get weatherCode;@JsonKey(name: 'temperature_2m') List<double?>? get temperature2M;@JsonKey(name: 'apparent_temperature') List<double?>? get apparentTemperature; List<double?>? get precipitation; List<double?>? get rain;@JsonKey(name: 'relativehumidity_2m') List<int?>? get relativeHumidity2M;@JsonKey(name: 'surface_pressure') List<double?>? get surfacePressure; List<double?>? get visibility; List<double?>? get evapotranspiration;@JsonKey(name: 'windspeed_10m') List<double?>? get windSpeed10M;@JsonKey(name: 'winddirection_10m') List<int?>? get windDirection10M;@JsonKey(name: 'windgusts_10m') List<double?>? get windGusts10M;@JsonKey(name: 'cloudcover') List<int?>? get cloudCover;@JsonKey(name: 'uv_index') List<double?>? get uvIndex;@JsonKey(name: 'dewpoint_2m') List<double?>? get dewpoint2M;@JsonKey(name: 'precipitation_probability') List<int?>? get precipitationProbability;@JsonKey(name: 'shortwave_radiation') List<double?>? get shortwaveRadiation;
 /// Create a copy of Hourly
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -353,7 +347,7 @@ abstract mixin class $HourlyCopyWith<$Res>  {
   factory $HourlyCopyWith(Hourly value, $Res Function(Hourly) _then) = _$HourlyCopyWithImpl;
 @useResult
 $Res call({
- List<String>? time,@JsonKey(name: 'weathercode') List<int>? weatherCode,@JsonKey(name: 'temperature_2m') List<double>? temperature2M,@JsonKey(name: 'apparent_temperature') List<double?>? apparentTemperature, List<double?>? precipitation, List<double?>? rain,@JsonKey(name: 'relativehumidity_2m') List<int?>? relativeHumidity2M,@JsonKey(name: 'surface_pressure') List<double?>? surfacePressure, List<double?>? visibility, List<double?>? evapotranspiration,@JsonKey(name: 'windspeed_10m') List<double?>? windSpeed10M,@JsonKey(name: 'winddirection_10m') List<int?>? windDirection10M,@JsonKey(name: 'windgusts_10m') List<double?>? windGusts10M,@JsonKey(name: 'cloudcover') List<int?>? cloudCover,@JsonKey(name: 'uv_index') List<double?>? uvIndex,@JsonKey(name: 'dewpoint_2m') List<double?>? dewpoint2M,@JsonKey(name: 'precipitation_probability') List<int?>? precipitationProbability,@JsonKey(name: 'shortwave_radiation') List<double?>? shortwaveRadiation
+ List<String>? time,@JsonKey(name: 'weathercode') List<int?>? weatherCode,@JsonKey(name: 'temperature_2m') List<double?>? temperature2M,@JsonKey(name: 'apparent_temperature') List<double?>? apparentTemperature, List<double?>? precipitation, List<double?>? rain,@JsonKey(name: 'relativehumidity_2m') List<int?>? relativeHumidity2M,@JsonKey(name: 'surface_pressure') List<double?>? surfacePressure, List<double?>? visibility, List<double?>? evapotranspiration,@JsonKey(name: 'windspeed_10m') List<double?>? windSpeed10M,@JsonKey(name: 'winddirection_10m') List<int?>? windDirection10M,@JsonKey(name: 'windgusts_10m') List<double?>? windGusts10M,@JsonKey(name: 'cloudcover') List<int?>? cloudCover,@JsonKey(name: 'uv_index') List<double?>? uvIndex,@JsonKey(name: 'dewpoint_2m') List<double?>? dewpoint2M,@JsonKey(name: 'precipitation_probability') List<int?>? precipitationProbability,@JsonKey(name: 'shortwave_radiation') List<double?>? shortwaveRadiation
 });
 
 
@@ -374,8 +368,8 @@ class _$HourlyCopyWithImpl<$Res>
   return _then(_self.copyWith(
 time: freezed == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as List<String>?,weatherCode: freezed == weatherCode ? _self.weatherCode : weatherCode // ignore: cast_nullable_to_non_nullable
-as List<int>?,temperature2M: freezed == temperature2M ? _self.temperature2M : temperature2M // ignore: cast_nullable_to_non_nullable
-as List<double>?,apparentTemperature: freezed == apparentTemperature ? _self.apparentTemperature : apparentTemperature // ignore: cast_nullable_to_non_nullable
+as List<int?>?,temperature2M: freezed == temperature2M ? _self.temperature2M : temperature2M // ignore: cast_nullable_to_non_nullable
+as List<double?>?,apparentTemperature: freezed == apparentTemperature ? _self.apparentTemperature : apparentTemperature // ignore: cast_nullable_to_non_nullable
 as List<double?>?,precipitation: freezed == precipitation ? _self.precipitation : precipitation // ignore: cast_nullable_to_non_nullable
 as List<double?>?,rain: freezed == rain ? _self.rain : rain // ignore: cast_nullable_to_non_nullable
 as List<double?>?,relativeHumidity2M: freezed == relativeHumidity2M ? _self.relativeHumidity2M : relativeHumidity2M // ignore: cast_nullable_to_non_nullable
@@ -437,10 +431,7 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _Hourly():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -475,7 +466,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String>? time, @JsonKey(name: 'weathercode')  List<int>? weatherCode, @JsonKey(name: 'temperature_2m')  List<double>? temperature2M, @JsonKey(name: 'apparent_temperature')  List<double?>? apparentTemperature,  List<double?>? precipitation,  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m')  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure')  List<double?>? surfacePressure,  List<double?>? visibility,  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m')  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m')  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m')  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover')  List<int?>? cloudCover, @JsonKey(name: 'uv_index')  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m')  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability')  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation')  List<double?>? shortwaveRadiation)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String>? time, @JsonKey(name: 'weathercode')  List<int?>? weatherCode, @JsonKey(name: 'temperature_2m')  List<double?>? temperature2M, @JsonKey(name: 'apparent_temperature')  List<double?>? apparentTemperature,  List<double?>? precipitation,  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m')  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure')  List<double?>? surfacePressure,  List<double?>? visibility,  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m')  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m')  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m')  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover')  List<int?>? cloudCover, @JsonKey(name: 'uv_index')  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m')  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability')  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation')  List<double?>? shortwaveRadiation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Hourly() when $default != null:
 return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentTemperature,_that.precipitation,_that.rain,_that.relativeHumidity2M,_that.surfacePressure,_that.visibility,_that.evapotranspiration,_that.windSpeed10M,_that.windDirection10M,_that.windGusts10M,_that.cloudCover,_that.uvIndex,_that.dewpoint2M,_that.precipitationProbability,_that.shortwaveRadiation);case _:
@@ -496,13 +487,10 @@ return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentT
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String>? time, @JsonKey(name: 'weathercode')  List<int>? weatherCode, @JsonKey(name: 'temperature_2m')  List<double>? temperature2M, @JsonKey(name: 'apparent_temperature')  List<double?>? apparentTemperature,  List<double?>? precipitation,  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m')  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure')  List<double?>? surfacePressure,  List<double?>? visibility,  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m')  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m')  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m')  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover')  List<int?>? cloudCover, @JsonKey(name: 'uv_index')  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m')  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability')  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation')  List<double?>? shortwaveRadiation)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String>? time, @JsonKey(name: 'weathercode')  List<int?>? weatherCode, @JsonKey(name: 'temperature_2m')  List<double?>? temperature2M, @JsonKey(name: 'apparent_temperature')  List<double?>? apparentTemperature,  List<double?>? precipitation,  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m')  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure')  List<double?>? surfacePressure,  List<double?>? visibility,  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m')  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m')  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m')  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover')  List<int?>? cloudCover, @JsonKey(name: 'uv_index')  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m')  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability')  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation')  List<double?>? shortwaveRadiation)  $default,) {final _that = this;
 switch (_that) {
 case _Hourly():
-return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentTemperature,_that.precipitation,_that.rain,_that.relativeHumidity2M,_that.surfacePressure,_that.visibility,_that.evapotranspiration,_that.windSpeed10M,_that.windDirection10M,_that.windGusts10M,_that.cloudCover,_that.uvIndex,_that.dewpoint2M,_that.precipitationProbability,_that.shortwaveRadiation);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentTemperature,_that.precipitation,_that.rain,_that.relativeHumidity2M,_that.surfacePressure,_that.visibility,_that.evapotranspiration,_that.windSpeed10M,_that.windDirection10M,_that.windGusts10M,_that.cloudCover,_that.uvIndex,_that.dewpoint2M,_that.precipitationProbability,_that.shortwaveRadiation);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -516,7 +504,7 @@ return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentT
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String>? time, @JsonKey(name: 'weathercode')  List<int>? weatherCode, @JsonKey(name: 'temperature_2m')  List<double>? temperature2M, @JsonKey(name: 'apparent_temperature')  List<double?>? apparentTemperature,  List<double?>? precipitation,  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m')  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure')  List<double?>? surfacePressure,  List<double?>? visibility,  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m')  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m')  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m')  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover')  List<int?>? cloudCover, @JsonKey(name: 'uv_index')  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m')  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability')  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation')  List<double?>? shortwaveRadiation)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String>? time, @JsonKey(name: 'weathercode')  List<int?>? weatherCode, @JsonKey(name: 'temperature_2m')  List<double?>? temperature2M, @JsonKey(name: 'apparent_temperature')  List<double?>? apparentTemperature,  List<double?>? precipitation,  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m')  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure')  List<double?>? surfacePressure,  List<double?>? visibility,  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m')  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m')  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m')  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover')  List<int?>? cloudCover, @JsonKey(name: 'uv_index')  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m')  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability')  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation')  List<double?>? shortwaveRadiation)?  $default,) {final _that = this;
 switch (_that) {
 case _Hourly() when $default != null:
 return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentTemperature,_that.precipitation,_that.rain,_that.relativeHumidity2M,_that.surfacePressure,_that.visibility,_that.evapotranspiration,_that.windSpeed10M,_that.windDirection10M,_that.windGusts10M,_that.cloudCover,_that.uvIndex,_that.dewpoint2M,_that.precipitationProbability,_that.shortwaveRadiation);case _:
@@ -531,7 +519,7 @@ return $default(_that.time,_that.weatherCode,_that.temperature2M,_that.apparentT
 @JsonSerializable()
 
 class _Hourly implements Hourly {
-  const _Hourly({final  List<String>? time, @JsonKey(name: 'weathercode') final  List<int>? weatherCode, @JsonKey(name: 'temperature_2m') final  List<double>? temperature2M, @JsonKey(name: 'apparent_temperature') final  List<double?>? apparentTemperature, final  List<double?>? precipitation, final  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m') final  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure') final  List<double?>? surfacePressure, final  List<double?>? visibility, final  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m') final  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m') final  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m') final  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover') final  List<int?>? cloudCover, @JsonKey(name: 'uv_index') final  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m') final  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability') final  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation') final  List<double?>? shortwaveRadiation}): _time = time,_weatherCode = weatherCode,_temperature2M = temperature2M,_apparentTemperature = apparentTemperature,_precipitation = precipitation,_rain = rain,_relativeHumidity2M = relativeHumidity2M,_surfacePressure = surfacePressure,_visibility = visibility,_evapotranspiration = evapotranspiration,_windSpeed10M = windSpeed10M,_windDirection10M = windDirection10M,_windGusts10M = windGusts10M,_cloudCover = cloudCover,_uvIndex = uvIndex,_dewpoint2M = dewpoint2M,_precipitationProbability = precipitationProbability,_shortwaveRadiation = shortwaveRadiation;
+  const _Hourly({final  List<String>? time, @JsonKey(name: 'weathercode') final  List<int?>? weatherCode, @JsonKey(name: 'temperature_2m') final  List<double?>? temperature2M, @JsonKey(name: 'apparent_temperature') final  List<double?>? apparentTemperature, final  List<double?>? precipitation, final  List<double?>? rain, @JsonKey(name: 'relativehumidity_2m') final  List<int?>? relativeHumidity2M, @JsonKey(name: 'surface_pressure') final  List<double?>? surfacePressure, final  List<double?>? visibility, final  List<double?>? evapotranspiration, @JsonKey(name: 'windspeed_10m') final  List<double?>? windSpeed10M, @JsonKey(name: 'winddirection_10m') final  List<int?>? windDirection10M, @JsonKey(name: 'windgusts_10m') final  List<double?>? windGusts10M, @JsonKey(name: 'cloudcover') final  List<int?>? cloudCover, @JsonKey(name: 'uv_index') final  List<double?>? uvIndex, @JsonKey(name: 'dewpoint_2m') final  List<double?>? dewpoint2M, @JsonKey(name: 'precipitation_probability') final  List<int?>? precipitationProbability, @JsonKey(name: 'shortwave_radiation') final  List<double?>? shortwaveRadiation}): _time = time,_weatherCode = weatherCode,_temperature2M = temperature2M,_apparentTemperature = apparentTemperature,_precipitation = precipitation,_rain = rain,_relativeHumidity2M = relativeHumidity2M,_surfacePressure = surfacePressure,_visibility = visibility,_evapotranspiration = evapotranspiration,_windSpeed10M = windSpeed10M,_windDirection10M = windDirection10M,_windGusts10M = windGusts10M,_cloudCover = cloudCover,_uvIndex = uvIndex,_dewpoint2M = dewpoint2M,_precipitationProbability = precipitationProbability,_shortwaveRadiation = shortwaveRadiation;
   factory _Hourly.fromJson(Map<String, dynamic> json) => _$HourlyFromJson(json);
 
  final  List<String>? _time;
@@ -543,8 +531,8 @@ class _Hourly implements Hourly {
   return EqualUnmodifiableListView(value);
 }
 
- final  List<int>? _weatherCode;
-@override@JsonKey(name: 'weathercode') List<int>? get weatherCode {
+ final  List<int?>? _weatherCode;
+@override@JsonKey(name: 'weathercode') List<int?>? get weatherCode {
   final value = _weatherCode;
   if (value == null) return null;
   if (_weatherCode is EqualUnmodifiableListView) return _weatherCode;
@@ -552,8 +540,8 @@ class _Hourly implements Hourly {
   return EqualUnmodifiableListView(value);
 }
 
- final  List<double>? _temperature2M;
-@override@JsonKey(name: 'temperature_2m') List<double>? get temperature2M {
+ final  List<double?>? _temperature2M;
+@override@JsonKey(name: 'temperature_2m') List<double?>? get temperature2M {
   final value = _temperature2M;
   if (value == null) return null;
   if (_temperature2M is EqualUnmodifiableListView) return _temperature2M;
@@ -730,7 +718,7 @@ abstract mixin class _$HourlyCopyWith<$Res> implements $HourlyCopyWith<$Res> {
   factory _$HourlyCopyWith(_Hourly value, $Res Function(_Hourly) _then) = __$HourlyCopyWithImpl;
 @override @useResult
 $Res call({
- List<String>? time,@JsonKey(name: 'weathercode') List<int>? weatherCode,@JsonKey(name: 'temperature_2m') List<double>? temperature2M,@JsonKey(name: 'apparent_temperature') List<double?>? apparentTemperature, List<double?>? precipitation, List<double?>? rain,@JsonKey(name: 'relativehumidity_2m') List<int?>? relativeHumidity2M,@JsonKey(name: 'surface_pressure') List<double?>? surfacePressure, List<double?>? visibility, List<double?>? evapotranspiration,@JsonKey(name: 'windspeed_10m') List<double?>? windSpeed10M,@JsonKey(name: 'winddirection_10m') List<int?>? windDirection10M,@JsonKey(name: 'windgusts_10m') List<double?>? windGusts10M,@JsonKey(name: 'cloudcover') List<int?>? cloudCover,@JsonKey(name: 'uv_index') List<double?>? uvIndex,@JsonKey(name: 'dewpoint_2m') List<double?>? dewpoint2M,@JsonKey(name: 'precipitation_probability') List<int?>? precipitationProbability,@JsonKey(name: 'shortwave_radiation') List<double?>? shortwaveRadiation
+ List<String>? time,@JsonKey(name: 'weathercode') List<int?>? weatherCode,@JsonKey(name: 'temperature_2m') List<double?>? temperature2M,@JsonKey(name: 'apparent_temperature') List<double?>? apparentTemperature, List<double?>? precipitation, List<double?>? rain,@JsonKey(name: 'relativehumidity_2m') List<int?>? relativeHumidity2M,@JsonKey(name: 'surface_pressure') List<double?>? surfacePressure, List<double?>? visibility, List<double?>? evapotranspiration,@JsonKey(name: 'windspeed_10m') List<double?>? windSpeed10M,@JsonKey(name: 'winddirection_10m') List<int?>? windDirection10M,@JsonKey(name: 'windgusts_10m') List<double?>? windGusts10M,@JsonKey(name: 'cloudcover') List<int?>? cloudCover,@JsonKey(name: 'uv_index') List<double?>? uvIndex,@JsonKey(name: 'dewpoint_2m') List<double?>? dewpoint2M,@JsonKey(name: 'precipitation_probability') List<int?>? precipitationProbability,@JsonKey(name: 'shortwave_radiation') List<double?>? shortwaveRadiation
 });
 
 
@@ -751,8 +739,8 @@ class __$HourlyCopyWithImpl<$Res>
   return _then(_Hourly(
 time: freezed == time ? _self._time : time // ignore: cast_nullable_to_non_nullable
 as List<String>?,weatherCode: freezed == weatherCode ? _self._weatherCode : weatherCode // ignore: cast_nullable_to_non_nullable
-as List<int>?,temperature2M: freezed == temperature2M ? _self._temperature2M : temperature2M // ignore: cast_nullable_to_non_nullable
-as List<double>?,apparentTemperature: freezed == apparentTemperature ? _self._apparentTemperature : apparentTemperature // ignore: cast_nullable_to_non_nullable
+as List<int?>?,temperature2M: freezed == temperature2M ? _self._temperature2M : temperature2M // ignore: cast_nullable_to_non_nullable
+as List<double?>?,apparentTemperature: freezed == apparentTemperature ? _self._apparentTemperature : apparentTemperature // ignore: cast_nullable_to_non_nullable
 as List<double?>?,precipitation: freezed == precipitation ? _self._precipitation : precipitation // ignore: cast_nullable_to_non_nullable
 as List<double?>?,rain: freezed == rain ? _self._rain : rain // ignore: cast_nullable_to_non_nullable
 as List<double?>?,relativeHumidity2M: freezed == relativeHumidity2M ? _self._relativeHumidity2M : relativeHumidity2M // ignore: cast_nullable_to_non_nullable
@@ -892,10 +880,7 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _Daily():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -954,10 +939,7 @@ return $default(_that.time,_that.weatherCode,_that.temperature2MMax,_that.temper
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _dateTimeFromJson)  List<DateTime>? time, @JsonKey(name: 'weathercode')  List<int?>? weatherCode, @JsonKey(name: 'temperature_2m_max')  List<double?>? temperature2MMax, @JsonKey(name: 'temperature_2m_min')  List<double?>? temperature2MMin, @JsonKey(name: 'apparent_temperature_max')  List<double?>? apparentTemperatureMax, @JsonKey(name: 'apparent_temperature_min')  List<double?>? apparentTemperatureMin, @JsonKey(name: 'precipitation_sum')  List<double?>? precipitationSum,  List<String>? sunrise,  List<String>? sunset, @JsonKey(name: 'precipitation_probability_max')  List<int?>? precipitationProbabilityMax, @JsonKey(name: 'windspeed_10m_max')  List<double?>? windSpeed10MMax, @JsonKey(name: 'windgusts_10m_max')  List<double?>? windGusts10MMax, @JsonKey(name: 'uv_index_max')  List<double?>? uvIndexMax, @JsonKey(name: 'rain_sum')  List<double?>? rainSum, @JsonKey(name: 'winddirection_10m_dominant')  List<int?>? windDirection10MDominant)  $default,) {final _that = this;
 switch (_that) {
 case _Daily():
-return $default(_that.time,_that.weatherCode,_that.temperature2MMax,_that.temperature2MMin,_that.apparentTemperatureMax,_that.apparentTemperatureMin,_that.precipitationSum,_that.sunrise,_that.sunset,_that.precipitationProbabilityMax,_that.windSpeed10MMax,_that.windGusts10MMax,_that.uvIndexMax,_that.rainSum,_that.windDirection10MDominant);case _:
-  throw StateError('Unexpected subclass');
-
-}
+return $default(_that.time,_that.weatherCode,_that.temperature2MMax,_that.temperature2MMin,_that.apparentTemperatureMax,_that.apparentTemperatureMin,_that.precipitationSum,_that.sunrise,_that.sunset,_that.precipitationProbabilityMax,_that.windSpeed10MMax,_that.windGusts10MMax,_that.uvIndexMax,_that.rainSum,_that.windDirection10MDominant);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///

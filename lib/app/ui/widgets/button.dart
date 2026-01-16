@@ -14,24 +14,20 @@ class MyTextButton extends StatelessWidget {
   final double height;
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: ElevatedButton(
-        style: _buildButtonStyle(context),
-        onPressed: onPressed,
-        child: Text(buttonName, style: context.textTheme.titleMedium),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => SizedBox(
+    height: height,
+    width: double.infinity,
+    child: ElevatedButton(
+      style: _buildButtonStyle(context),
+      onPressed: onPressed,
+      child: Text(buttonName, style: context.textTheme.titleMedium),
+    ),
+  );
 
-  ButtonStyle _buildButtonStyle(BuildContext context) {
-    return ButtonStyle(
-      shadowColor: const WidgetStatePropertyAll(Colors.transparent),
-      backgroundColor: WidgetStatePropertyAll(
-        context.theme.colorScheme.secondaryContainer.withAlpha(80),
-      ),
-    );
-  }
+  ButtonStyle _buildButtonStyle(BuildContext context) => ButtonStyle(
+    shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+    backgroundColor: WidgetStatePropertyAll(
+      context.theme.colorScheme.secondaryContainer.withAlpha(80),
+    ),
+  );
 }

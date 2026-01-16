@@ -1,23 +1,27 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:rain/app/api/city_api.dart';
-import 'package:rain/app/api/weather_api.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/api/city_api.dart';
+import 'package:nimbus/app/api/weather_api.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/main.dart';
 
 class WeatherAPI {
+  // Base URL updated to exclude the '?' to handle queryParameters cleanly via Dio
   final Dio dio = Dio()
-    ..options.baseUrl = 'https://api.open-meteo.com/v1/forecast?';
+    ..options.baseUrl = 'https://api.open-meteo.com/v1/forecast';
   final Dio dioLocation = Dio();
 
+  // Added alerts=true and models=gem_global for boundary/polygon data
   static const String _weatherParams =
       'hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation,rain,weathercode,surface_pressure,visibility,evapotranspiration,windspeed_10m,winddirection_10m,windgusts_10m,cloudcover,uv_index,dewpoint_2m,precipitation_probability,shortwave_radiation'
       '&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,uv_index_max,rain_sum,winddirection_10m_dominant'
-      '&forecast_days=12&timezone=auto';
+      '&forecast_days=12&timezone=auto'
+      '&alerts=true' // Required for weather warnings
+      '&models=gem_global'; // Best model for global alert polygons
 
   String _buildWeatherUrl(double lat, double lon) {
-    String url = 'latitude=$lat&longitude=$lon&$_weatherParams';
+    String url = '?latitude=$lat&longitude=$lon&$_weatherParams';
     if (settings.measurements == 'imperial') {
       url += '&windspeed_unit=mph&precipitation_unit=inch';
     }
@@ -38,6 +42,28 @@ class WeatherAPI {
         print(e);
       }
       rethrow;
+    }
+  }
+
+  // Optimized method to fetch ONLY alerts for map rendering
+  Future<List<dynamic>> getRawAlerts(double lat, double lon) async {
+    try {
+      final response = await dio.get(
+        '',
+        queryParameters: {
+          'latitude': lat,
+          'longitude': lon,
+          'models': 'gem_global',
+          'alerts': 'true',
+          'forecast_days': 1, // Minimize payload for map refresh
+        },
+      );
+      return response.data['alerts'] ?? [];
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        print("Alert Fetch Error: $e");
+      }
+      return [];
     }
   }
 
@@ -94,46 +120,45 @@ class WeatherAPI {
     }
   }
 
-  MainWeatherCache _mapWeatherDataToCache(WeatherDataApi weatherData) {
-    return MainWeatherCache(
-      time: weatherData.hourly.time,
-      temperature2M: weatherData.hourly.temperature2M,
-      relativehumidity2M: weatherData.hourly.relativeHumidity2M,
-      apparentTemperature: weatherData.hourly.apparentTemperature,
-      precipitation: weatherData.hourly.precipitation,
-      rain: weatherData.hourly.rain,
-      weathercode: weatherData.hourly.weatherCode,
-      surfacePressure: weatherData.hourly.surfacePressure,
-      visibility: weatherData.hourly.visibility,
-      evapotranspiration: weatherData.hourly.evapotranspiration,
-      windspeed10M: weatherData.hourly.windSpeed10M,
-      winddirection10M: weatherData.hourly.windDirection10M,
-      windgusts10M: weatherData.hourly.windGusts10M,
-      cloudcover: weatherData.hourly.cloudCover,
-      uvIndex: weatherData.hourly.uvIndex,
-      dewpoint2M: weatherData.hourly.dewpoint2M,
-      precipitationProbability: weatherData.hourly.precipitationProbability,
-      shortwaveRadiation: weatherData.hourly.shortwaveRadiation,
-      timeDaily: weatherData.daily.time,
-      weathercodeDaily: weatherData.daily.weatherCode,
-      temperature2MMax: weatherData.daily.temperature2MMax,
-      temperature2MMin: weatherData.daily.temperature2MMin,
-      apparentTemperatureMax: weatherData.daily.apparentTemperatureMax,
-      apparentTemperatureMin: weatherData.daily.apparentTemperatureMin,
-      sunrise: weatherData.daily.sunrise,
-      sunset: weatherData.daily.sunset,
-      precipitationSum: weatherData.daily.precipitationSum,
-      precipitationProbabilityMax:
-          weatherData.daily.precipitationProbabilityMax,
-      windspeed10MMax: weatherData.daily.windSpeed10MMax,
-      windgusts10MMax: weatherData.daily.windGusts10MMax,
-      uvIndexMax: weatherData.daily.uvIndexMax,
-      rainSum: weatherData.daily.rainSum,
-      winddirection10MDominant: weatherData.daily.windDirection10MDominant,
-      timezone: weatherData.timezone,
-      timestamp: DateTime.now(),
-    );
-  }
+  MainWeatherCache _mapWeatherDataToCache(WeatherDataApi weatherData) =>
+      MainWeatherCache(
+        time: weatherData.hourly.time,
+        temperature2M: weatherData.hourly.temperature2M,
+        relativehumidity2M: weatherData.hourly.relativeHumidity2M,
+        apparentTemperature: weatherData.hourly.apparentTemperature,
+        precipitation: weatherData.hourly.precipitation,
+        rain: weatherData.hourly.rain,
+        weathercode: weatherData.hourly.weatherCode,
+        surfacePressure: weatherData.hourly.surfacePressure,
+        visibility: weatherData.hourly.visibility,
+        evapotranspiration: weatherData.hourly.evapotranspiration,
+        windspeed10M: weatherData.hourly.windSpeed10M,
+        winddirection10M: weatherData.hourly.windDirection10M,
+        windgusts10M: weatherData.hourly.windGusts10M,
+        cloudcover: weatherData.hourly.cloudCover,
+        uvIndex: weatherData.hourly.uvIndex,
+        dewpoint2M: weatherData.hourly.dewpoint2M,
+        precipitationProbability: weatherData.hourly.precipitationProbability,
+        shortwaveRadiation: weatherData.hourly.shortwaveRadiation,
+        timeDaily: weatherData.daily.time,
+        weathercodeDaily: weatherData.daily.weatherCode,
+        temperature2MMax: weatherData.daily.temperature2MMax,
+        temperature2MMin: weatherData.daily.temperature2MMin,
+        apparentTemperatureMax: weatherData.daily.apparentTemperatureMax,
+        apparentTemperatureMin: weatherData.daily.apparentTemperatureMin,
+        sunrise: weatherData.daily.sunrise,
+        sunset: weatherData.daily.sunset,
+        precipitationSum: weatherData.daily.precipitationSum,
+        precipitationProbabilityMax:
+            weatherData.daily.precipitationProbabilityMax,
+        windspeed10MMax: weatherData.daily.windSpeed10MMax,
+        windgusts10MMax: weatherData.daily.windGusts10MMax,
+        uvIndexMax: weatherData.daily.uvIndexMax,
+        rainSum: weatherData.daily.rainSum,
+        winddirection10MDominant: weatherData.daily.windDirection10MDominant,
+        timezone: weatherData.timezone,
+        timestamp: DateTime.now(),
+      );
 
   WeatherCard _mapWeatherDataToCard(
     WeatherDataApi weatherData,
@@ -142,48 +167,45 @@ class WeatherAPI {
     String city,
     String district,
     String timezone,
-  ) {
-    return WeatherCard(
-      time: weatherData.hourly.time,
-      temperature2M: weatherData.hourly.temperature2M,
-      relativehumidity2M: weatherData.hourly.relativeHumidity2M,
-      apparentTemperature: weatherData.hourly.apparentTemperature,
-      precipitation: weatherData.hourly.precipitation,
-      rain: weatherData.hourly.rain,
-      weathercode: weatherData.hourly.weatherCode,
-      surfacePressure: weatherData.hourly.surfacePressure,
-      visibility: weatherData.hourly.visibility,
-      evapotranspiration: weatherData.hourly.evapotranspiration,
-      windspeed10M: weatherData.hourly.windSpeed10M,
-      winddirection10M: weatherData.hourly.windDirection10M,
-      windgusts10M: weatherData.hourly.windGusts10M,
-      cloudcover: weatherData.hourly.cloudCover,
-      uvIndex: weatherData.hourly.uvIndex,
-      dewpoint2M: weatherData.hourly.dewpoint2M,
-      precipitationProbability: weatherData.hourly.precipitationProbability,
-      shortwaveRadiation: weatherData.hourly.shortwaveRadiation,
-      timeDaily: weatherData.daily.time,
-      weathercodeDaily: weatherData.daily.weatherCode,
-      temperature2MMax: weatherData.daily.temperature2MMax,
-      temperature2MMin: weatherData.daily.temperature2MMin,
-      apparentTemperatureMax: weatherData.daily.apparentTemperatureMax,
-      apparentTemperatureMin: weatherData.daily.apparentTemperatureMin,
-      sunrise: weatherData.daily.sunrise,
-      sunset: weatherData.daily.sunset,
-      precipitationSum: weatherData.daily.precipitationSum,
-      precipitationProbabilityMax:
-          weatherData.daily.precipitationProbabilityMax,
-      windspeed10MMax: weatherData.daily.windSpeed10MMax,
-      windgusts10MMax: weatherData.daily.windGusts10MMax,
-      uvIndexMax: weatherData.daily.uvIndexMax,
-      rainSum: weatherData.daily.rainSum,
-      winddirection10MDominant: weatherData.daily.windDirection10MDominant,
-      lat: lat,
-      lon: lon,
-      city: city,
-      district: district,
-      timezone: timezone,
-      timestamp: DateTime.now(),
-    );
-  }
+  ) => WeatherCard(
+    time: weatherData.hourly.time,
+    temperature2M: weatherData.hourly.temperature2M,
+    relativehumidity2M: weatherData.hourly.relativeHumidity2M,
+    apparentTemperature: weatherData.hourly.apparentTemperature,
+    precipitation: weatherData.hourly.precipitation,
+    rain: weatherData.hourly.rain,
+    weathercode: weatherData.hourly.weatherCode,
+    surfacePressure: weatherData.hourly.surfacePressure,
+    visibility: weatherData.hourly.visibility,
+    evapotranspiration: weatherData.hourly.evapotranspiration,
+    windspeed10M: weatherData.hourly.windSpeed10M,
+    winddirection10M: weatherData.hourly.windDirection10M,
+    windgusts10M: weatherData.hourly.windGusts10M,
+    cloudcover: weatherData.hourly.cloudCover,
+    uvIndex: weatherData.hourly.uvIndex,
+    dewpoint2M: weatherData.hourly.dewpoint2M,
+    precipitationProbability: weatherData.hourly.precipitationProbability,
+    shortwaveRadiation: weatherData.hourly.shortwaveRadiation,
+    timeDaily: weatherData.daily.time,
+    weathercodeDaily: weatherData.daily.weatherCode,
+    temperature2MMax: weatherData.daily.temperature2MMax,
+    temperature2MMin: weatherData.daily.temperature2MMin,
+    apparentTemperatureMax: weatherData.daily.apparentTemperatureMax,
+    apparentTemperatureMin: weatherData.daily.apparentTemperatureMin,
+    sunrise: weatherData.daily.sunrise,
+    sunset: weatherData.daily.sunset,
+    precipitationSum: weatherData.daily.precipitationSum,
+    precipitationProbabilityMax: weatherData.daily.precipitationProbabilityMax,
+    windspeed10MMax: weatherData.daily.windSpeed10MMax,
+    windgusts10MMax: weatherData.daily.windGusts10MMax,
+    uvIndexMax: weatherData.daily.uvIndexMax,
+    rainSum: weatherData.daily.rainSum,
+    winddirection10MDominant: weatherData.daily.windDirection10MDominant,
+    lat: lat,
+    lon: lon,
+    city: city,
+    district: district,
+    timezone: timezone,
+    timestamp: DateTime.now(),
+  );
 }

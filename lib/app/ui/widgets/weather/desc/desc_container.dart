@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rain/app/ui/widgets/weather/desc/desc.dart';
-import 'package:rain/app/ui/widgets/weather/desc/message.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/desc/desc.dart';
+import 'package:nimbus/app/ui/widgets/weather/desc/message.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 
 class DescContainer extends StatefulWidget {
   const DescContainer({
@@ -71,26 +71,24 @@ class _DescContainerState extends State<DescContainer> {
   final message = Message();
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 15),
-      child: ExpansionTile(
-        shape: const Border(),
-        title: Text(widget.title, style: context.textTheme.labelLarge),
-        initiallyExpanded: widget.initiallyExpanded,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20, bottom: 5),
-            child: Wrap(
-              alignment: WrapAlignment.spaceEvenly,
-              spacing: 5,
-              children: _buildWeatherDescriptions(context),
-            ),
+  Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: ExpansionTile(
+      shape: const Border(),
+      title: Text(widget.title, style: context.textTheme.labelLarge),
+      initiallyExpanded: widget.initiallyExpanded,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 5),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            spacing: 5,
+            children: _buildWeatherDescriptions(context),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
   List<Widget> _buildWeatherDescriptions(BuildContext context) {
     final List<Widget> descriptions = [];
@@ -124,12 +122,13 @@ class _DescContainerState extends State<DescContainer> {
     final weatherData = [
       {
         'value': statusData.getDegree(widget.apparentTemperatureMin?.round()),
-        'imageName': 'assets/images/cold.png',
+        'imageName':
+            'assets/images/wi-snowflake${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'apparentTemperatureMin'.tr,
       },
       {
         'value': statusData.getDegree(widget.apparentTemperatureMax?.round()),
-        'imageName': 'assets/images/hot.png',
+        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'apparentTemperatureMax'.tr,
       },
       {
@@ -140,111 +139,126 @@ class _DescContainerState extends State<DescContainer> {
       },
       {
         'value': '${widget.windDirection10MDominant}°',
-        'imageName': 'assets/images/windsock.png',
+        'imageName':
+            'assets/images/wi-wind-direction${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'direction'.tr,
         'message': message.getDirection(widget.windDirection10MDominant),
       },
       {
         'value': statusData.getSpeed(widget.windSpeed10MMax?.round()),
-        'imageName': 'assets/images/wind.png',
+        'imageName':
+            'assets/images/wi-wind-speed${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'wind'.tr,
       },
       {
         'value': statusData.getSpeed(widget.windGusts10MMax?.round()),
-        'imageName': 'assets/images/windgusts.png',
+        'imageName':
+            'assets/images/wi-wind-gust${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'windgusts'.tr,
       },
       {
         'value': '${widget.precipitationProbabilityMax}%',
-        'imageName': 'assets/images/precipitation_probability.png',
+        'imageName':
+            'assets/images/wi-umbrella${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitationProbability'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.rainSum),
-        'imageName': 'assets/images/water.png',
+        'imageName': 'assets/images/wi-rain${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'rain'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.precipitationSum),
-        'imageName': 'assets/images/rainfall.png',
+        'imageName':
+            'assets/images/wi-precipitation${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitation'.tr,
       },
       {
         'value': statusData.getDegree(widget.dewpoint2M?.round()),
-        'imageName': 'assets/images/dew.png',
+        'imageName':
+            'assets/images/wi-dewpoint${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'dewpoint'.tr,
       },
       {
         'value': statusData.getDegree(widget.feels?.round()),
-        'imageName': 'assets/images/temperature.png',
+        'imageName':
+            'assets/images/wi-thermometer${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'feels'.tr,
       },
       {
         'value': statusData.getVisibility(widget.visibility),
-        'imageName': 'assets/images/fog.png',
+        'imageName': 'assets/images/wi-fog${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'visibility'.tr,
       },
       {
         'value': '${widget.direction}°',
-        'imageName': 'assets/images/windsock.png',
+        'imageName':
+            'assets/images/wi-wind-direction${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'direction'.tr,
         'message': message.getDirection(widget.direction),
       },
       {
         'value': statusData.getSpeed(widget.wind?.round()),
-        'imageName': 'assets/images/wind.png',
+        'imageName':
+            'assets/images/wi-wind-speed${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'wind'.tr,
       },
       {
         'value': statusData.getSpeed(widget.windgusts?.round()),
-        'imageName': 'assets/images/windgusts.png',
+        'imageName':
+            'assets/images/wi-wind-gust${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'windgusts'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.evaporation?.abs()),
-        'imageName': 'assets/images/evaporation.png',
+        'imageName':
+            'assets/images/wi-raindrops${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'evaporation'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.precipitation),
-        'imageName': 'assets/images/rainfall.png',
+        'imageName':
+            'assets/images/wi-precipitation${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitation'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.rain),
-        'imageName': 'assets/images/water.png',
+        'imageName': 'assets/images/wi-rain${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'rain'.tr,
       },
       {
         'value': '${widget.precipitationProbability}%',
-        'imageName': 'assets/images/precipitation_probability.png',
+        'imageName':
+            'assets/images/wi-umbrella${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'precipitationProbability'.tr,
       },
       {
         'value': '${widget.humidity}%',
-        'imageName': 'assets/images/humidity.png',
+        'imageName':
+            'assets/images/wi-humidity${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'humidity'.tr,
       },
       {
         'value': '${widget.cloudcover}%',
-        'imageName': 'assets/images/cloudy.png',
+        'imageName': 'assets/images/wi-cloudy${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'cloudcover'.tr,
       },
       {
         'value': statusData.getPressure(widget.pressure?.round()),
-        'imageName': 'assets/images/atmospheric.png',
+        'imageName':
+            'assets/images/wi-barometer${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'pressure'.tr,
         'message': message.getPressure(widget.pressure?.round()),
       },
       {
         'value': widget.uvIndex?.round(),
-        'imageName': 'assets/images/uv.png',
+        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'uvIndex'.tr,
         'message': message.getUvIndex(widget.uvIndex?.round()),
       },
       {
         'value': '${widget.shortwaveRadiation?.round()} ${'W/m2'.tr}',
-        'imageName': 'assets/images/shortwave_radiation.png',
+        'imageName': 'assets/images/wi-hot${Get.isDarkMode ? "-w" : ""}.png',
         'desc': 'shortwaveRadiation'.tr,
       },
     ];

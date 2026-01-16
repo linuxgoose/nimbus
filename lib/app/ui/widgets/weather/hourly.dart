@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_data.dart';
-import 'package:rain/app/ui/widgets/weather/status/status_weather.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
+import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
+import 'package:nimbus/main.dart';
 
 class Hourly extends StatefulWidget {
   const Hourly({
@@ -18,8 +18,8 @@ class Hourly extends StatefulWidget {
   final String time;
   final String timeDay;
   final String timeNight;
-  final int weather;
-  final double degree;
+  final int? weather;
+  final double? degree;
 
   @override
   State<Hourly> createState() => _HourlyState();
@@ -44,34 +44,28 @@ class _HourlyState extends State<Hourly> {
     );
   }
 
-  Widget _buildTimeText(TextTheme textTheme, String time) {
-    return Column(
-      children: [
-        Text(statusData.getTimeFormat(time), style: textTheme.labelLarge),
-        Text(
-          DateFormat('E', locale.languageCode).format(DateTime.tryParse(time)!),
-          style: textTheme.labelLarge?.copyWith(color: Colors.grey),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWeatherImage() {
-    return Image.asset(
-      statusWeather.getImageToday(
-        widget.weather,
-        widget.time,
-        widget.timeDay,
-        widget.timeNight,
+  Widget _buildTimeText(TextTheme textTheme, String time) => Column(
+    children: [
+      Text(statusData.getTimeFormat(time), style: textTheme.labelLarge),
+      Text(
+        DateFormat('E', locale.languageCode).format(DateTime.tryParse(time)!),
+        style: textTheme.labelLarge?.copyWith(color: Colors.grey),
       ),
-      scale: 3,
-    );
-  }
+    ],
+  );
 
-  Widget _buildTemperatureText(TextTheme textTheme) {
-    return Text(
-      statusData.getDegree(widget.degree.round()),
-      style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-    );
-  }
+  Widget _buildWeatherImage() => Image.asset(
+    statusWeather.getImageToday(
+      widget.weather,
+      widget.time,
+      widget.timeDay,
+      widget.timeNight,
+    ),
+    scale: 3,
+  );
+
+  Widget _buildTemperatureText(TextTheme textTheme) => Text(
+    statusData.getDegree((widget.degree ?? 0).round()),
+    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+  );
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/main.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/main.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationShow {
@@ -36,9 +36,8 @@ class NotificationShow {
     }
   }
 
-  Future<String> _getLocalImagePath(String icon) async {
-    return await WeatherController().getLocalImagePath(icon);
-  }
+  Future<String> _getLocalImagePath(String icon) async =>
+      await WeatherController().getLocalImagePath(icon);
 
   Future<NotificationDetails> _buildNotificationDetails(
     String imagePath,
@@ -55,7 +54,6 @@ class NotificationShow {
     return NotificationDetails(android: androidNotificationDetails);
   }
 
-  tz.TZDateTime _getScheduledTime(DateTime date) {
-    return tz.TZDateTime.from(date, tz.local);
-  }
+  tz.TZDateTime _getScheduledTime(DateTime date) =>
+      tz.TZDateTime.from(date, tz.local);
 }

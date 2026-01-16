@@ -12,15 +12,15 @@ import 'package:home_widget/home_widget.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/data/db.dart';
-import 'package:rain/app/ui/geolocation.dart';
-import 'package:rain/app/ui/home.dart';
-import 'package:rain/app/ui/onboarding.dart';
-import 'package:rain/theme/theme.dart';
-import 'package:rain/theme/theme_controller.dart';
-import 'package:rain/translation/translation.dart';
-import 'package:rain/app/utils/device_info.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/geolocation.dart';
+import 'package:nimbus/app/ui/home.dart';
+import 'package:nimbus/app/ui/onboarding.dart';
+import 'package:nimbus/theme/theme.dart';
+import 'package:nimbus/theme/theme_controller.dart';
+import 'package:nimbus/translation/translation.dart';
+import 'package:nimbus/app/utils/device_info.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:workmanager/workmanager.dart';
@@ -51,26 +51,39 @@ const String androidWidgetName = 'OreoWidget';
 
 const List<Map<String, dynamic>> appLanguages = [
   {'name': 'বাংলা', 'locale': Locale('bn', 'IN')},
+  {'name': 'العربية', 'locale': Locale('ar', 'SA')},
+  {'name': 'অসমীয়া', 'locale': Locale('as', 'IN')},
+  {'name': 'বাংলা', 'locale': Locale('bn', 'IN')},
   {'name': 'Čeština', 'locale': Locale('cs', 'CZ')},
   {'name': 'Dansk', 'locale': Locale('da', 'DK')},
   {'name': 'Deutsch', 'locale': Locale('de', 'DE')},
   {'name': 'English', 'locale': Locale('en', 'US')},
   {'name': 'Español', 'locale': Locale('es', 'ES')},
   {'name': 'Français', 'locale': Locale('fr', 'FR')},
-  // {'name': 'Gaeilge', 'locale':  Locale('ga', 'IE')},
   {'name': 'हिन्दी', 'locale': Locale('hi', 'IN')},
+  {'name': 'Gaeilge', 'locale': Locale('ga', 'IE')},
+  {'name': 'ગુજરાતી', 'locale': Locale('gu', 'IN')},
+  {'name': 'हिन्दी', 'locale': Locale('hi', 'IN')},
+  {'name': 'עברית', 'locale': Locale('he', 'IL')},
   {'name': 'Magyar', 'locale': Locale('hu', 'HU')},
   {'name': 'Italiano', 'locale': Locale('it', 'IT')},
+  {'name': 'ಕನ್ನಡ', 'locale': Locale('kn', 'IN')},
   {'name': '한국어', 'locale': Locale('ko', 'KR')},
+  {'name': 'മലയാളം', 'locale': Locale('ml', 'IN')},
+  {'name': 'मराठी', 'locale': Locale('mr', 'IN')},
   {'name': 'فارسی', 'locale': Locale('fa', 'IR')},
+  {'name': 'ਪੰਜਾਬੀ', 'locale': Locale('pa', 'IN')},
   {'name': 'ქართული', 'locale': Locale('ka', 'GE')},
   {'name': 'Nederlands', 'locale': Locale('nl', 'NL')},
+  {'name': 'ଓଡ଼ିଆ', 'locale': Locale('or', 'IN')},
   {'name': 'Polski', 'locale': Locale('pl', 'PL')},
   {'name': 'Português', 'locale': Locale('pt', 'PT')},
   {'name': 'Português (Brasil)', 'locale': Locale('pt', 'BR')},
   {'name': 'Română', 'locale': Locale('ro', 'RO')},
   {'name': 'Русский', 'locale': Locale('ru', 'RU')},
   {'name': 'Slovenčina', 'locale': Locale('sk', 'SK')},
+  {'name': 'தமிழ்', 'locale': Locale('ta', 'IN')},
+  {'name': 'తెలుగు', 'locale': Locale('te', 'IN')},
   {'name': 'Türkçe', 'locale': Locale('tr', 'TR')},
   {'name': 'اردو', 'locale': Locale('ur', 'PK')},
   {'name': '中文(简体)', 'locale': Locale('zh', 'CN')},
@@ -78,11 +91,9 @@ const List<Map<String, dynamic>> appLanguages = [
 ];
 
 @pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
-    return WeatherController().updateWidget();
-  });
-}
+void callbackDispatcher() => Workmanager().executeTask(
+  (task, inputData) => WeatherController().updateWidget(),
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,13 +114,11 @@ Future<void> initializeApp() async {
   DeviceFeature().init();
 }
 
-void setupConnectivityListener() {
-  Connectivity().onConnectivityChanged.listen((result) {
-    isOnline.value = result.contains(ConnectivityResult.none)
-        ? Future.value(false)
-        : InternetConnection().hasInternetAccess;
-  });
-}
+void setupConnectivityListener() => Connectivity().onConnectivityChanged.listen(
+  (result) => isOnline.value = result.contains(ConnectivityResult.none)
+      ? Future.value(false)
+      : InternetConnection().hasInternetAccess,
+);
 
 Future<void> initializeTimeZone() async {
   final TimezoneInfo timeZoneName = await FlutterTimezone.getLocalTimezone();

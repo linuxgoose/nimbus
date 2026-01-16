@@ -31,8 +31,8 @@ class Settings {
 class MainWeatherCache {
   Id id = Isar.autoIncrement;
   List<String>? time;
-  List<int>? weathercode;
-  List<double>? temperature2M;
+  List<int?>? weathercode;
+  List<double?>? temperature2M;
   List<double?>? apparentTemperature;
   List<int?>? relativehumidity2M;
   List<double?>? precipitation;
@@ -151,8 +151,9 @@ class LocationCache {
   double? lon;
   String? city;
   String? district;
+  String? country;
 
-  LocationCache({this.lat, this.lon, this.city, this.district});
+  LocationCache({this.lat, this.lon, this.city, this.district, this.country});
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -160,6 +161,7 @@ class LocationCache {
     'lon': lon,
     'city': city,
     'district': district,
+    'country': country,
   };
 }
 
@@ -167,8 +169,8 @@ class LocationCache {
 class WeatherCard {
   Id id = Isar.autoIncrement;
   List<String>? time;
-  List<int>? weathercode;
-  List<double>? temperature2M;
+  List<int?>? weathercode;
+  List<double?>? temperature2M;
   List<double?>? apparentTemperature;
   List<int?>? relativehumidity2M;
   List<double?>? precipitation;
@@ -297,13 +299,13 @@ class WeatherCard {
   factory WeatherCard.fromJson(Map<String, dynamic> json) {
     return WeatherCard(
       time: List<String>.from(json['time'] ?? []),
-      weathercode: List<int>.from(json['weathercode'] ?? []),
-      temperature2M: List<double>.from(json['temperature2M'] ?? []),
+      weathercode: List<int?>.from(json['weathercode'] ?? []),
+      temperature2M: List<double?>.from(json['temperature2M'] ?? []),
       apparentTemperature: List<double?>.from(
         json['apparentTemperature'] ?? [],
       ),
       relativehumidity2M: List<int?>.from(json['relativehumidity2M'] ?? []),
-      precipitation: List<double>.from(json['precipitation'] ?? []),
+      precipitation: List<double?>.from(json['precipitation'] ?? []),
       rain: List<double?>.from(json['rain'] ?? []),
       surfacePressure: List<double?>.from(json['surfacePressure'] ?? []),
       visibility: List<double?>.from(json['visibility'] ?? []),

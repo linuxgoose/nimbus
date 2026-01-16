@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:rain/app/controller/controller.dart';
-import 'package:rain/app/ui/places/widgets/place_card_list.dart';
-import 'package:rain/app/ui/widgets/text_form.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/ui/places/widgets/place_card_list.dart';
+import 'package:nimbus/app/ui/widgets/text_form.dart';
 
 class PlaceList extends StatefulWidget {
   const PlaceList({super.key});
@@ -34,79 +34,74 @@ class _PlaceListState extends State<PlaceList> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final textTheme = context.textTheme;
-    final titleMedium = textTheme.titleMedium;
+  Widget build(BuildContext context) => Obx(() => _buildContent(context));
 
-    return Obx(() => _buildContent(context, titleMedium));
-  }
-
-  Widget _buildContent(BuildContext context, TextStyle? titleMedium) {
+  Widget _buildContent(BuildContext context) {
     if (weatherController.weatherCards.isEmpty) {
-      return _buildEmptyState(context, titleMedium);
+      return _buildEmptyState(context);
     } else {
       return _buildListView(context);
     }
   }
 
-  Widget _buildEmptyState(BuildContext context, TextStyle? titleMedium) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Image.asset('assets/icons/City.png', scale: 6),
-            SizedBox(
-              width: Get.size.width * 0.8,
-              child: Text(
-                'noWeatherCard'.tr,
-                textAlign: TextAlign.center,
-                style: titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
-                ),
+  Widget _buildEmptyState(BuildContext context) => Center(
+    child: SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            LucideIcons.mapPinned,
+            size: 80,
+            color: context.theme.colorScheme.primary.withOpacity(0.5),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: Get.size.width * 0.8,
+            child: Text(
+              'noWeatherCard'.tr,
+              textAlign: TextAlign.center,
+              style: context.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _buildListView(BuildContext context) {
-    return NestedScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [_buildSearchField(context)];
-      },
-      body: RefreshIndicator(
-        onRefresh: _handleRefresh,
-        child: PlaceCardList(searchCity: filter),
-      ),
-    );
-  }
+  Widget _buildListView(BuildContext context) => NestedScrollView(
+    physics: const NeverScrollableScrollPhysics(),
+    headerSliverBuilder: (context, innerBoxIsScrolled) => [
+      _buildSearchField(context),
+    ],
+    body: RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: PlaceCardList(searchCity: filter),
+    ),
+  );
 
-  Widget _buildSearchField(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: MyTextForm(
-        labelText: 'search'.tr,
-        type: TextInputType.text,
-        icon: const Icon(IconsaxPlusLinear.search_normal_1, size: 20),
-        controller: searchTasks,
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        onChanged: applyFilter,
-        iconButton: searchTasks.text.isNotEmpty
-            ? IconButton(
-                onPressed: clearSearch,
-                icon: const Icon(
-                  IconsaxPlusLinear.close_circle,
-                  color: Colors.grey,
-                  size: 20,
-                ),
-              )
-            : null,
-      ),
-    );
-  }
+  Widget _buildSearchField(BuildContext context) => SliverToBoxAdapter(
+    child: MyTextForm(
+      labelText: 'search'.tr,
+      type: TextInputType.text,
+      icon: const Icon(LucideIcons.search, size: 20),
+      controller: searchTasks,
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      onChanged: applyFilter,
+      iconButton: searchTasks.text.isNotEmpty
+          ? IconButton(
+              onPressed: clearSearch,
+              icon: const Icon(
+                LucideIcons.circleX,
+                color: Colors.grey,
+                size: 20,
+              ),
+            )
+          : null,
+    ),
+  );
 
   Future<void> _handleRefresh() async {
     await weatherController.updateCacheCard(true);

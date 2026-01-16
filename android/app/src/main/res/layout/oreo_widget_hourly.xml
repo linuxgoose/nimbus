@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/widget_hourly_container"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="8dp"
+              android:background="#FFFFFF">
+    
+    <TextView
+        android:id="@+id/widget_location_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:paddingBottom="2dp"
+        android:text="Location, Country"
+        android:textColor="#000000"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/hourly_time_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+            <ImageView
+                android:id="@+id/hourly_icon_0"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="icon" />
+            <TextView
+                android:id="@+id/hourly_temp_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_wind_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_precip_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp"
+                android:textColor="#0066CC" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/hourly_time_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+            <ImageView
+                android:id="@+id/hourly_icon_1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="icon" />
+            <TextView
+                android:id="@+id/hourly_temp_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_wind_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_precip_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp"
+                android:textColor="#0066CC" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/hourly_time_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+            <ImageView
+                android:id="@+id/hourly_icon_2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="icon" />
+            <TextView
+                android:id="@+id/hourly_temp_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_wind_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_precip_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp"
+                android:textColor="#0066CC" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/hourly_time_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+            <ImageView
+                android:id="@+id/hourly_icon_3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="icon" />
+            <TextView
+                android:id="@+id/hourly_temp_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_wind_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_precip_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp"
+                android:textColor="#0066CC" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/hourly_time_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+            <ImageView
+                android:id="@+id/hourly_icon_4"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="icon" />
+            <TextView
+                android:id="@+id/hourly_temp_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_wind_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_precip_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp"
+                android:textColor="#0066CC" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingVertical="4dp">
+            <TextView
+                android:id="@+id/hourly_time_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+            <ImageView
+                android:id="@+id/hourly_icon_5"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="fitCenter"
+                android:contentDescription="icon" />
+            <TextView
+                android:id="@+id/hourly_temp_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_wind_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:layout_marginTop="2dp"
+                android:textColor="#000000" />
+            <TextView
+                android:id="@+id/hourly_precip_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:layout_marginTop="1dp"
+                android:textColor="#0066CC" />
+        </LinearLayout>
+        
+    </LinearLayout>
+</LinearLayout>
