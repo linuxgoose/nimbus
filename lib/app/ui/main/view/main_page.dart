@@ -139,6 +139,11 @@ class _MainPageState extends State<MainPage> {
   );
 
   Widget _buildWeatherAlert() {
+    // Check if alerts should be shown on main page
+    if (!settings.showAlertsOnMainPage) {
+      return const SizedBox.shrink();
+    }
+
     // Check if dummy alerts should be shown
     if (settings.showDummyAlerts) {
       return _buildDummyAlert();
@@ -168,7 +173,11 @@ class _MainPageState extends State<MainPage> {
           final alerts = snapshot.data!;
           if (alerts.isEmpty) return const SizedBox.shrink();
 
-          final alert = alerts.first;
+          // Filter alerts by minimum severity setting
+          final filteredAlerts = _filterAlertsBySeverity(alerts);
+          if (filteredAlerts.isEmpty) return const SizedBox.shrink();
+
+          final alert = filteredAlerts.first;
           final String alertTitle =
               alert['event']?.toString() ?? "Weather Warning";
           final String alertDesc =
@@ -191,6 +200,9 @@ class _MainPageState extends State<MainPage> {
               warningColor = Colors.blue;
           }
 
+          // Store alert in history
+          _storeAlertInHistory(alert, lat, lon);
+
           return _buildAlertContainer(alertTitle, alertDesc, warningColor);
         } catch (e) {
           // Catch-all for parsing errors to prevent the screen from going red
@@ -198,6 +210,49 @@ class _MainPageState extends State<MainPage> {
         }
       },
     );
+  }
+
+  List<dynamic> _filterAlertsBySeverity(List<dynamic> alerts) {
+    if (settings.alertMinSeverity == 'all') return alerts;
+
+    final severityLevels = ['minor', 'moderate', 'severe', 'extreme'];
+    final minLevel = settings.alertMinSeverity;
+    final minIndex = severityLevels.indexOf(minLevel);
+
+    return alerts.where((alert) {
+      final severity = (alert['severity']?.toString() ?? 'moderate')
+          .toLowerCase();
+      final severityIndex = severityLevels.indexOf(severity);
+      return severityIndex >= minIndex;
+    }).toList();
+  }
+
+  void _storeAlertInHistory(dynamic alert, double lat, double lon) {
+    try {
+      final timestamp = DateTime.now();
+      final event = alert['event']?.toString() ?? 'Weather Alert';
+      final severity = (alert['severity']?.toString() ?? 'moderate')
+          .toLowerCase();
+
+      // Create unique key combining location and event
+      final eventKey =
+          '${lat.toStringAsFixed(4)}_${lon.toStringAsFixed(4)}_${timestamp.millisecondsSinceEpoch}_$event';
+
+      final alertHistory = AlertHistory(
+        lat: lat,
+        lon: lon,
+        timestamp: timestamp,
+        event: event,
+        description: alert['description']?.toString(),
+        severity: severity,
+      )..eventKey = eventKey;
+
+      isar.writeTxnSync(() {
+        isar.alertHistorys.putByEventKeySync(alertHistory);
+      });
+    } catch (e) {
+      debugPrint('Error storing alert in history: $e');
+    }
   }
 
   Widget _buildDummyAlert() {

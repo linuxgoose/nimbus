@@ -165,6 +165,11 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       _warningLabels.clear();
     });
 
+    // Check if alerts should be shown on map
+    if (!settings.showAlertsOnMap) {
+      return;
+    }
+
     // Check if dummy alerts should be shown
     if (settings.showDummyAlerts) {
       _addDummyCumbriaWarning();
@@ -180,7 +185,13 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
       final List alerts = await WeatherAPI().getRawAlerts(lat, lon);
 
-      for (var alert in alerts) {
+      // Filter alerts by minimum severity setting
+      final filteredAlerts = _filterAlertsBySeverity(alerts);
+
+      for (var alert in filteredAlerts) {
+        // Store alert in history
+        _storeAlertInHistory(alert, lat, lon);
+
         if (alert['boundaries'] != null) {
           final features = alert['boundaries']['features'] as List;
           for (var feature in features) {
@@ -218,6 +229,49 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       }
     } catch (e) {
       debugPrint("Alerts Error: $e");
+    }
+  }
+
+  List<dynamic> _filterAlertsBySeverity(List<dynamic> alerts) {
+    if (settings.alertMinSeverity == 'all') return alerts;
+
+    final severityLevels = ['minor', 'moderate', 'severe', 'extreme'];
+    final minLevel = settings.alertMinSeverity;
+    final minIndex = severityLevels.indexOf(minLevel);
+
+    return alerts.where((alert) {
+      final severity = (alert['severity']?.toString() ?? 'moderate')
+          .toLowerCase();
+      final severityIndex = severityLevels.indexOf(severity);
+      return severityIndex >= minIndex;
+    }).toList();
+  }
+
+  void _storeAlertInHistory(dynamic alert, double lat, double lon) {
+    try {
+      final timestamp = DateTime.now();
+      final event = alert['event']?.toString() ?? 'Weather Alert';
+      final severity = (alert['severity']?.toString() ?? 'moderate')
+          .toLowerCase();
+
+      // Create unique key combining location and event
+      final eventKey =
+          '${lat.toStringAsFixed(4)}_${lon.toStringAsFixed(4)}_${timestamp.millisecondsSinceEpoch}_$event';
+
+      final alertHistory = AlertHistory(
+        lat: lat,
+        lon: lon,
+        timestamp: timestamp,
+        event: event,
+        description: alert['description']?.toString(),
+        severity: severity,
+      )..eventKey = eventKey;
+
+      isar.writeTxnSync(() {
+        isar.alertHistorys.putByEventKeySync(alertHistory);
+      });
+    } catch (e) {
+      debugPrint('Error storing alert in history: $e');
     }
   }
 

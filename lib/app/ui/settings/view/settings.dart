@@ -12,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/alert_history/view/alert_history_page.dart';
 import 'package:nimbus/app/ui/settings/widgets/setting_card.dart';
 import 'package:nimbus/main.dart';
 import 'package:nimbus/theme/theme_controller.dart';
@@ -248,6 +249,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   _buildWeatherAlertsTitle(context),
                   _buildDummyAlertsSettingCard(context, setState),
+                  _buildAlertSeveritySettingCard(context, setState),
+                  _buildShowAlertsOnMainPageSettingCard(context, setState),
+                  _buildShowAlertsOnMapSettingCard(context, setState),
+                  _buildViewAlertHistoryCard(context),
                   const Gap(10),
                 ],
               ),
@@ -813,6 +818,95 @@ class _SettingsPageState extends State<SettingsPage> {
       settings.showDummyAlerts = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
+    },
+  );
+
+  Widget _buildAlertSeveritySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.info),
+    text: 'Minimum Alert Severity',
+    dropdown: true,
+    dropdownName: _getSeverityDisplayName(settings.alertMinSeverity),
+    dropdownList: <String>['Show All', 'Moderate+', 'Severe+', 'Extreme Only'],
+    dropdownChange: (String? newValue) {
+      if (newValue == null) return;
+      String severityValue;
+      switch (newValue) {
+        case 'Moderate+':
+          severityValue = 'moderate';
+          break;
+        case 'Severe+':
+          severityValue = 'severe';
+          break;
+        case 'Extreme Only':
+          severityValue = 'extreme';
+          break;
+        default:
+          severityValue = 'all';
+      }
+      isar.writeTxnSync(() {
+        settings.alertMinSeverity = severityValue;
+        isar.settings.putSync(settings);
+      });
+      setState(() {});
+    },
+  );
+
+  String _getSeverityDisplayName(String severity) {
+    switch (severity) {
+      case 'moderate':
+        return 'Moderate+';
+      case 'severe':
+        return 'Severe+';
+      case 'extreme':
+        return 'Extreme Only';
+      default:
+        return 'Show All';
+    }
+  }
+
+  Widget _buildShowAlertsOnMainPageSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.house),
+    text: 'Show Alerts on Main Page',
+    switcher: true,
+    value: settings.showAlertsOnMainPage,
+    onChange: (value) {
+      settings.showAlertsOnMainPage = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildShowAlertsOnMapSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.map),
+    text: 'Show Alerts on Map',
+    switcher: true,
+    value: settings.showAlertsOnMap,
+    onChange: (value) {
+      settings.showAlertsOnMap = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildViewAlertHistoryCard(BuildContext context) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.history),
+    text: 'View Alert History',
+    onPressed: () {
+      Navigator.pop(context); // Close settings bottom sheet
+      Get.to(() => AlertHistoryPage());
     },
   );
 

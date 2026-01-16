@@ -26,10 +26,44 @@ class Settings {
   String timeformat = '24';
   String aqiIndex = 'daqi';
   bool showDummyAlerts = false;
+  String alertMinSeverity = 'all'; // all, moderate, severe, extreme
+  bool showAlertsOnMainPage = true;
+  bool showAlertsOnMap = true;
   String? language;
   int? timeRange;
   String? timeStart;
   String? timeEnd;
+}
+
+@collection
+class AlertHistory {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String eventKey = ''; // Composite key: lat_lon_timestamp_event
+
+  double lat;
+  double lon;
+  DateTime timestamp;
+
+  String event;
+  String? description;
+  String severity; // extreme, severe, moderate, minor
+  String? boundariesJson; // Store boundaries as JSON string
+  DateTime? startTime;
+  DateTime? endTime;
+
+  AlertHistory({
+    required this.lat,
+    required this.lon,
+    required this.timestamp,
+    required this.event,
+    this.description,
+    required this.severity,
+    this.boundariesJson,
+    this.startTime,
+    this.endTime,
+  });
 }
 
 @collection
