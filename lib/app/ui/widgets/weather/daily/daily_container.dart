@@ -130,7 +130,14 @@ class _DailyContainerState extends State<DailyContainer> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(statusWeather.getImage7Day(weatherCode), scale: 3),
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: Image.asset(
+              statusWeather.getImage7Day(weatherCode),
+              fit: BoxFit.contain,
+            ),
+          ),
           const Gap(5),
           Expanded(
             child: Text(

@@ -25,6 +25,8 @@ class StatusWeather {
         'wi-night-snow',
         'wi-day-snow-96',
         'wi-night-snow-96',
+        'wi-day-rain-512',
+        'wi-night-rain-512',
       ];
 
       // Extract filename without path and extension for exact matching
@@ -52,8 +54,8 @@ class StatusWeather {
   );
 
   // Updated to include Dark Mode check
-  String getImageNowDaily(int? weather) =>
-      _adjustForDarkMode(_getDailyImage(weather));
+  String getImageNowDaily(int? weather, {String size = ''}) =>
+      _adjustForDarkMode(_getDailyImage(weather, isDay: true, size: size));
 
   String getImageToday(
     int? weather,
@@ -121,17 +123,19 @@ class StatusWeather {
     return _adjustForDarkMode(path);
   }
 
-  String _getDailyImage(int? weather, {bool isDay = false}) {
+  String _getDailyImage(int? weather, {bool isDay = false, String size = ''}) {
+    final sizePrefix = size.isNotEmpty ? '-$size' : '';
+
     switch (weather) {
       case 0:
-        return '$assetImageRoot${isDay ? 'wi-day-clear' : 'wi-sun'}.png';
+        return '$assetImageRoot${isDay ? 'wi-day-clear' : 'wi-sun'}$sizePrefix.png';
       case 1:
       case 2:
       case 3:
-        return '$assetImageRoot${isDay ? 'wi-cloudy-day' : 'wi-cloud'}.png';
+        return '$assetImageRoot${isDay ? 'wi-cloud' : 'wi-cloud'}$sizePrefix.png';
       case 45:
       case 48:
-        return '${assetImageRoot}fog${isDay ? '_day' : ''}.png';
+        return '${assetImageRoot}fog${isDay ? '_day' : ''}$sizePrefix.png';
       case 51:
       case 53:
       case 55:
@@ -145,18 +149,18 @@ class StatusWeather {
       case 80:
       case 81:
       case 82:
-        return '$assetImageRoot${isDay ? 'wi-day-rain' : 'wi-night-rain'}.png';
+        return '$assetImageRoot${isDay ? 'wi-day-rain-512' : 'wi-night-rain-512'}$sizePrefix.png';
       case 71:
       case 73:
       case 75:
       case 77:
       case 85:
       case 86:
-        return '$assetImageRoot${isDay ? 'wi-day-snow-96' : 'wi-night-snow-96'}.png';
+        return '$assetImageRoot${isDay ? 'wi-day-snow' : 'wi-night-snow'}$sizePrefix.png';
       case 95:
       case 96:
       case 99:
-        return '${assetImageRoot}thunder${isDay ? '_day' : ''}.png';
+        return '${assetImageRoot}thunder${isDay ? '_day' : ''}$sizePrefix.png';
       default:
         return '';
     }
