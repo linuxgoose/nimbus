@@ -764,6 +764,9 @@ class WeatherController extends GetxController {
         final weathercode = mainWeatherCache.weathercodeDaily?[dayIndex];
         final tempMax = mainWeatherCache.temperature2MMax?[dayIndex];
         final tempMin = mainWeatherCache.temperature2MMin?[dayIndex];
+        final windSpeed = mainWeatherCache.windspeed10MMax?[dayIndex];
+        final precipProb =
+            mainWeatherCache.precipitationProbabilityMax?[dayIndex];
 
         final dateFormat = DateFormat.MMMd(locale.languageCode).format(date);
 
@@ -775,6 +778,18 @@ class WeatherController extends GetxController {
         await HomeWidget.saveWidgetData(
           'daily_min_$i',
           '${tempMin?.round() ?? 0}°',
+        );
+
+        // Save wind speed
+        await HomeWidget.saveWidgetData(
+          'daily_wind_$i',
+          '${windSpeed?.round() ?? 0} ${settings.wind}',
+        );
+
+        // Save precipitation probability
+        await HomeWidget.saveWidgetData(
+          'daily_precip_$i',
+          '${precipProb ?? 0}%',
         );
 
         try {

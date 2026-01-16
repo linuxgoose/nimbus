@@ -30,22 +30,34 @@ class DailyWidget : HomeWidgetProvider() {
             val locationName = widgetData.getString("location_name", "Unknown Location")
             remoteViews.setTextViewText(R.id.widget_location_name, locationName)
 
-            // Display daily forecast data (days 0-3)
+            // Display daily forecast data (days 0-5)
             for (i in 0 until 6) {
                 val date = widgetData.getString("daily_date_$i", null)
                 val max = widgetData.getString("daily_max_$i", null)
                 val min = widgetData.getString("daily_min_$i", null)
                 val icon = widgetData.getString("daily_icon_$i", null)
+                val wind = widgetData.getString("daily_wind_$i", null)
+                val precip = widgetData.getString("daily_precip_$i", null)
 
                 val dateViewId = context.resources.getIdentifier("daily_date_$i", "id", context.packageName)
                 val maxViewId = context.resources.getIdentifier("daily_max_$i", "id", context.packageName)
                 val minViewId = context.resources.getIdentifier("daily_min_$i", "id", context.packageName)
                 val iconViewId = context.resources.getIdentifier("daily_icon_$i", "id", context.packageName)
+                val windViewId = context.resources.getIdentifier("daily_wind_$i", "id", context.packageName)
+                val precipViewId = context.resources.getIdentifier("daily_precip_$i", "id", context.packageName)
 
                 if (date != null && max != null && min != null) {
                     remoteViews.setTextViewText(dateViewId, date)
                     remoteViews.setTextViewText(maxViewId, max)
                     remoteViews.setTextViewText(minViewId, min)
+                }
+                
+                if (wind != null && windViewId != 0) {
+                    remoteViews.setTextViewText(windViewId, wind)
+                }
+                
+                if (precip != null && precipViewId != 0) {
+                    remoteViews.setTextViewText(precipViewId, precip)
                 }
                 
                 if (icon != null) {
@@ -88,10 +100,15 @@ class DailyWidget : HomeWidgetProvider() {
                 val dateViewId = context.resources.getIdentifier("daily_date_$i", "id", context.packageName)
                 val maxViewId = context.resources.getIdentifier("daily_max_$i", "id", context.packageName)
                 val minViewId = context.resources.getIdentifier("daily_min_$i", "id", context.packageName)
+                val windViewId = context.resources.getIdentifier("daily_wind_$i", "id", context.packageName)
+                val precipViewId = context.resources.getIdentifier("daily_precip_$i", "id", context.packageName)
                 
                 if (dateViewId != 0) remoteViews.setTextColor(dateViewId, finalTextColor)
                 if (maxViewId != 0) remoteViews.setTextColor(maxViewId, finalTextColor)
                 if (minViewId != 0) remoteViews.setTextColor(minViewId, finalTextColor)
+                if (windViewId != 0) remoteViews.setTextColor(windViewId, finalTextColor)
+                // Keep precip color blue for visibility
+                if (precipViewId != 0) remoteViews.setTextColor(precipViewId, Color.parseColor("#0066CC"))
             }
 
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
