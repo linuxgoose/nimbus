@@ -11,6 +11,14 @@
     </p>
 </p>
 
+## Download
+
+<div align="left">
+<a href="https://github.com/linuxgoose/nimbus/releases">
+  <img src="Screenshots/github_download_buttton.png" alt="github_link" width="150">
+</a>
+</div>
+
 <p align='center'> Your comprehensive weather companion. Stay informed with accurate forecasts and elegant design. </p>
 
 ### Complete Weather Information
@@ -33,13 +41,22 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - 9 customizable color schemes (TITAN, NEXRAD, Weather Channel, Dark Sky, and more)
   - Dynamic legend showing precipitation intensity
   - Location centering and interactive map controls
-- **Tide Predictions:** Comprehensive tide information with:
+- **Tide Predictions:** Comprehensive tide information with multiple data sources:
+  - **Stormglass API**: Global coverage with lat/lon-based predictions (10 requests/day free)
+    - Multiple saved locations with geocoding search
+    - 24-hour offline caching to conserve API quota
+    - Configurable datum selection (MLLW, MLW, MSL, MHW, MHHW)
+  - **UK Tidal API - Discovery**: Authoritative UK tide data from the UK Hydrographic Office
+    - 608+ tide stations across the UK, Channel Islands, and Gibraltar
+    - Station-based predictions using official tidal constants
+    - Searchable station browser with real-time filtering
+    - Save multiple stations with primary station selection
+    - LAT (Lowest Astronomical Tide) datum standard
+    - No caching - always provides fresh predictions
+  - **UK Environment Agency**: Real-time water levels for England (interpolated predictions)
   - Interactive 24-hour tide chart with axis labels
-  - Current tide level and status (rising/falling)
+  - Current tide level and height display
   - Upcoming high and low tide times
-  - Multiple saved locations with geocoding search
-  - Optional real-time data via Stormglass API (10 requests/day free)
-  - 24-hour offline caching to conserve API quota
   - Toggle between real and dummy data for testing
 - **Detailed Weather Data:** Access comprehensive weather statistics including temperature, humidity, wind speed, precipitation probability, UV index, and more.
 - **Weather Alerts:** Receive timely notifications about significant weather changes and conditions, including:
@@ -54,6 +71,66 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - Color-coded health recommendations
   - 1-hour caching to reduce API calls
   - Manual cache inspection and clearing
+- **Aurora Watch:** Track northern lights activity with:
+  - Real-time Kp-index from NOAA Space Weather Prediction Center
+  - AuroraWatch UK alerts for the United Kingdom
+  - 3-day aurora forecast with hourly predictions
+  - Activity levels and visibility indicators
+  - Color-coded alerts based on geomagnetic activity
+  - 30-minute caching for optimal performance
+- **Moon Phases:** Comprehensive lunar information with:
+  - Current moon phase with emoji visualization
+  - Phase name and illumination percentage
+  - Progress indicator through lunar cycle
+  - Predictions for next full and new moon
+  - Educational information about moon phases
+  - Astronomical calculations using Julian Date method
+- **UK Flood Monitoring:** Real-time flood and river data across the UK with:
+  - Active flood warnings and alerts from regional agencies
+  - England: Environment Agency flood warnings and river monitoring stations
+  - Scotland: SEPA (Scottish Environment Protection Agency) warnings only
+  - Wales: Natural Resources Wales flood alerts only
+  - Northern Ireland: Limited data availability (no public API)
+  - Interactive map showing flood areas and monitoring stations
+  - Severity levels (Severe Warning, Warning, Alert)
+  - River level monitoring stations (England only)
+  - Configurable search radius (25-200km, default 100km)
+  - Location-based filtering with distance calculations
+  - Color-coded warning indicators
+  - Detailed warning information and updates
+  - Toggle visibility and notifications in settings
+- **Agriculture Data:** Comprehensive farming and crop management information with:
+  - Soil moisture monitoring at multiple depths (0-1cm, 1-3cm, 3-9cm, 9-27cm, 27-81cm)
+  - Soil temperature at different levels (surface, 6cm, 18cm, 54cm)
+  - ET₀ FAO Reference Evapotranspiration for irrigation planning
+  - Vapour Pressure Deficit (VPD) for plant stress assessment
+  - Growing Degree Days (GDD) calculations for crop development
+  - 48-hour soil condition forecasts with interactive charts
+  - 7-day agricultural weather forecast
+  - Real-time conditions and recommendations
+  - Toggle visibility in settings
+- **Marine Conditions:** Ocean and wave data for maritime activities with:
+  - Total wave height and wind wave height monitoring
+  - Swell wave analysis (long-period waves from distant storms)
+  - Ocean current velocity and direction
+  - Wave period measurements and characteristics
+  - 48-hour wave height and swell forecasts with interactive charts
+  - 7-day marine forecast with dominant wave direction
+  - Wave categories (Calm, Smooth, Slight, Moderate, Rough, etc.)
+  - Safety recommendations based on current conditions
+  - Toggle visibility in settings
+- **Hiking Conditions:** Comprehensive outdoor trail weather data with:
+  - UV index monitoring with hourly forecasts
+  - Visibility tracking for safe navigation
+  - Wind speed, gusts, and direction analysis
+  - Snow depth and freezing level information
+  - Trail condition ratings (Excellent, Good, Fair, Poor, Hazardous)
+  - 48-hour UV index and visibility charts
+  - 7-day hiking forecast with weather metrics
+  - Temperature, feels-like, and precipitation data
+  - Safety recommendations for outdoor activities
+  - Toggle visibility in settings
+- **Elevation Data:** View elevation above sea level for any location
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.
 - **Multiple Locations:** Add and manage weather for multiple cities.
@@ -88,7 +165,14 @@ Weather data is powered by **multiple sources** for optimal accuracy and coverag
   - Enhanced short-term precipitation forecasting
   - Official government weather warnings when available
 
-Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day). Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data.
+Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. 
+
+**Tide Data Sources**:
+- **[Stormglass.io](https://stormglass.io/)**: Global tide predictions with optional API key integration (10 free requests per day)
+- **[UK Tidal API - Discovery](https://admiraltyapi.portal.azure-api.net/)**: Official UK tide data from the UK Hydrographic Office with 608+ monitoring stations
+- **[Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference)**: Real-time water levels for England
+
+Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data. UK flood monitoring data is provided by the [Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference) (England - warnings and monitoring stations), [SEPA](https://www2.sepa.org.uk/fwa/) (Scotland - warnings only), and [Natural Resources Wales](https://api.naturalresources.wales/) (Wales - warnings only). Northern Ireland's DfI Rivers does not currently provide a public API for automated flood data access.
 
 **Weather Provider Selection**: Choose your preferred weather data source in Settings → Weather Provider:
 - **Open-Meteo**: Global coverage (default)

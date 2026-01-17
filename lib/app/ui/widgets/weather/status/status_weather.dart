@@ -1,101 +1,99 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-const assetImageRoot = 'assets/images/';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:nimbus/app/utils/icon_to_image.dart';
 
 class StatusWeather {
-  /// Centralized logic to handle Dark Mode icon switching
-  String _adjustForDarkMode(String path) {
-    if (Get.isDarkMode && path.isNotEmpty) {
-      // List of icons that have a corresponding '-w.png' version
-      const whiteIconsAvailable = [
-        'wi-night-clear',
-        'wi-sun',
-        'wi-full-moon',
-        'wi-moon',
-        'wi-cloud',
-        'wi-cloudy-day',
-        'wi-day-clear',
-        'wi-day-clear-512',
-        'wi-night-cloudy',
-        'wi-night-rain',
-        'wi-day-rain',
-        'wi-fog',
-        'wi-wind-direction',
-        'wi-snow',
-        'wi-day-snow',
-        'wi-night-snow',
-        'wi-day-snow-96',
-        'wi-night-snow-96',
-        'wi-day-rain-512',
-        'wi-night-rain-512',
-      ];
-
-      // Extract filename without path and extension for exact matching
-      // e.g., "assets/images/wi-day-rain.png" -> "wi-day-rain"
-      String fileName = path.split('/').last.replaceAll('.png', '');
-
-      if (whiteIconsAvailable.contains(fileName)) {
-        return path.replaceAll('.png', '-w.png');
-      }
-    }
-    return path;
-  }
-
-  String getImageNow(
+  /// Get icon for current weather conditions
+  IconData getIconNow(
     int? weather,
     String time,
     String timeDay,
     String timeNight,
-  ) => _getImageBasedOnTime(
-    weather,
-    time,
-    timeDay,
-    timeNight,
-    _getDayNightImagePaths,
-  );
+  ) =>
+      _getIconBasedOnTime(weather, time, timeDay, timeNight, _getDayNightIcons);
 
-  // Updated to include Dark Mode check
-  String getImageNowDaily(int? weather, {String size = ''}) =>
-      _adjustForDarkMode(_getDailyImage(weather, isDay: true, size: size));
+  /// Get icon for daily forecast
+  IconData getIconNowDaily(int? weather) => _getDailyIcon(weather, isDay: true);
 
-  String getImageToday(
+  /// Get icon for today's forecast
+  IconData getIconToday(
     int? weather,
     String time,
     String timeDay,
     String timeNight,
-  ) => _getImageBasedOnTime(
-    weather,
-    time,
-    timeDay,
-    timeNight,
-    _getTodayImagePaths,
-  );
+  ) => _getIconBasedOnTime(weather, time, timeDay, timeNight, _getTodayIcons);
 
-  // Updated to include Dark Mode check
-  String getImage7Day(int? weather) =>
-      _adjustForDarkMode(_getDailyImage(weather, isDay: true));
+  /// Get icon for 7-day forecast
+  IconData getIcon7Day(int? weather) => _getDailyIcon(weather, isDay: true);
 
   String getText(int? weather) => _getWeatherText(weather);
 
-  String getImageNotification(
+  /// Get icon for notifications
+  IconData getIconNotification(
     int? weather,
     String time,
     String timeDay,
     String timeNight,
-  ) => _getImageBasedOnTime(
+  ) => _getIconBasedOnTime(
     weather,
     time,
     timeDay,
     timeNight,
-    _getNotificationImagePaths,
+    _getNotificationIcons,
   );
 
-  String _getImageBasedOnTime(
+  /// Get icon for widgets - generates colored bitmap from Lucide icon
+  Future<String> getImageNotification(
+    int? weather,
+    String time,
+    String timeDay,
+    String timeNight, {
+    Color? iconColor,
+  }) async {
+    final icons = _getNotificationIcons;
+    final isDayTime =
+        time.isNotEmpty && timeDay.isNotEmpty && timeNight.isNotEmpty
+        ? time.compareTo(timeDay) >= 0 && time.compareTo(timeNight) < 0
+        : true;
+
+    // Get the appropriate Lucide icon
+    final iconData = icons[weather]?[isDayTime] ?? LucideIcons.cloud;
+
+    // Use widget text color or default to white
+    final color = iconColor ?? Colors.white;
+
+    // Generate a unique filename based on weather code, time of day, and color
+    final colorHex = color.value.toRadixString(16).padLeft(8, '0');
+    final filename =
+        'weather_${weather}_${isDayTime ? 'day' : 'night'}_$colorHex.png';
+
+    // Generate and save the icon as PNG
+    try {
+      return await IconToImage.saveIconAsPng(
+        icon: iconData,
+        color: color,
+        filename: filename,
+        size: 96.0,
+      );
+    } catch (e) {
+      debugPrint('Error generating widget icon: $e');
+      // Fallback to generating a default cloud icon
+      return await IconToImage.saveIconAsPng(
+        icon: LucideIcons.cloud,
+        color: color,
+        filename: 'weather_fallback_$colorHex.png',
+        size: 96.0,
+      );
+    }
+  }
+
+  IconData _getIconBasedOnTime(
     int? weather,
     String time,
     String timeDay,
     String timeNight,
-    Map<int, Map<bool, String>> imagePaths,
+    Map<int, Map<bool, IconData>> icons,
   ) {
     final currentTime = DateTime.parse(time);
     final day = DateTime.parse(timeDay);
@@ -119,27 +117,25 @@ class StatusWeather {
     final isDayTime =
         currentTime.isAfter(dayTime) && currentTime.isBefore(nightTime);
 
-    String path = imagePaths[weather]?[isDayTime] ?? '';
-
-    return _adjustForDarkMode(path);
+    return icons[weather]?[isDayTime] ?? LucideIcons.handHelping;
   }
 
-  String _getDailyImage(int? weather, {bool isDay = false, String size = ''}) {
-    final sizePrefix = size.isNotEmpty ? '-$size' : '';
-
+  IconData _getDailyIcon(int? weather, {bool isDay = false}) {
     switch (weather) {
       case 0:
-        return '$assetImageRoot${isDay ? 'wi-day-clear-512' : 'wi-sun'}.png';
+        return isDay ? LucideIcons.sun : LucideIcons.moon;
       case 1:
       case 2:
+        return isDay ? LucideIcons.cloudSun : LucideIcons.cloudMoon;
       case 3:
-        return '$assetImageRoot${isDay ? 'wi-cloud' : 'wi-cloud'}.png';
+        return LucideIcons.cloud;
       case 45:
       case 48:
-        return '${assetImageRoot}fog${isDay ? '_day' : ''}.png';
+        return LucideIcons.cloudFog;
       case 51:
       case 53:
       case 55:
+        return LucideIcons.cloudDrizzle;
       case 56:
       case 57:
       case 61:
@@ -150,20 +146,20 @@ class StatusWeather {
       case 80:
       case 81:
       case 82:
-        return '$assetImageRoot${isDay ? 'wi-day-rain-512' : 'wi-night-rain-512'}.png';
+        return LucideIcons.cloudRain;
       case 71:
       case 73:
       case 75:
       case 77:
       case 85:
       case 86:
-        return '$assetImageRoot${isDay ? 'wi-day-snow' : 'wi-night-snow'}.png';
+        return LucideIcons.cloudSnow;
       case 95:
       case 96:
       case 99:
-        return '${assetImageRoot}thunder${isDay ? '_day' : ''}.png';
+        return LucideIcons.cloudLightning;
       default:
-        return '';
+        return LucideIcons.handHelping;
     }
   }
 
@@ -213,264 +209,96 @@ class StatusWeather {
     }
   }
 
-  final Map<int, Map<bool, String>> _getDayNightImagePaths = {
-    0: {
-      true: '${assetImageRoot}wi-sun.png',
-      false: '${assetImageRoot}wi-moon.png',
-    },
-    1: {
-      true: '${assetImageRoot}wi-cloud.png',
-      false: '${assetImageRoot}wi-moon.png',
-    },
-    2: {
-      true: '${assetImageRoot}wi-cloud.png',
-      false: '${assetImageRoot}wi-moon.png',
-    },
-    3: {
-      true: '${assetImageRoot}wi-cloud.png',
-      false: '${assetImageRoot}wi-moon.png',
-    },
-    45: {
-      true: '${assetImageRoot}wi-fog.png',
-      false: '${assetImageRoot}fog_moon.png',
-    },
-    48: {
-      true: '${assetImageRoot}wi-fog.png',
-      false: '${assetImageRoot}fog_moon.png',
-    },
-    51: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    53: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    55: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    56: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    57: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    61: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    63: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    65: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    66: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    67: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    80: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    81: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    82: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    71: {
-      true: '${assetImageRoot}wi-snow.png',
-      false: '${assetImageRoot}wi-snow.png',
-    },
-    73: {
-      true: '${assetImageRoot}wi-snow.png',
-      false: '${assetImageRoot}wi-snow.png',
-    },
-    75: {
-      true: '${assetImageRoot}wi-snow.png',
-      false: '${assetImageRoot}wi-snow.png',
-    },
-    77: {
-      true: '${assetImageRoot}wi-snow.png',
-      false: '${assetImageRoot}wi-snow.png',
-    },
-    85: {
-      true: '${assetImageRoot}wi-snow.png',
-      false: '${assetImageRoot}wi-snow.png',
-    },
-    86: {
-      true: '${assetImageRoot}wi-snow.png',
-      false: '${assetImageRoot}wi-snow.png',
-    },
-    95: {
-      true: '${assetImageRoot}thunder.png',
-      false: '${assetImageRoot}thunder.png',
-    },
-    96: {
-      true: '${assetImageRoot}storm.png',
-      false: '${assetImageRoot}storm.png',
-    },
-    99: {
-      true: '${assetImageRoot}storm.png',
-      false: '${assetImageRoot}storm.png',
-    },
+  final Map<int, Map<bool, IconData>> _getDayNightIcons = {
+    0: {true: LucideIcons.sun, false: LucideIcons.moon},
+    1: {true: LucideIcons.cloudSun, false: LucideIcons.cloudMoon},
+    2: {true: LucideIcons.cloudSun, false: LucideIcons.cloudMoon},
+    3: {true: LucideIcons.cloud, false: LucideIcons.cloud},
+    45: {true: LucideIcons.cloudFog, false: LucideIcons.cloudFog},
+    48: {true: LucideIcons.cloudFog, false: LucideIcons.cloudFog},
+    51: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    53: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    55: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    56: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    57: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    61: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    63: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    65: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    66: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    67: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    80: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    81: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    82: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    71: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    73: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    75: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    77: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    85: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    86: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    95: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
+    96: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
+    99: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
   };
 
-  final Map<int, Map<bool, String>> _getTodayImagePaths = {
-    0: {
-      true: '${assetImageRoot}wi-day-clear.png',
-      false: '${assetImageRoot}wi-night-clear.png',
-    },
-    1: {
-      true: '${assetImageRoot}wi-cloudy-day.png',
-      false: '${assetImageRoot}wi-night-cloudy.png',
-    },
-    2: {
-      true: '${assetImageRoot}wi-cloudy-day.png',
-      false: '${assetImageRoot}wi-night-cloudy.png',
-    },
-    3: {
-      true: '${assetImageRoot}wi-cloudy-day.png',
-      false: '${assetImageRoot}wi-night-cloudy.png',
-    },
-    45: {
-      true: '${assetImageRoot}fog_day.png',
-      false: '${assetImageRoot}fog_night.png',
-    },
-    48: {
-      true: '${assetImageRoot}fog_day.png',
-      false: '${assetImageRoot}fog_night.png',
-    },
-    51: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    53: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    55: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    56: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    57: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    61: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    63: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    65: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    66: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    67: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    80: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    81: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    82: {
-      true: '${assetImageRoot}wi-day-rain.png',
-      false: '${assetImageRoot}wi-night-rain.png',
-    },
-    71: {
-      true: '${assetImageRoot}wi-day-snow.png',
-      false: '${assetImageRoot}wi-night-snow.png',
-    },
-    73: {
-      true: '${assetImageRoot}wi-day-snow.png',
-      false: '${assetImageRoot}wi-night-snow.png',
-    },
-    75: {
-      true: '${assetImageRoot}wi-day-snow.png',
-      false: '${assetImageRoot}wi-night-snow.png',
-    },
-    77: {
-      true: '${assetImageRoot}wi-day-snow.png',
-      false: '${assetImageRoot}wi-night-snow.png',
-    },
-    85: {
-      true: '${assetImageRoot}wi-day-snow.png',
-      false: '${assetImageRoot}wi-night-snow.png',
-    },
-    86: {
-      true: '${assetImageRoot}wi-day-snow.png',
-      false: '${assetImageRoot}wi-night-snow.png',
-    },
-    95: {
-      true: '${assetImageRoot}thunder_day.png',
-      false: '${assetImageRoot}thunder_night.png',
-    },
-    96: {
-      true: '${assetImageRoot}thunder_day.png',
-      false: '${assetImageRoot}thunder_night.png',
-    },
-    99: {
-      true: '${assetImageRoot}thunder_day.png',
-      false: '${assetImageRoot}thunder_night.png',
-    },
+  final Map<int, Map<bool, IconData>> _getTodayIcons = {
+    0: {true: LucideIcons.sun, false: LucideIcons.moon},
+    1: {true: LucideIcons.cloudSun, false: LucideIcons.cloudMoon},
+    2: {true: LucideIcons.cloudSun, false: LucideIcons.cloudMoon},
+    3: {true: LucideIcons.cloud, false: LucideIcons.cloud},
+    45: {true: LucideIcons.cloudFog, false: LucideIcons.cloudFog},
+    48: {true: LucideIcons.cloudFog, false: LucideIcons.cloudFog},
+    51: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    53: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    55: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    56: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    57: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    61: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    63: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    65: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    66: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    67: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    80: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    81: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    82: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    71: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    73: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    75: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    77: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    85: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    86: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    95: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
+    96: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
+    99: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
   };
 
-  final Map<int, Map<bool, String>> _getNotificationImagePaths = {
-    0: {true: 'wi-sun.png', false: 'wi-moon.png'},
-    1: {true: 'wi-cloud.png', false: 'wi-moon.png'},
-    2: {true: 'wi-cloud.png', false: 'wi-moon.png'},
-    3: {true: 'wi-cloud.png', false: 'wi-moon.png'},
-    45: {true: 'wi-fog.png', false: 'fog_moon.png'},
-    48: {true: 'wi-fog.png', false: 'fog_moon.png'},
-    51: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    53: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    55: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    56: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    57: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    61: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    63: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    65: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    66: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    67: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    80: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    81: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    82: {true: 'wi-day-rain.png', false: 'wi-night-rain.png'},
-    71: {true: 'wi-snow.png', false: 'wi-snow.png'},
-    73: {true: 'wi-snow.png', false: 'wi-snow.png'},
-    75: {true: 'wi-snow.png', false: 'wi-snow.png'},
-    77: {true: 'wi-snow.png', false: 'wi-snow.png'},
-    85: {true: 'wi-snow.png', false: 'wi-snow.png'},
-    86: {true: 'wi-snow.png', false: 'wi-snow.png'},
-    95: {true: 'thunder.png', false: 'thunder.png'},
-    96: {true: 'storm.png', false: 'storm.png'},
-    99: {true: 'storm.png', false: 'storm.png'},
+  final Map<int, Map<bool, IconData>> _getNotificationIcons = {
+    0: {true: LucideIcons.sun, false: LucideIcons.moon},
+    1: {true: LucideIcons.cloudSun, false: LucideIcons.cloudMoon},
+    2: {true: LucideIcons.cloudSun, false: LucideIcons.cloudMoon},
+    3: {true: LucideIcons.cloud, false: LucideIcons.cloud},
+    45: {true: LucideIcons.cloudFog, false: LucideIcons.cloudFog},
+    48: {true: LucideIcons.cloudFog, false: LucideIcons.cloudFog},
+    51: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    53: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    55: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    56: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    57: {true: LucideIcons.cloudDrizzle, false: LucideIcons.cloudDrizzle},
+    61: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    63: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    65: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    66: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    67: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    80: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    81: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    82: {true: LucideIcons.cloudRain, false: LucideIcons.cloudRain},
+    71: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    73: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    75: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    77: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    85: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    86: {true: LucideIcons.cloudSnow, false: LucideIcons.cloudSnow},
+    95: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
+    96: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
+    99: {true: LucideIcons.cloudLightning, false: LucideIcons.cloudLightning},
   };
 }

@@ -17,6 +17,12 @@ import 'package:nimbus/app/ui/radar/view/radar_page.dart';
 import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:nimbus/app/ui/tides/view/tides_page.dart';
 import 'package:nimbus/app/ui/elevation/view/elevation_page.dart';
+import 'package:nimbus/app/ui/aurora/view/aurora_page.dart';
+import 'package:nimbus/app/ui/moon/moon_phase_tile.dart';
+import 'package:nimbus/app/ui/flood/flood_tile.dart';
+import 'package:nimbus/app/ui/agriculture/agriculture_tile.dart';
+import 'package:nimbus/app/ui/marine/marine_tile.dart';
+import 'package:nimbus/app/ui/hiking/hiking_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -116,31 +122,46 @@ class _MainPageState extends State<MainPage> {
     String sunset,
     double tempMax,
     double tempMin,
-  ) => ListView(
-    children: [
-      _buildNowWidget(
-        mainWeather,
-        hourOfDay,
-        dayOfNow,
-        sunrise,
-        sunset,
-        tempMax,
-        tempMin,
-      ),
-      // --- REAL API ALERT WIDGET ---
-      _buildWeatherAlert(),
-      // ----------------------------
-      if (settings.showRainForecast) _buildRainForecastChart(mainWeather),
-      _buildRadarTile(),
-      if (!settings.hideAqi) _buildAqiTile(),
-      if (!settings.hideTides) _buildTidesTile(),
-      if (!settings.hideElevation) _buildElevationTile(),
-      _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
-      _buildSunsetSunriseWidget(sunrise, sunset),
-      _buildHourlyDescContainer(mainWeather, hourOfDay),
-      _buildDailyContainer(weatherCard),
-    ],
-  );
+  ) {
+    debugPrint(
+      'Building main view - hideRainForecast: ${settings.hideRainForecast}',
+    );
+    return ListView(
+      children: [
+        _buildNowWidget(
+          mainWeather,
+          hourOfDay,
+          dayOfNow,
+          sunrise,
+          sunset,
+          tempMax,
+          tempMin,
+        ),
+        // --- REAL API ALERT WIDGET ---
+        _buildWeatherAlert(),
+        // ----------------------------
+        if (!settings.hideRainForecast) ...[
+          _buildRainForecastChart(mainWeather),
+        ] else ...[
+          const SizedBox.shrink(), // Debug: explicitly hidden
+        ],
+        _buildRadarTile(),
+        if (!settings.hideAqi) _buildAqiTile(),
+        if (!settings.hideTides) _buildTidesTile(),
+        if (!settings.hideElevation) _buildElevationTile(),
+        if (!settings.hideAurora) _buildAuroraTile(),
+        if (!settings.hideFlood) const FloodTile(),
+        _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
+        _buildSunsetSunriseWidget(sunrise, sunset),
+        _buildHourlyDescContainer(mainWeather, hourOfDay),
+        _buildDailyContainer(weatherCard),
+        if (!settings.hideAgriculture) const AgricultureTile(),
+        if (!settings.hideMarine) const MarineTile(),
+        if (!settings.hideHiking) const HikingTile(),
+        const MoonPhaseTile(),
+      ],
+    );
+  }
 
   Widget _buildWeatherAlert() {
     // Check if alerts should be shown on main page
@@ -336,10 +357,10 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildRainForecastChart(MainWeatherCache mainWeather) {
     // Get current location from the weather controller
-    final latitude = weatherController.latitude;
-    final longitude = weatherController.longitude;
+    final latitude = weatherController.location.lat;
+    final longitude = weatherController.location.lon;
 
-    if (latitude == 0.0 || longitude == 0.0) {
+    if (latitude == null || longitude == null) {
       return const SizedBox.shrink();
     }
 
@@ -649,6 +670,59 @@ class _MainPageState extends State<MainPage> {
                   const SizedBox(height: 4),
                   Text(
                     'View elevation above sea level',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.arrowRight,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildAuroraTile() => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () =>
+          Get.to(() => const AuroraPage(), transition: Transition.downToUp),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                LucideIcons.sparkles,
+                size: 32,
+                color: context.theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Aurora Watch',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Northern lights forecast and alerts',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.onSurfaceVariant,
                     ),

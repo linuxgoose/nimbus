@@ -179,6 +179,9 @@ class _RainForecastChartState extends State<RainForecastChart> {
     final maxPrecip = _precipitation.reduce((a, b) => a > b ? a : b);
     final hasRain = maxPrecip > 0;
 
+    // Display all data points (API already limits to 6 hours via forecast_hours=6)
+    final dataPointsToShow = _times.length;
+
     return LineChart(
       LineChartData(
         gridData: FlGridData(
@@ -217,28 +220,19 @@ class _RainForecastChartState extends State<RainForecastChart> {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 30,
-              interval: 1,
               getTitlesWidget: (value, meta) {
                 final index = value.toInt();
-                if (index < 0 || index >= _times.length) {
+                if (index < 0 || index >= dataPointsToShow) {
                   return const SizedBox();
                 }
 
-                // Only show labels at start, middle, and end for 15min data
-                // Or every other hour for hourly data
-                bool shouldShow = false;
-                if (_resolution == '15min') {
-                  // Show first, middle, and last time labels
-                  shouldShow =
-                      index == 0 ||
-                      index == (_times.length / 2).round() ||
-                      index == _times.length - 1;
-                } else {
-                  // For hourly, show every 2 hours
-                  shouldShow = index % 2 == 0;
-                }
+                // Calculate interval: show 4 labels (start + 2h + 4h + end)
+                final labelInterval = (dataPointsToShow / 3).floor();
 
-                if (!shouldShow) {
+                // Only show labels at calculated intervals
+                if (index != 0 &&
+                    index != dataPointsToShow - 1 &&
+                    index % labelInterval != 0) {
                   return const SizedBox();
                 }
 
@@ -266,13 +260,13 @@ class _RainForecastChartState extends State<RainForecastChart> {
           ),
         ),
         minX: 0,
-        maxX: (_times.length - 1).toDouble(),
+        maxX: (dataPointsToShow - 1).toDouble(),
         minY: 0,
         maxY: hasRain ? maxPrecip * 1.2 : 2,
         lineBarsData: [
           LineChartBarData(
             spots: List.generate(
-              _precipitation.length,
+              dataPointsToShow,
               (index) => FlSpot(index.toDouble(), _precipitation[index]),
             ),
             isCurved: true,
@@ -300,17 +294,24 @@ class _RainForecastChartState extends State<RainForecastChart> {
           enabled: true,
           touchTooltipData: LineTouchTooltipData(
             getTooltipItems: (touchedSpots) {
-              return touchedSpots.map((spot) {
-                final time = _times[spot.x.toInt()];
-                final precip = spot.y;
-                return LineTooltipItem(
-                  '${DateFormat.Hm().format(time)}\n${precip.toStringAsFixed(2)} mm',
-                  Theme.of(context).textTheme.labelSmall!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              }).toList();
+              return touchedSpots
+                  .map((spot) {
+                    final index = spot.x.toInt();
+                    if (index >= 0 && index < _times.length) {
+                      final time = _times[index];
+                      final precip = spot.y;
+                      return LineTooltipItem(
+                        '${DateFormat.Hm().format(time)}\n${precip.toStringAsFixed(2)} mm',
+                        Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
+                    return null;
+                  })
+                  .whereType<LineTooltipItem>()
+                  .toList();
             },
           ),
         ),

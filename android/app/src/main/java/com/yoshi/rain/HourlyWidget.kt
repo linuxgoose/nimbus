@@ -57,23 +57,28 @@ class HourlyWidget : HomeWidgetProvider() {
             for (i in 0 until 6) {
                 val time = widgetData.getString("hourly_time_$i", null)
                 val temp = widgetData.getString("hourly_temp_$i", null)
-                val wind = widgetData.getString("hourly_wind_$i", null) // Wind data
+                val wind = widgetData.getString("hourly_wind_$i", null)
+                val precip = widgetData.getString("hourly_precip_$i", null)
                 val icon = widgetData.getString("hourly_icon_$i", null)
 
                 val timeViewId = context.resources.getIdentifier("hourly_time_$i", "id", context.packageName)
                 val tempViewId = context.resources.getIdentifier("hourly_temp_$i", "id", context.packageName)
                 val windViewId = context.resources.getIdentifier("hourly_wind_$i", "id", context.packageName)
+                val precipViewId = context.resources.getIdentifier("hourly_precip_$i", "id", context.packageName)
                 val iconViewId = context.resources.getIdentifier("hourly_icon_$i", "id", context.packageName)
 
                 // Set Text Values
                 if (time != null) remoteViews.setTextViewText(timeViewId, time)
                 if (temp != null) remoteViews.setTextViewText(tempViewId, temp)
                 if (wind != null && windViewId != 0) remoteViews.setTextViewText(windViewId, wind)
+                if (precip != null && precipViewId != 0) remoteViews.setTextViewText(precipViewId, precip)
 
                 // Apply Text Colors
                 if (timeViewId != 0) remoteViews.setTextColor(timeViewId, finalTextColor)
                 if (tempViewId != 0) remoteViews.setTextColor(tempViewId, finalTextColor)
                 if (windViewId != 0) remoteViews.setTextColor(windViewId, finalTextColor)
+                // Keep precip color blue for visibility
+                if (precipViewId != 0) remoteViews.setTextColor(precipViewId, Color.parseColor("#0066CC"))
 
                 // Handle Icon with Memory Protection (Downsampling)
                 if (icon != null) {
@@ -81,6 +86,7 @@ class HourlyWidget : HomeWidgetProvider() {
                         val options = BitmapFactory.Options().apply {
                             inJustDecodeBounds = true // Check dimensions first
                             BitmapFactory.decodeFile(icon, this)
+                            // Resize to ~100px to avoid the 20MB RemoteViews crash
                             inSampleSize = calculateInSampleSize(this, 100, 100)
                             inJustDecodeBounds = false
                         }
@@ -98,6 +104,7 @@ class HourlyWidget : HomeWidgetProvider() {
         }
     }
 
+    // Prevents "exceeds maximum bitmap memory usage" error
     private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
         val (height: Int, width: Int) = options.outHeight to options.outWidth
         var inSampleSize = 1

@@ -28,6 +28,82 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  Widget _buildTidesDiscoveryApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.key),
+      text: 'UK Tidal API - Discovery Key',
+      info: true,
+      infoSettings: true,
+      infoWidget: _TextInfo(
+        info: settings.tidesDiscoveryApiKey?.isNotEmpty == true
+            ? '${settings.tidesDiscoveryApiKey!.substring(0, 8)}...'
+            : 'Not set',
+      ),
+      onPressed: () => _showTidesDiscoveryApiKeyDialog(context, setState),
+    );
+  }
+
+  void _showTidesDiscoveryApiKeyDialog(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    final controller = TextEditingController(
+      text: settings.tidesDiscoveryApiKey ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('UK Tidal API - Discovery Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Get your API key from:', style: context.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://www.admiralty.co.uk/uksouthampton/uk-tidal-api',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.tidesDiscoveryApiKey = controller.text.trim();
+              if (settings.tidesDiscoveryApiKey!.isEmpty) {
+                settings.tidesDiscoveryApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   final themeController = Get.put(ThemeController());
   final weatherController = Get.put(WeatherController());
   String? appVersion;
@@ -62,6 +138,11 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildFunctionsCard(context),
         _buildTidesCard(context),
         _buildElevationCard(context),
+        _buildAuroraCard(context),
+        _buildFloodMonitoringCard(context),
+        _buildAgricultureCard(context),
+        _buildMarineCard(context),
+        _buildHikingCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -107,7 +188,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildWeatherDataSourceSettingCard(context, setState),
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
-                  _buildShowRainForecastSettingCard(context, setState),
+                  _buildHideRainForecastSettingCard(context, setState),
+                  _buildRainNotificationsSettingCard(context, setState),
+                  _buildRainThresholdSettingCard(context, setState),
+                  _buildNowTileMetricsTitle(context),
+                  _buildNowTileMetric1Card(context, setState),
+                  _buildNowTileMetric2Card(context, setState),
                   const Gap(10),
                 ],
               ),
@@ -258,7 +344,12 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildTidesTitle(context),
               _buildHideTidesSettingCard(context, setState),
               _buildUseDummyTidesSettingCard(context, setState),
-              _buildTidesApiKeySettingCard(context, setState),
+              _buildTidesSourceSettingCard(context, setState),
+              if (settings.tidesSource == 'stormglass')
+                _buildTidesApiKeySettingCard(context, setState),
+              if (settings.tidesSource == 'uk_tidal_api')
+                _buildTidesDiscoveryApiKeySettingCard(context, setState),
+              _buildTideDatumSettingCard(context, setState),
               _buildCheckTidesCacheSettingCard(context, setState),
               _buildClearTidesCacheSettingCard(context, setState),
               const Gap(10),
@@ -280,6 +371,12 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showElevationBottomSheet(context),
   );
 
+  Widget _buildAuroraCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.sparkles),
+    text: 'Aurora Watch',
+    onPressed: () => _showAuroraBottomSheet(context),
+  );
+
   void _showElevationBottomSheet(BuildContext context) => showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Padding(
@@ -295,6 +392,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildUseDummyElevationSettingCard(context, setState),
               _buildElevationApiKeySettingCard(context, setState),
               _buildCheckElevationCacheSettingCard(context, setState),
+              const Gap(10),
               _buildClearElevationCacheSettingCard(context, setState),
               const Gap(10),
             ],
@@ -307,6 +405,140 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildElevationTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.all(20),
     child: Text('Elevation', style: context.textTheme.headlineSmall),
+  );
+
+  void _showAuroraBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildAuroraTitle(context),
+              _buildHideAuroraSettingCard(context, setState),
+              _buildAuroraNotificationsSettingCard(context, setState),
+              _buildAuroraThresholdSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildFloodMonitoringCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.waves),
+    text: 'UK Flood Monitoring',
+    onPressed: () => _showFloodMonitoringBottomSheet(context),
+  );
+
+  Widget _buildAgricultureCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.sprout),
+    text: 'Agriculture',
+    onPressed: () => _showAgricultureBottomSheet(context),
+  );
+
+  Widget _buildMarineCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.waves),
+    text: 'Marine',
+    onPressed: () => _showMarineBottomSheet(context),
+  );
+
+  Widget _buildHikingCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.mountain),
+    text: 'Hiking',
+    onPressed: () => _showHikingBottomSheet(context),
+  );
+
+  void _showFloodMonitoringBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) => StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildFloodTitle(context),
+                  _buildHideFloodSettingCard(context, setState),
+                  _buildFloodNotificationsSettingCard(context, setState),
+                  _buildFloodRadiusSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  void _showAgricultureBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) => StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildAgricultureTitle(context),
+                  _buildHideAgricultureSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  void _showMarineBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      builder: (context, scrollController) => StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildMarineTitle(context),
+              _buildHideMarineSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  void _showHikingBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      builder: (context, scrollController) => StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHikingTitle(context),
+              _buildHideHikingSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
   );
 
   Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
@@ -636,6 +868,73 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildTidesSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Tide Data Source',
+    dropdown: true,
+    dropdownName: _getTidesSourceDisplayName(settings.tidesSource),
+    dropdownList: const <String>[
+      'Stormglass',
+      'UK Environment Agency',
+      'UK Tidal API - Discovery',
+    ],
+    dropdownChange: (String? newValue) async {
+      if (newValue == null) return;
+
+      isar.writeTxnSync(() {
+        if (newValue == 'Stormglass') {
+          settings.tidesSource = 'stormglass';
+        } else if (newValue == 'UK Environment Agency') {
+          settings.tidesSource = 'environment_agency';
+        } else if (newValue == 'UK Tidal API - Discovery') {
+          settings.tidesSource = 'uk_tidal_api';
+        }
+        isar.settings.putSync(settings);
+      });
+
+      setState(() {});
+    },
+  );
+
+  String _getTidesSourceDisplayName(String source) {
+    switch (source) {
+      case 'stormglass':
+        return 'Stormglass';
+      case 'environment_agency':
+        return 'UK Environment Agency';
+      case 'uk_tidal_api':
+        return 'UK Tidal API - Discovery';
+      default:
+        return 'Stormglass';
+    }
+  }
+
+  Widget _buildTideDatumSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.ruler),
+    text: 'Tide Datum',
+    dropdown: true,
+    dropdownName: settings.tideDatum.toUpperCase(),
+    dropdownList: const <String>['MLLW', 'MLW', 'MSL', 'MHW', 'MHHW'],
+    dropdownChange: (String? newValue) async {
+      if (newValue == null) return;
+
+      isar.writeTxnSync(() {
+        settings.tideDatum = newValue.toLowerCase();
+        isar.settings.putSync(settings);
+      });
+
+      setState(() {});
+    },
+  );
+
   Widget _buildCheckTidesCacheSettingCard(
     BuildContext context,
     StateSetter setState,
@@ -759,6 +1058,260 @@ class _SettingsPageState extends State<SettingsPage> {
     },
   );
 
+  Widget _buildAuroraTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'Aurora Watch',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideAuroraSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Aurora Watch',
+    switcher: true,
+    value: settings.hideAurora,
+    onChange: (value) {
+      settings.hideAurora = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildAuroraNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Aurora Notifications',
+    switcher: true,
+    value: settings.auroraNotifications,
+    onChange: (value) {
+      settings.auroraNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value || settings.rainNotifications || settings.floodNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
+      setState(() {});
+    },
+  );
+
+  Widget _buildAuroraThresholdSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.gauge),
+    text: 'Notification Threshold',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: 'Kp ${settings.auroraNotificationThreshold.toStringAsFixed(1)}',
+    ),
+    onPressed: () => _showAuroraThresholdDialog(context, setState),
+  );
+
+  Widget _buildFloodTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'UK Flood Monitoring',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideFloodSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Flood Monitoring',
+    switcher: true,
+    value: settings.hideFlood,
+    onChange: (value) {
+      settings.hideFlood = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildFloodNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Flood Notifications',
+    switcher: true,
+    value: settings.floodNotifications,
+    onChange: (value) {
+      settings.floodNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value || settings.rainNotifications || settings.auroraNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
+      setState(() {});
+    },
+  );
+
+  Widget _buildFloodRadiusSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.radius),
+    text: 'Search Radius',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: '${settings.floodRadiusKm.toStringAsFixed(0)} km',
+    ),
+    onPressed: () => _showFloodRadiusDialog(context, setState),
+  );
+
+  Widget _buildAgricultureTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'Agriculture',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideAgricultureSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Agriculture',
+    switcher: true,
+    value: settings.hideAgriculture,
+    onChange: (value) {
+      settings.hideAgriculture = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildMarineTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'Marine',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideMarineSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Marine',
+    switcher: true,
+    value: settings.hideMarine,
+    onChange: (value) {
+      settings.hideMarine = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildHikingTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: Text(
+      'Hiking',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideHikingSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Hiking',
+    switcher: true,
+    value: settings.hideHiking,
+    onChange: (value) {
+      settings.hideHiking = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  void _showFloodRadiusDialog(BuildContext context, StateSetter setState) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Flood Search Radius'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Set the radius to search for flood warnings around your location (25-200 km).',
+              style: context.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            StatefulBuilder(
+              builder: (context, setDialogState) => Column(
+                children: [
+                  Text(
+                    '${settings.floodRadiusKm.toStringAsFixed(0)} km',
+                    style: context.textTheme.titleLarge,
+                  ),
+                  Slider(
+                    value: settings.floodRadiusKm,
+                    min: 25,
+                    max: 200,
+                    divisions: 35,
+                    label: '${settings.floodRadiusKm.toStringAsFixed(0)} km',
+                    onChanged: (value) {
+                      setDialogState(() {
+                        settings.floodRadiusKm = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Get.back();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildElevationApiKeySettingCard(
     BuildContext context,
     StateSetter setState,
@@ -832,6 +1385,149 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
     );
+  }
+
+  void _showAuroraThresholdDialog(BuildContext context, StateSetter setState) {
+    double tempThreshold = settings.auroraNotificationThreshold;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Aurora Notification Threshold'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Get notified when the Kp index reaches or exceeds this level at your location.',
+                style: context.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Kp Index: ${tempThreshold.toStringAsFixed(1)}',
+                style: context.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Slider(
+                value: tempThreshold,
+                min: 0.0,
+                max: 9.0,
+                divisions: 18,
+                label: tempThreshold.toStringAsFixed(1),
+                onChanged: (value) {
+                  setDialogState(() {
+                    tempThreshold = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getKpDescription(tempThreshold),
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                settings.auroraNotificationThreshold = tempThreshold;
+                isar.writeTxnSync(() => isar.settings.putSync(settings));
+                setState(() {});
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getKpDescription(double kp) {
+    if (kp >= 9) return 'Extreme storm - Aurora visible worldwide';
+    if (kp >= 7) return 'Severe storm - Aurora visible mid-latitudes';
+    if (kp >= 6) return 'Strong storm - Aurora visible lower latitudes';
+    if (kp >= 5) return 'Minor storm - Aurora visible high latitudes';
+    if (kp >= 4) return 'Active - Aurora possible at high latitudes';
+    return 'Quiet to unsettled - Aurora unlikely';
+  }
+
+  void _showRainThresholdDialog(BuildContext context, StateSetter setState) {
+    double tempThreshold = settings.rainNotificationThreshold;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Rain Notification Threshold'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Get notified when rain is forecast in the next 6 hours that meets or exceeds this amount.',
+                style: context.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Rain Amount: ${tempThreshold.toStringAsFixed(1)}mm',
+                style: context.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Slider(
+                value: tempThreshold,
+                min: 0.1,
+                max: 10.0,
+                divisions: 99,
+                label: '${tempThreshold.toStringAsFixed(1)}mm',
+                onChanged: (value) {
+                  setDialogState(() {
+                    tempThreshold = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getRainDescription(tempThreshold),
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                settings.rainNotificationThreshold = tempThreshold;
+                isar.writeTxnSync(() => isar.settings.putSync(settings));
+                setState(() {});
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getRainDescription(double mm) {
+    if (mm >= 8) return 'Heavy rain - significant precipitation';
+    if (mm >= 4) return 'Moderate rain - noticeable rainfall';
+    if (mm >= 2) return 'Light rain - light precipitation';
+    if (mm >= 0.5) return 'Light drizzle - minor precipitation';
+    return 'Very light - barely noticeable';
   }
 
   Widget _buildCheckElevationCacheSettingCard(
@@ -1231,20 +1927,58 @@ class _SettingsPageState extends State<SettingsPage> {
     },
   );
 
-  Widget _buildShowRainForecastSettingCard(
+  Widget _buildHideRainForecastSettingCard(
     BuildContext context,
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
     icon: const Icon(LucideIcons.cloudRain),
-    text: 'Show 6-Hour Rain Forecast',
+    text: 'Hide 6-Hour Rain Forecast',
     switcher: true,
-    value: settings.showRainForecast,
+    value: settings.hideRainForecast,
     onChange: (value) {
-      settings.showRainForecast = value;
+      settings.hideRainForecast = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
+      // Force main page to rebuild by triggering weather controller update
+      weatherController.isLoading.refresh();
       setState(() {});
     },
+  );
+
+  Widget _buildRainNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Rain Notifications',
+    switcher: true,
+    value: settings.rainNotifications,
+    onChange: (value) {
+      settings.rainNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value || settings.auroraNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
+      setState(() {});
+    },
+  );
+
+  Widget _buildRainThresholdSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.droplet),
+    text: 'Rain Threshold',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: '${settings.rainNotificationThreshold.toStringAsFixed(1)}mm',
+    ),
+    onPressed: () => _showRainThresholdDialog(context, setState),
   );
 
   Widget _buildPreferMetNoSettingCard(
@@ -1253,19 +1987,97 @@ class _SettingsPageState extends State<SettingsPage> {
   ) => SettingCard(
     elevation: 4,
     icon: const Icon(LucideIcons.mapPin),
-    text: 'Prefer MET Norway',
+    text: 'Prefer MET Norway in Hybrid Mode',
     switcher: true,
     value: settings.preferMetNoInHybrid,
-    onChange: (value) async {
+    onChange: (value) {
       settings.preferMetNoInHybrid = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
-      // Clear cache and refresh weather data
-      await weatherController.deleteAll(false);
-      await weatherController.setLocation();
-      await weatherController.updateCacheCard(true);
       setState(() {});
     },
   );
+
+  Widget _buildNowTileMetricsTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 20, bottom: 10),
+    child: Text(
+      'Now Tile Metrics',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildNowTileMetric1Card(BuildContext context, StateSetter setState) {
+    final metrics = [
+      'humidity',
+      'wind',
+      'precipitation',
+      'uv',
+      'feels',
+      'none',
+    ];
+    final labels = [
+      'Humidity',
+      'Wind Speed',
+      'Precipitation Probability',
+      'UV Index',
+      'Feels Like',
+      'None',
+    ];
+
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.gauge),
+      text: 'First Metric',
+      dropdown: true,
+      dropdownName: labels[metrics.indexOf(settings.nowTileMetric1)],
+      dropdownList: labels,
+      dropdownChange: (value) {
+        if (value != null) {
+          final index = labels.indexOf(value);
+          settings.nowTileMetric1 = metrics[index];
+          isar.writeTxnSync(() => isar.settings.putSync(settings));
+          setState(() {});
+        }
+      },
+    );
+  }
+
+  Widget _buildNowTileMetric2Card(BuildContext context, StateSetter setState) {
+    final metrics = [
+      'humidity',
+      'wind',
+      'precipitation',
+      'uv',
+      'feels',
+      'none',
+    ];
+    final labels = [
+      'Humidity',
+      'Wind Speed',
+      'Precipitation Probability',
+      'UV Index',
+      'Feels Like',
+      'None',
+    ];
+
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.gauge),
+      text: 'Second Metric',
+      dropdown: true,
+      dropdownName: labels[metrics.indexOf(settings.nowTileMetric2)],
+      dropdownList: labels,
+      dropdownChange: (value) {
+        if (value != null) {
+          final index = labels.indexOf(value);
+          settings.nowTileMetric2 = metrics[index];
+          isar.writeTxnSync(() => isar.settings.putSync(settings));
+          setState(() {});
+        }
+      },
+    );
+  }
 
   Widget _buildDegreesSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(

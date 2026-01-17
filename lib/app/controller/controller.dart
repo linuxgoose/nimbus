@@ -572,17 +572,31 @@ class WeatherController extends GetxController {
         final dailyTime = mainWeatherCache.timeDaily ?? [];
         for (var j = 0; j < dailyTime.length; j++) {
           if (dailyTime[j].day == notificationTime.day) {
+            // Parse widget text color or default to white for notification icon
+            final iconColor =
+                settings.widgetTextColor != null &&
+                    settings.widgetTextColor!.isNotEmpty
+                ? Color(
+                    int.parse(
+                      settings.widgetTextColor!.replaceFirst('#', '0xff'),
+                    ),
+                  )
+                : Colors.white;
+
+            final iconPath = await StatusWeather().getImageNotification(
+              mainWeatherCache.weathercode?[i] ?? 0,
+              timeStr,
+              mainWeatherCache.sunrise?[j] ?? "",
+              mainWeatherCache.sunset?[j] ?? "",
+              iconColor: iconColor,
+            );
+
             NotificationShow().showNotification(
               UniqueKey().hashCode,
               '$city: ${mainWeatherCache.temperature2M?[i] ?? 0}°',
               '${StatusWeather().getText(mainWeatherCache.weathercode?[i] ?? 0)} · ${StatusData().getTimeFormat(timeStr)}',
               notificationTime,
-              StatusWeather().getImageNotification(
-                mainWeatherCache.weathercode?[i] ?? 0,
-                timeStr,
-                mainWeatherCache.sunrise?[j] ?? "",
-                mainWeatherCache.sunset?[j] ?? "",
-              ),
+              iconPath,
             );
           }
         }
@@ -711,16 +725,26 @@ class WeatherController extends GetxController {
 
       // --- Weather Icon ---
       try {
-        final imagePath = await getLocalImagePath(
-          StatusWeather().getImageNotification(
-            mainWeatherCache.weathercode?[hour] ?? 0,
-            mainWeatherCache.time?[hour] ?? "",
-            mainWeatherCache.sunrise?[day] ?? "",
-            mainWeatherCache.sunset?[day] ?? "",
-          ),
+        // Parse widget text color or default to white
+        final iconColor =
+            settings.widgetTextColor != null &&
+                settings.widgetTextColor!.isNotEmpty
+            ? Color(
+                int.parse(settings.widgetTextColor!.replaceFirst('#', '0xff')),
+              )
+            : Colors.white;
+
+        final imagePath = await StatusWeather().getImageNotification(
+          mainWeatherCache.weathercode?[hour] ?? 0,
+          mainWeatherCache.time?[hour] ?? "",
+          mainWeatherCache.sunrise?[day] ?? "",
+          mainWeatherCache.sunset?[day] ?? "",
+          iconColor: iconColor,
         );
         await HomeWidget.saveWidgetData('weather_icon', imagePath);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Error saving weather icon: $e');
+      }
 
       // --- Small Widget Data ---
       final currentTime = DateFormat.Hm(
@@ -736,16 +760,26 @@ class WeatherController extends GetxController {
       await HomeWidget.saveWidgetData('small_precipitation', precip);
       await HomeWidget.saveWidgetData('small_description', description);
       try {
-        final smallIconPath = await getLocalImagePath(
-          StatusWeather().getImageNotification(
-            mainWeatherCache.weathercode?[hour] ?? 0,
-            mainWeatherCache.time?[hour] ?? "",
-            mainWeatherCache.sunrise?[day] ?? "",
-            mainWeatherCache.sunset?[day] ?? "",
-          ),
+        // Parse widget text color or default to white
+        final iconColor =
+            settings.widgetTextColor != null &&
+                settings.widgetTextColor!.isNotEmpty
+            ? Color(
+                int.parse(settings.widgetTextColor!.replaceFirst('#', '0xff')),
+              )
+            : Colors.white;
+
+        final smallIconPath = await StatusWeather().getImageNotification(
+          mainWeatherCache.weathercode?[hour] ?? 0,
+          mainWeatherCache.time?[hour] ?? "",
+          mainWeatherCache.sunrise?[day] ?? "",
+          mainWeatherCache.sunset?[day] ?? "",
+          iconColor: iconColor,
         );
         await HomeWidget.saveWidgetData('small_weather_icon', smallIconPath);
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('Error saving small weather icon: $e');
+      }
 
       // --- Hourly & Daily Forecasting ---
       await _updateHourlyWidget(mainWeatherCache, hour, day);
@@ -804,13 +838,23 @@ class WeatherController extends GetxController {
             }
           }
 
-          final imagePath = await getLocalImagePath(
-            StatusWeather().getImageNotification(
-              weathercode ?? 0,
-              time,
-              mainWeatherCache.sunrise?[dayIdx] ?? "",
-              mainWeatherCache.sunset?[dayIdx] ?? "",
-            ),
+          // Parse widget text color or default to white
+          final iconColor =
+              settings.widgetTextColor != null &&
+                  settings.widgetTextColor!.isNotEmpty
+              ? Color(
+                  int.parse(
+                    settings.widgetTextColor!.replaceFirst('#', '0xff'),
+                  ),
+                )
+              : Colors.white;
+
+          final imagePath = await StatusWeather().getImageNotification(
+            weathercode ?? 0,
+            time,
+            mainWeatherCache.sunrise?[dayIdx] ?? "",
+            mainWeatherCache.sunset?[dayIdx] ?? "",
+            iconColor: iconColor,
           );
           await HomeWidget.saveWidgetData('hourly_icon_$i', imagePath);
         } catch (e) {
@@ -866,13 +910,24 @@ class WeatherController extends GetxController {
         try {
           final sunrise = mainWeatherCache.sunrise?[dayIndex];
           final sunset = mainWeatherCache.sunset?[dayIndex];
-          final imagePath = await getLocalImagePath(
-            StatusWeather().getImageNotification(
-              weathercode ?? 0,
-              '${DateFormat('yyyy-MM-dd').format(date)}T12:00',
-              sunrise ?? "",
-              sunset ?? "",
-            ),
+
+          // Parse widget text color or default to white
+          final iconColor =
+              settings.widgetTextColor != null &&
+                  settings.widgetTextColor!.isNotEmpty
+              ? Color(
+                  int.parse(
+                    settings.widgetTextColor!.replaceFirst('#', '0xff'),
+                  ),
+                )
+              : Colors.white;
+
+          final imagePath = await StatusWeather().getImageNotification(
+            weathercode ?? 0,
+            '${DateFormat('yyyy-MM-dd').format(date)}T12:00',
+            sunrise ?? "",
+            sunset ?? "",
+            iconColor: iconColor,
           );
           debugPrint("Daily Widget Icon $i: $imagePath");
           await HomeWidget.saveWidgetData('daily_icon_$i', imagePath);
@@ -890,6 +945,28 @@ class WeatherController extends GetxController {
     final url = Uri.parse(uri);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
+    }
+  }
+
+  static void scheduleNotificationChecks() {
+    if (Platform.isAndroid) {
+      Workmanager().registerPeriodicTask(
+        'notificationCheck',
+        'notificationCheck',
+        frequency: const Duration(minutes: 30),
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
+        constraints: Constraints(networkType: NetworkType.connected),
+      );
+      debugPrint(
+        '📅 Scheduled periodic notification checks (every 30 minutes)',
+      );
+    }
+  }
+
+  static void cancelNotificationChecks() {
+    if (Platform.isAndroid) {
+      Workmanager().cancelByUniqueName('notificationCheck');
+      debugPrint('🚫 Cancelled periodic notification checks');
     }
   }
 }

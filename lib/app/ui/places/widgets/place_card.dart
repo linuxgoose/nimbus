@@ -135,18 +135,14 @@ class _PlaceCardState extends State<PlaceCard> {
     ),
   );
 
-  Widget _buildWeatherImage(int currentTimeIndex, int currentDayIndex) =>
-      SizedBox(
-        width: 60,
-        height: 60,
-        child: Image.asset(
-          statusWeather.getImageNow(
-            widget.weather[currentTimeIndex],
-            widget.time[currentTimeIndex],
-            widget.timeDay[currentDayIndex],
-            widget.timeNight[currentDayIndex],
-          ),
-          fit: BoxFit.contain,
-        ),
-      );
+  Widget _buildWeatherImage(int currentTimeIndex, int currentDayIndex) => Icon(
+    statusWeather.getIconNow(
+      widget.weather[currentTimeIndex],
+      widget.time[currentTimeIndex],
+      widget.timeDay[currentDayIndex],
+      widget.timeNight[currentDayIndex],
+    ),
+    size: 60,
+    color: context.theme.colorScheme.primary,
+  );
 }

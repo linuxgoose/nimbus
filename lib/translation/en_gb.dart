@@ -17,7 +17,7 @@ class EnGb {
     'humidity': 'Humidity',
     'wind': 'Wind Speed',
     'visibility': 'Visibility',
-    'feels': 'Apparent Temperature',
+    'feels': 'Apparent Temp.',
     'evaporation': 'Evapotranspiration',
     'precipitation': 'Precipitation',
     'direction': 'Wind Direction',
@@ -172,5 +172,122 @@ class EnGb {
     'weatherSummaryUseSunscreen': 'High UV - use sun protection.',
     'weatherSummaryHumid': 'High humidity levels.',
     'weatherSummaryGreatDay': 'Great day to be outside!',
+    // Moon Phase translations
+    'moon_phase': 'Moon Phase',
+    'new_moon': 'New Moon',
+    'waxing_crescent': 'Waxing Crescent',
+    'first_quarter': 'First Quarter',
+    'waxing_gibbous': 'Waxing Gibbous',
+    'full_moon': 'Full Moon',
+    'waning_gibbous': 'Waning Gibbous',
+    'last_quarter': 'Last Quarter',
+    'waning_crescent': 'Waning Crescent',
+    'illuminated': 'illuminated',
+    'phase_progress': 'Lunar Cycle Progress',
+    'upcoming_events': 'Upcoming Lunar Events',
+    'next_full_moon': 'Next Full Moon',
+    'next_new_moon': 'Next New Moon',
+    'about_moon_phases': 'About Moon Phases',
+    'moon_phase_info':
+        'The Moon completes a full cycle approximately every 29.5 days, transitioning through eight distinct phases. These phases affect tides, wildlife behaviour, and have been observed by cultures throughout human history.',
+    'in': 'in',
+    'days': 'days',
+    'flood_monitoring': 'Flood Monitoring',
+    'flood_warning': 'Flood Warning',
+    'flood_alert': 'Flood Alert',
+    'severe_flood_warning': 'Severe Flood Warning',
+    'flood_summary': 'Flood Summary',
+    'active_warnings': 'Active Warnings',
+    'monitoring_stations': 'Monitoring Stations',
+    'no_flood_warnings': 'No Active Flood Warnings',
+    'no_flood_warnings_desc':
+        'There are currently no flood warnings in your area',
+    'flood_info':
+        'Real-time flood monitoring data for England provided by the Environment Agency.',
+    'flood_coverage':
+        'Coverage: England only. For Scotland, Wales, and Northern Ireland, check regional services.',
+    'hide_flood_monitoring': 'Hide Flood Monitoring',
+    'flood_notifications': 'Flood Notifications',
+    'flood_search_radius': 'Search Radius',
+    'flood_radius_desc':
+        'Set the radius to search for flood warnings around your location',
+
+    // Agriculture
+    'agriculture': 'Agriculture',
+    'agriculture_subtitle': 'Soil conditions & farming data',
+    'current_conditions': 'Current Conditions',
+    'soil_moisture_chart': 'Soil Moisture (48h Forecast)',
+    'soil_moisture_desc': 'Volumetric water content at different depths',
+    'soil_temperature_chart': 'Soil Temperature (48h Forecast)',
+    'soil_temperature_desc': 'Temperature at different soil depths',
+    'surface_soil_moisture': 'Surface Soil Moisture',
+    'surface_temperature': 'Surface Temperature',
+    'vpd_transpiration': 'VPD (Transpiration)',
+    'et0_reference': 'ET₀ Reference',
+    'water_evaporation_rate': 'Water evaporation rate',
+    'evapotranspiration_et0': 'Evapotranspiration (ET₀)',
+    'vapour_pressure_deficit': 'Vapour Pressure Deficit',
+    'et0_desc':
+        'ET₀ represents the water loss from a well-watered grass field. '
+        'It\'s used to calculate crop irrigation requirements. '
+        'Higher values indicate greater water demand.',
+    'vpd_desc':
+        'VPD measures the difference between moisture in the air and '
+        'what it can hold. Low VPD (<0.4 kPa) slows plant transpiration. '
+        'High VPD (>1.6 kPa) causes plant stress.',
+    'weekly_forecast': '7-Day Forecast',
+    'about_agriculture_data': 'About Agriculture Data',
+    'agriculture_info':
+        'Agricultural weather data from Open-Meteo provides essential '
+        'metrics for farming and crop management.',
+    'hide_agriculture': 'Hide Agriculture',
+
+    // Marine
+    'marine': 'Marine',
+    'marine_subtitle': 'Wave height, swell & ocean conditions',
+    'marine_conditions': 'Marine Conditions',
+    'current_marine_conditions': 'Current Conditions',
+    'total_wave_height': 'Total Wave Height',
+    'wind_wave_height': 'Wind Wave Height',
+    'swell_height': 'Swell Height',
+    'ocean_current': 'Ocean Current',
+    'wave_period': 'Wave Period',
+    'wave_height_chart': 'Wave Height (48h Forecast)',
+    'wave_height_desc': 'Total wave and wind wave heights',
+    'swell_chart': 'Swell Height (48h Forecast)',
+    'swell_desc': 'Long-period waves from distant storms',
+    'current_speed': 'Speed',
+    'current_direction': 'Direction',
+    'time_between_waves': 'Time between wave crests',
+    'about_marine_data': 'About Marine Data',
+    'marine_info':
+        'Marine weather data from Open-Meteo provides essential information '
+        'for maritime activities, surfing, fishing, and coastal planning.',
+    'hide_marine': 'Hide Marine',
+
+    // Hiking
+    'hiking': 'Hiking',
+    'hiking_subtitle': 'UV index, visibility & trail conditions',
+    'hiking_conditions': 'Hiking Conditions',
+    'current_trail_conditions': 'Current Trail Conditions',
+    'trail_conditions': 'Trail Conditions',
+    'uv_index': 'UV Index',
+    'wind_conditions': 'Wind Conditions',
+    'snow_conditions': 'Snow Conditions',
+    'snow_depth': 'Snow Depth',
+    'freezing_level': 'Freezing Level',
+    'wind_speed': 'Wind Speed',
+    'wind_gusts': 'Wind Gusts',
+    'wind_direction': 'Wind Direction',
+    'uv_index_chart': 'UV Index (48h Forecast)',
+    'visibility_chart': 'Visibility (48h Forecast)',
+    'hiking_forecast': '7-Day Hiking Forecast',
+    'about_hiking_data': 'About Hiking Data',
+    'hiking_info':
+        'This page provides comprehensive hiking weather data including UV index, '
+        'visibility, wind conditions, and snow depth. Data is updated hourly from '
+        'Open-Meteo. Plan your outdoor adventures safely with detailed forecasts '
+        'and safety recommendations.',
+    'hide_hiking': 'Hide Hiking',
   };
 }

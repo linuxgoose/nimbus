@@ -17,10 +17,25 @@ class Settings {
   bool hideTides = false;
   bool hideAqi = false;
   bool useDummyTides = true;
+  String tidesSource =
+      'environment_agency'; // stormglass, environment_agency, uk_tidal_api
   String? tidesApiKey;
+  String? tidesDiscoveryApiKey;
+  String tideDatum = 'mllw'; // mllw, mlw, msl, mhw, mhhw
   bool hideElevation = false;
   bool useDummyElevation = true;
   String? elevationApiKey;
+  bool hideAurora = false;
+  bool auroraNotifications = false;
+  double auroraNotificationThreshold = 5.0; // Kp index threshold
+  bool hideFlood = false;
+  bool floodNotifications = false;
+  double floodRadiusKm = 100.0; // Radius to check for flood warnings
+  bool hideAgriculture = false;
+  bool hideMarine = false;
+  bool hideHiking = false;
+  bool rainNotifications = false;
+  double rainNotificationThreshold = 1.0; // mm of rain threshold
   String? widgetBackgroundColor;
   String? widgetTextColor;
   String degrees = 'celsius';
@@ -36,11 +51,57 @@ class Settings {
   String weatherDataSource = 'openmeteo'; // openmeteo, metno, hybrid
   bool preferMetNoInHybrid =
       false; // Override Nordic region detection in hybrid mode
-  bool showRainForecast = true; // Show 6-hour rain forecast chart
+  bool hideRainForecast = false; // Hide 6-hour rain forecast chart
+  String nowTileMetric1 = 'humidity'; // First metric to show in now tile
+  String nowTileMetric2 = 'wind'; // Second metric to show in now tile
   String? language;
   int? timeRange;
   String? timeStart;
   String? timeEnd;
+}
+
+@collection
+class TideStation {
+  Id id = Isar.autoIncrement;
+  String? stationId; // UK Tidal API station ID
+  String? name;
+  double? lat;
+  double? lon;
+  String? country;
+  bool isSaved = false;
+
+  TideStation({
+    this.stationId,
+    this.name,
+    this.lat,
+    this.lon,
+    this.country,
+    this.isSaved = false,
+  });
+}
+
+@collection
+class SavedTideStation {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String stationId = ''; // UK Tidal API station ID
+
+  String name = '';
+  double lat = 0.0;
+  double lon = 0.0;
+  String? country;
+  bool isPrimary = false;
+  DateTime savedAt = DateTime.now();
+
+  SavedTideStation({
+    required this.stationId,
+    required this.name,
+    required this.lat,
+    required this.lon,
+    this.country,
+    this.isPrimary = false,
+  });
 }
 
 @collection
@@ -472,6 +533,39 @@ class ElevationLocation {
             ? DateTime.parse(json['lastUpdated'] as String)
             : null,
       );
+}
+
+@collection
+class AuroraCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+
+  double? kpIndex;
+  String? activityLevel;
+  String? timestamp;
+  String? ukStatus;
+  String? forecastJson; // Store 3-day forecast as JSON string
+  DateTime? cachedAt;
+  double? latitude;
+  double? longitude;
+
+  AuroraCache();
+
+  factory AuroraCache.fromJson(Map<String, dynamic> json) => AuroraCache()
+    ..id = json['id'] as int? ?? Isar.autoIncrement
+    ..locationKey = json['locationKey'] as String? ?? ''
+    ..kpIndex = (json['kpIndex'] as num?)?.toDouble()
+    ..activityLevel = json['activityLevel'] as String?
+    ..timestamp = json['timestamp'] as String?
+    ..ukStatus = json['ukStatus'] as String?
+    ..forecastJson = json['forecastJson'] as String?
+    ..cachedAt = json['cachedAt'] != null
+        ? DateTime.parse(json['cachedAt'] as String)
+        : null
+    ..latitude = (json['latitude'] as num?)?.toDouble()
+    ..longitude = (json['longitude'] as num?)?.toDouble();
 }
 
 @collection

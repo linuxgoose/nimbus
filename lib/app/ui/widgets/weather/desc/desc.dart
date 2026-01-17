@@ -5,13 +5,13 @@ import 'package:get/get.dart';
 class DescWeather extends StatefulWidget {
   const DescWeather({
     super.key,
-    required this.imageName,
+    required this.icon,
     required this.value,
     required this.desc,
     this.message = '',
   });
 
-  final String imageName;
+  final IconData icon;
   final String value;
   final String desc;
   final String? message;
@@ -51,7 +51,7 @@ class _DescWeatherState extends State<DescWeather> {
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(widget.imageName, scale: 20),
+        Icon(widget.icon, size: 32, color: context.theme.colorScheme.primary),
         const Gap(6),
         Text(
           widget.value,
