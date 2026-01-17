@@ -21,6 +21,7 @@ class Settings {
   bool hideElevation = false;
   bool useDummyElevation = true;
   String? elevationApiKey;
+  bool hideAurora = false;
   String? widgetBackgroundColor;
   String? widgetTextColor;
   String degrees = 'celsius';

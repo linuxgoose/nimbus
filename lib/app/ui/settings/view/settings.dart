@@ -298,6 +298,10 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildUseDummyElevationSettingCard(context, setState),
               _buildElevationApiKeySettingCard(context, setState),
               _buildCheckElevationCacheSettingCard(context, setState),
+              const Gap(10),
+              _buildAuroraTitle(context),
+              _buildHideAuroraSettingCard(context, setState),
+              const Gap(10),
               _buildClearElevationCacheSettingCard(context, setState),
               const Gap(10),
             ],
@@ -757,6 +761,32 @@ class _SettingsPageState extends State<SettingsPage> {
     value: settings.useDummyElevation,
     onChange: (value) {
       settings.useDummyElevation = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildAuroraTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'Aurora Watch',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideAuroraSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Aurora Watch',
+    switcher: true,
+    value: settings.hideAurora,
+    onChange: (value) {
+      settings.hideAurora = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
     },
