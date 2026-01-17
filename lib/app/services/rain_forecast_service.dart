@@ -23,19 +23,39 @@ class RainForecastService {
 
     if (cached != null && cached.expiresAt != null) {
       if (DateTime.now().isBefore(cached.expiresAt!)) {
-        debugPrint('✅ Using cached rain forecast data');
-        return {
-          'time': cached.times ?? [],
-          'precipitation': cached.precipitation ?? [],
-          'resolution': cached.resolution ?? 'unknown',
-        };
+        // Validate cached data is limited to 6 hours
+        final times = cached.times ?? [];
+        final precip = cached.precipitation ?? [];
+
+        if (times.length > 1) {
+          final firstTime = DateTime.parse(times.first);
+          final lastTime = DateTime.parse(times.last);
+          final hoursDiff = lastTime.difference(firstTime).inMinutes / 60.0;
+
+          // If cached data exceeds 6 hours, clear it and fetch fresh data
+          if (hoursDiff > 6.0) {
+            debugPrint(
+              '⚠️ Cached data exceeds 6 hours ($hoursDiff), clearing cache',
+            );
+            isar.writeTxnSync(() {
+              isar.rainForecastCaches.deleteByLocationKeySync(locationKey);
+            });
+          } else {
+            debugPrint('✅ Using cached rain forecast data ($hoursDiff hours)');
+            return {
+              'time': times,
+              'precipitation': precip,
+              'resolution': cached.resolution ?? 'unknown',
+            };
+          }
+        }
       }
     }
 
     try {
-      // Try minutely endpoint first (1-minute resolution for next hour)
+      // Use minutely_15 endpoint with forecast_days=1 (gives ~24 hours, we'll filter to 6)
       final minutelyUrl =
-          'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&minutely_15=precipitation&forecast_hours=6&timezone=auto';
+          'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&minutely_15=precipitation&forecast_days=1&timezone=auto';
 
       debugPrint('🌧️ Fetching rain forecast: $minutelyUrl');
 
@@ -50,13 +70,49 @@ class RainForecastService {
 
           if (minutelyData.containsKey('time') &&
               minutelyData.containsKey('precipitation')) {
+            final times = minutelyData['time'] as List<dynamic>;
+            final precip = minutelyData['precipitation'] as List<dynamic>;
+
+            // Filter to exactly 6 hours starting from NOW
+            final List<dynamic> limitedTimes = [];
+            final List<dynamic> limitedPrecip = [];
+            final now = DateTime.now();
+
+            if (times.isNotEmpty) {
+              // Find the first data point that's current or in the future
+              int startIndex = 0;
+              for (int i = 0; i < times.length; i++) {
+                final time = DateTime.parse(times[i] as String);
+                if (!time.isBefore(now)) {
+                  startIndex = i;
+                  break;
+                }
+              }
+
+              // Collect 6 hours of data from that point
+              final startTime = DateTime.parse(times[startIndex] as String);
+              for (int i = startIndex; i < times.length; i++) {
+                final currentTime = DateTime.parse(times[i] as String);
+                final hoursDiff =
+                    currentTime.difference(startTime).inMinutes / 60.0;
+
+                // Only include data points within 6 hours from start
+                if (hoursDiff <= 6.0) {
+                  limitedTimes.add(times[i]);
+                  limitedPrecip.add(precip[i]);
+                } else {
+                  break;
+                }
+              }
+            }
+
             debugPrint(
-              '✅ Rain forecast fetched: ${(minutelyData['time'] as List).length} data points',
+              '✅ Rain forecast fetched: ${limitedTimes.length} data points (${limitedTimes.first} to ${limitedTimes.last})',
             );
 
             final result = {
-              'time': minutelyData['time'] as List<dynamic>,
-              'precipitation': minutelyData['precipitation'] as List<dynamic>,
+              'time': limitedTimes,
+              'precipitation': limitedPrecip,
               'resolution': '15min',
             };
 
@@ -129,7 +185,7 @@ class RainForecastService {
   ) async {
     try {
       final hourlyUrl =
-          'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&hourly=precipitation&forecast_hours=6&timezone=auto';
+          'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&hourly=precipitation&forecast_days=1&timezone=auto';
 
       final response = await _dio.get(hourlyUrl);
 
@@ -142,11 +198,49 @@ class RainForecastService {
 
           if (hourlyData.containsKey('time') &&
               hourlyData.containsKey('precipitation')) {
-            debugPrint('✅ Using hourly fallback for rain forecast');
+            final times = hourlyData['time'] as List<dynamic>;
+            final precip = hourlyData['precipitation'] as List<dynamic>;
+
+            // Filter to exactly 6 hours starting from NOW
+            final List<dynamic> limitedTimes = [];
+            final List<dynamic> limitedPrecip = [];
+            final now = DateTime.now();
+
+            if (times.isNotEmpty) {
+              // Find the first data point that's current or in the future
+              int startIndex = 0;
+              for (int i = 0; i < times.length; i++) {
+                final time = DateTime.parse(times[i] as String);
+                if (!time.isBefore(now)) {
+                  startIndex = i;
+                  break;
+                }
+              }
+
+              // Collect 6 hours of data from that point
+              final startTime = DateTime.parse(times[startIndex] as String);
+              for (int i = startIndex; i < times.length; i++) {
+                final currentTime = DateTime.parse(times[i] as String);
+                final hoursDiff =
+                    currentTime.difference(startTime).inMinutes / 60.0;
+
+                // Only include data points within 6 hours from start
+                if (hoursDiff <= 6.0) {
+                  limitedTimes.add(times[i]);
+                  limitedPrecip.add(precip[i]);
+                } else {
+                  break;
+                }
+              }
+            }
+
+            debugPrint(
+              '✅ Using hourly fallback: ${limitedTimes.length} data points (${limitedTimes.first} to ${limitedTimes.last})',
+            );
 
             final result = {
-              'time': hourlyData['time'] as List<dynamic>,
-              'precipitation': hourlyData['precipitation'] as List<dynamic>,
+              'time': limitedTimes,
+              'precipitation': limitedPrecip,
               'resolution': 'hourly',
             };
 
