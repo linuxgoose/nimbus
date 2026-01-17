@@ -12,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/ui/alert_history/view/alert_history_page.dart';
 import 'package:nimbus/app/ui/settings/widgets/setting_card.dart';
 import 'package:nimbus/main.dart';
 import 'package:nimbus/theme/theme_controller.dart';
@@ -57,7 +58,12 @@ class _SettingsPageState extends State<SettingsPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildAppearanceCard(context),
+        _buildWeatherProviderCard(context),
         _buildFunctionsCard(context),
+        _buildTidesCard(context),
+        _buildElevationCard(context),
+        _buildWeatherAlertsCard(context),
+        _buildAqiCard(context),
         _buildDataCard(context),
         _buildWidgetCard(context),
         _buildMapCard(context),
@@ -66,6 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildVersionCard(context),
         _buildGitHubCard(context),
         _buildSupportCard(context),
+        _buildMetNorwayText(context),
         _buildOpenMeteoText(context),
       ],
     ),
@@ -75,6 +82,46 @@ class _SettingsPageState extends State<SettingsPage> {
     icon: const Icon(LucideIcons.paintRoller),
     text: 'appearance'.tr,
     onPressed: () => _showAppearanceBottomSheet(context),
+  );
+
+  Widget _buildWeatherProviderCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.cloudSun),
+    text: 'Weather Provider',
+    onPressed: () => _showWeatherProviderBottomSheet(context),
+  );
+
+  void _showWeatherProviderBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildWeatherProviderTitle(context),
+                  _buildWeatherDataSourceSettingCard(context, setState),
+                  if (settings.weatherDataSource == 'hybrid')
+                    _buildPreferMetNoSettingCard(context, setState),
+                  _buildShowRainForecastSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildWeatherProviderTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 15),
+    child: Text(
+      'Weather Provider',
+      style: context.textTheme.titleLarge?.copyWith(fontSize: 20),
+    ),
   );
 
   void _showAppearanceBottomSheet(BuildContext context) => showModalBottomSheet(
@@ -190,6 +237,162 @@ class _SettingsPageState extends State<SettingsPage> {
     icon: const Icon(LucideIcons.chartSpline),
     text: 'functions'.tr,
     onPressed: () => _showFunctionsBottomSheet(context),
+  );
+
+  Widget _buildTidesCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.waves),
+    text: 'Tides',
+    onPressed: () => _showTidesBottomSheet(context),
+  );
+
+  void _showTidesBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTidesTitle(context),
+              _buildHideTidesSettingCard(context, setState),
+              _buildUseDummyTidesSettingCard(context, setState),
+              _buildTidesApiKeySettingCard(context, setState),
+              _buildCheckTidesCacheSettingCard(context, setState),
+              _buildClearTidesCacheSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildTidesTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Tides', style: context.textTheme.headlineSmall),
+  );
+
+  Widget _buildElevationCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.mountain),
+    text: 'Elevation',
+    onPressed: () => _showElevationBottomSheet(context),
+  );
+
+  void _showElevationBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildElevationTitle(context),
+              _buildHideElevationSettingCard(context, setState),
+              _buildUseDummyElevationSettingCard(context, setState),
+              _buildElevationApiKeySettingCard(context, setState),
+              _buildCheckElevationCacheSettingCard(context, setState),
+              _buildClearElevationCacheSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildElevationTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Elevation', style: context.textTheme.headlineSmall),
+  );
+
+  Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.triangleAlert),
+    text: 'Weather Alerts',
+    onPressed: () => _showWeatherAlertsBottomSheet(context),
+  );
+
+  Widget _buildAqiCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.wind),
+    text: 'Air Quality Index',
+    onPressed: () => _showAqiBottomSheet(context),
+  );
+
+  void _showAqiBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildAqiTitle(context),
+              _buildHideAqiSettingCard(context, setState),
+              _buildAqiIndexSettingCard(context, setState),
+              _buildCheckAqiCacheSettingCard(context, setState),
+              _buildClearAqiCacheSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildAqiTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Air Quality Index', style: context.textTheme.headlineSmall),
+  );
+
+  Widget _buildHideAqiSettingCard(BuildContext context, StateSetter setState) =>
+      SettingCard(
+        elevation: 4,
+        icon: const Icon(LucideIcons.eyeOff),
+        text: 'Hide Air Quality Index',
+        switcher: true,
+        value: settings.hideAqi,
+        onChange: (value) {
+          settings.hideAqi = value;
+          isar.writeTxnSync(() => isar.settings.putSync(settings));
+          setState(() {});
+        },
+      );
+
+  void _showWeatherAlertsBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildWeatherAlertsTitle(context),
+                  _buildDummyAlertsSettingCard(context, setState),
+                  _buildAlertSeveritySettingCard(context, setState),
+                  _buildShowAlertsOnMainPageSettingCard(context, setState),
+                  _buildShowAlertsOnMapSettingCard(context, setState),
+                  _buildViewAlertHistoryCard(context),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildWeatherAlertsTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Weather Alerts', style: context.textTheme.headlineSmall),
   );
 
   void _showFunctionsBottomSheet(BuildContext context) => showModalBottomSheet(
@@ -321,6 +524,502 @@ class _SettingsPageState extends State<SettingsPage> {
         }
         setState(() {});
       }
+    },
+  );
+
+  Widget _buildHideTidesSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.waves),
+    text: 'hideTides'.tr,
+    switcher: true,
+    value: settings.hideTides,
+    onChange: (value) {
+      settings.hideTides = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+      Future.delayed(
+        const Duration(milliseconds: 500),
+        () => Restart.restartApp(),
+      );
+    },
+  );
+
+  Widget _buildUseDummyTidesSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.testTube),
+    text: 'Use Dummy Tide Data',
+    switcher: true,
+    value: settings.useDummyTides,
+    onChange: (value) {
+      settings.useDummyTides = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildTidesApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.key),
+    text: 'Stormglass API Key',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.tidesApiKey?.isNotEmpty == true
+          ? '${settings.tidesApiKey!.substring(0, 8)}...'
+          : 'Not set',
+    ),
+    onPressed: () => _showTidesApiKeyDialog(context, setState),
+  );
+
+  void _showTidesApiKeyDialog(BuildContext context, StateSetter setState) {
+    final controller = TextEditingController(text: settings.tidesApiKey ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Stormglass API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Get your free API key (10 requests/day) from:',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://stormglass.io/',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.tidesApiKey = controller.text.trim();
+              if (settings.tidesApiKey!.isEmpty) {
+                settings.tidesApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckTidesCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Check Tide Cache',
+    onPressed: () {
+      final cacheCount = isar.tideCaches.countSync();
+      final caches = isar.tideCaches
+          .getAllSync([])
+          .whereType<TideCache>()
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Tide Cache Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total cached entries: $cacheCount'),
+              const SizedBox(height: 16),
+              if (caches.isNotEmpty) ...[
+                const Text(
+                  'Cached locations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...caches.map(
+                  (cache) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• ${cache.locationKey}\n  Cached: ${cache.cachedAt}\n  Expires: ${cache.expiresAt}',
+                      style: context.textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildClearTidesCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.trash2),
+    text: 'Clear Tide Cache',
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Clear Tide Cache'),
+          content: const Text(
+            'Are you sure you want to clear all cached tide data?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                isar.writeTxnSync(() {
+                  isar.tideCaches.clearSync();
+                });
+                Navigator.pop(context);
+                // ignore: void_checks
+                showSnackBar(content: 'Cleared tide cache entries');
+                setState(() {});
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildHideElevationSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Elevation',
+    switcher: true,
+    value: settings.hideElevation,
+    onChange: (value) {
+      settings.hideElevation = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildUseDummyElevationSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.testTube),
+    text: 'Use Dummy Elevation Data',
+    switcher: true,
+    value: settings.useDummyElevation,
+    onChange: (value) {
+      settings.useDummyElevation = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildElevationApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.key),
+    text: 'Open-Elevation API Key',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.elevationApiKey?.isNotEmpty == true
+          ? '${settings.elevationApiKey!.substring(0, 8)}...'
+          : 'Not set (Public API)',
+    ),
+    onPressed: () => _showElevationApiKeyDialog(context, setState),
+  );
+
+  void _showElevationApiKeyDialog(BuildContext context, StateSetter setState) {
+    final controller = TextEditingController(
+      text: settings.elevationApiKey ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Open-Elevation API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The public API is free and requires no key. You can optionally use your own self-hosted instance:',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://github.com/Jorl17/open-elevation',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key (Optional)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.elevationApiKey = controller.text.trim();
+              if (settings.elevationApiKey!.isEmpty) {
+                settings.elevationApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckElevationCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Check Elevation Cache',
+    onPressed: () {
+      final cacheCount = isar.elevationCaches.countSync();
+      final caches = isar.elevationCaches
+          .getAllSync([])
+          .whereType<ElevationCache>()
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Elevation Cache Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total cached locations: $cacheCount'),
+              if (caches.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Cached Locations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...caches
+                    .take(5)
+                    .map(
+                      (cache) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          '${cache.lat?.toStringAsFixed(4)}, ${cache.lon?.toStringAsFixed(4)}',
+                          style: context.textTheme.bodySmall,
+                        ),
+                      ),
+                    ),
+                if (caches.length > 5)
+                  Text(
+                    '... and ${caches.length - 5} more',
+                    style: context.textTheme.bodySmall,
+                  ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildClearElevationCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.trash2),
+    text: 'Clear Elevation Cache',
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Clear Elevation Cache'),
+          content: const Text(
+            'Are you sure you want to clear all cached elevation data?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                isar.writeTxnSync(() {
+                  isar.elevationCaches.clearSync();
+                });
+                Navigator.pop(context);
+                // ignore: void_checks
+                showSnackBar(content: 'Cleared elevation cache entries');
+                setState(() {});
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildCheckAqiCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Check AQI Cache',
+    onPressed: () {
+      final cacheCount = isar.aqiCaches.countSync();
+      final caches = isar.aqiCaches
+          .getAllSync([])
+          .whereType<AqiCache>()
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('AQI Cache Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total cached entries: $cacheCount'),
+              const SizedBox(height: 16),
+              if (caches.isNotEmpty) ...[
+                const Text(
+                  'Cached locations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...caches.map(
+                  (cache) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• ${cache.locationKey}\n  Cached: ${cache.cachedAt}\n  Expires: ${cache.expiresAt}',
+                      style: context.textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildClearAqiCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.trash2),
+    text: 'Clear AQI Cache',
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Clear AQI Cache'),
+          content: const Text(
+            'Are you sure you want to clear all cached AQI data?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                isar.writeTxnSync(() {
+                  isar.aqiCaches.clearSync();
+                });
+                Navigator.pop(context);
+                // ignore: void_checks
+                showSnackBar(content: 'Cleared AQI cache entries');
+                setState(() {});
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+      );
     },
   );
 
@@ -468,6 +1167,53 @@ class _SettingsPageState extends State<SettingsPage> {
     ),
   );
 
+  Widget _buildWeatherDataSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.cloudSun),
+    text: 'Weather Data Source',
+    dropdown: true,
+    dropdownName: _getDataSourceDisplayName(settings.weatherDataSource),
+    dropdownList: <String>['Open-Meteo', 'MET Norway', 'Hybrid (Best of Both)'],
+    dropdownChange: (String? newValue) async {
+      if (newValue == null) return;
+      String sourceValue;
+      switch (newValue) {
+        case 'MET Norway':
+          sourceValue = 'metno';
+          break;
+        case 'Hybrid (Best of Both)':
+          sourceValue = 'hybrid';
+          break;
+        default:
+          sourceValue = 'openmeteo';
+      }
+      isar.writeTxnSync(() {
+        settings.weatherDataSource = sourceValue;
+        isar.settings.putSync(settings);
+      });
+
+      // Clear cache and refresh data
+      await weatherController.deleteAll(false);
+      await weatherController.setLocation();
+      await weatherController.updateCacheCard(true);
+      setState(() {});
+    },
+  );
+
+  String _getDataSourceDisplayName(String source) {
+    switch (source) {
+      case 'metno':
+        return 'MET Norway';
+      case 'hybrid':
+        return 'Hybrid (Best of Both)';
+      default:
+        return 'Open-Meteo';
+    }
+  }
+
   Widget _buildRoundDegreeSettingCard(
     BuildContext context,
     StateSetter setState,
@@ -481,6 +1227,42 @@ class _SettingsPageState extends State<SettingsPage> {
       settings.roundDegree = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       MyApp.updateAppState(context, newRoundDegree: value);
+      setState(() {});
+    },
+  );
+
+  Widget _buildShowRainForecastSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.cloudRain),
+    text: 'Show 6-Hour Rain Forecast',
+    switcher: true,
+    value: settings.showRainForecast,
+    onChange: (value) {
+      settings.showRainForecast = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildPreferMetNoSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.mapPin),
+    text: 'Prefer MET Norway',
+    switcher: true,
+    value: settings.preferMetNoInHybrid,
+    onChange: (value) async {
+      settings.preferMetNoInHybrid = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      // Clear cache and refresh weather data
+      await weatherController.deleteAll(false);
+      await weatherController.setLocation();
+      await weatherController.updateCacheCard(true);
       setState(() {});
     },
   );
@@ -599,6 +1381,130 @@ class _SettingsPageState extends State<SettingsPage> {
         isar.settings.putSync(settings);
       });
       setState(() {});
+    },
+  );
+
+  Widget _buildAqiIndexSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.wind),
+    text: 'Air Quality Index',
+    dropdown: true,
+    dropdownName: settings.aqiIndex == 'daqi' ? 'UK DAQI' : 'US AQI',
+    dropdownList: <String>['UK DAQI', 'US AQI'],
+    dropdownChange: (String? newValue) {
+      isar.writeTxnSync(() {
+        settings.aqiIndex = newValue == 'UK DAQI' ? 'daqi' : 'us';
+        isar.settings.putSync(settings);
+      });
+      setState(() {});
+    },
+  );
+
+  Widget _buildDummyAlertsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.triangleAlert),
+    text: 'Show Dummy Weather Alerts',
+    switcher: true,
+    value: settings.showDummyAlerts,
+    onChange: (value) {
+      settings.showDummyAlerts = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildAlertSeveritySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.info),
+    text: 'Minimum Alert Severity',
+    dropdown: true,
+    dropdownName: _getSeverityDisplayName(settings.alertMinSeverity),
+    dropdownList: <String>['Show All', 'Moderate+', 'Severe+', 'Extreme Only'],
+    dropdownChange: (String? newValue) {
+      if (newValue == null) return;
+      String severityValue;
+      switch (newValue) {
+        case 'Moderate+':
+          severityValue = 'moderate';
+          break;
+        case 'Severe+':
+          severityValue = 'severe';
+          break;
+        case 'Extreme Only':
+          severityValue = 'extreme';
+          break;
+        default:
+          severityValue = 'all';
+      }
+      isar.writeTxnSync(() {
+        settings.alertMinSeverity = severityValue;
+        isar.settings.putSync(settings);
+      });
+      setState(() {});
+    },
+  );
+
+  String _getSeverityDisplayName(String severity) {
+    switch (severity) {
+      case 'moderate':
+        return 'Moderate+';
+      case 'severe':
+        return 'Severe+';
+      case 'extreme':
+        return 'Extreme Only';
+      default:
+        return 'Show All';
+    }
+  }
+
+  Widget _buildShowAlertsOnMainPageSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.house),
+    text: 'Show Alerts on Main Page',
+    switcher: true,
+    value: settings.showAlertsOnMainPage,
+    onChange: (value) {
+      settings.showAlertsOnMainPage = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildShowAlertsOnMapSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.map),
+    text: 'Show Alerts on Map',
+    switcher: true,
+    value: settings.showAlertsOnMap,
+    onChange: (value) {
+      settings.showAlertsOnMap = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildViewAlertHistoryCard(BuildContext context) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.history),
+    text: 'View Alert History',
+    onPressed: () {
+      Navigator.pop(context); // Close settings bottom sheet
+      Get.to(() => AlertHistoryPage());
     },
   );
 
@@ -1072,6 +1978,18 @@ class _SettingsPageState extends State<SettingsPage> {
         textAlign: TextAlign.center,
       ),
       onTap: () => weatherController.urlLauncher('https://open-meteo.com/'),
+    ),
+  );
+  Widget _buildMetNorwayText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: GestureDetector(
+      child: Text(
+        'metNorway'.tr,
+        style: context.textTheme.bodyMedium,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => weatherController.urlLauncher('https://api.met.no/'),
     ),
   );
 }

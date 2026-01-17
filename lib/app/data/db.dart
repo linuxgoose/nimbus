@@ -14,17 +14,64 @@ class Settings {
   bool roundDegree = false;
   bool largeElement = false;
   bool hideMap = false;
+  bool hideTides = false;
+  bool hideAqi = false;
+  bool useDummyTides = true;
+  String? tidesApiKey;
+  bool hideElevation = false;
+  bool useDummyElevation = true;
+  String? elevationApiKey;
   String? widgetBackgroundColor;
   String? widgetTextColor;
-  String measurements = 'metric';
   String degrees = 'celsius';
-  String wind = 'kph';
   String pressure = 'hPa';
   String timeformat = '24';
+  String aqiIndex = 'daqi';
+  String measurements = 'imperial';
+  String wind = 'mph';
+  bool showDummyAlerts = false;
+  String alertMinSeverity = 'all'; // all, moderate, severe, extreme
+  bool showAlertsOnMainPage = true;
+  bool showAlertsOnMap = true;
+  String weatherDataSource = 'openmeteo'; // openmeteo, metno, hybrid
+  bool preferMetNoInHybrid =
+      false; // Override Nordic region detection in hybrid mode
+  bool showRainForecast = true; // Show 6-hour rain forecast chart
   String? language;
   int? timeRange;
   String? timeStart;
   String? timeEnd;
+}
+
+@collection
+class AlertHistory {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String eventKey = ''; // Composite key: lat_lon_timestamp_event
+
+  double lat;
+  double lon;
+  DateTime timestamp;
+
+  String event;
+  String? description;
+  String severity; // extreme, severe, moderate, minor
+  String? boundariesJson; // Store boundaries as JSON string
+  DateTime? startTime;
+  DateTime? endTime;
+
+  AlertHistory({
+    required this.lat,
+    required this.lon,
+    required this.timestamp,
+    required this.event,
+    this.description,
+    required this.severity,
+    this.boundariesJson,
+    this.startTime,
+    this.endTime,
+  });
 }
 
 @collection
@@ -352,4 +399,173 @@ class WeatherCard {
       index: json['index'],
     );
   }
+}
+
+@collection
+class TideLocation {
+  Id id = Isar.autoIncrement;
+  String? name;
+  double? lat;
+  double? lon;
+  bool isPrimary = false;
+  DateTime? lastUpdated;
+
+  TideLocation({
+    this.name,
+    this.lat,
+    this.lon,
+    this.isPrimary = false,
+    this.lastUpdated,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'lat': lat,
+    'lon': lon,
+    'isPrimary': isPrimary,
+    'lastUpdated': lastUpdated?.toIso8601String(),
+  };
+
+  factory TideLocation.fromJson(Map<String, dynamic> json) => TideLocation(
+    name: json['name'] as String?,
+    lat: (json['lat'] as num?)?.toDouble(),
+    lon: (json['lon'] as num?)?.toDouble(),
+    isPrimary: json['isPrimary'] as bool? ?? false,
+    lastUpdated: json['lastUpdated'] != null
+        ? DateTime.parse(json['lastUpdated'] as String)
+        : null,
+  );
+}
+
+@collection
+class ElevationLocation {
+  Id id = Isar.autoIncrement;
+  String? name;
+  double? lat;
+  double? lon;
+  bool isPrimary = false;
+  DateTime? lastUpdated;
+
+  ElevationLocation({
+    this.name,
+    this.lat,
+    this.lon,
+    this.isPrimary = false,
+    this.lastUpdated,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'lat': lat,
+    'lon': lon,
+    'isPrimary': isPrimary,
+    'lastUpdated': lastUpdated?.toIso8601String(),
+  };
+
+  factory ElevationLocation.fromJson(Map<String, dynamic> json) =>
+      ElevationLocation(
+        name: json['name'] as String?,
+        lat: (json['lat'] as num?)?.toDouble(),
+        lon: (json['lon'] as num?)?.toDouble(),
+        isPrimary: json['isPrimary'] as bool? ?? false,
+        lastUpdated: json['lastUpdated'] != null
+            ? DateTime.parse(json['lastUpdated'] as String)
+            : null,
+      );
+}
+
+@collection
+class TideCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  String? cachedDataJson; // Store the entire tide data response as JSON
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 24 hours
+
+  TideCache({
+    required this.locationKey,
+    this.lat,
+    this.lon,
+    this.cachedDataJson,
+    this.cachedAt,
+    this.expiresAt,
+  });
+}
+
+@collection
+class AqiCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  String? cachedDataJson; // Store the entire AQI data response as JSON
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 1 hour
+
+  AqiCache({
+    required this.locationKey,
+    this.lat,
+    this.lon,
+    this.cachedDataJson,
+    this.cachedAt,
+    this.expiresAt,
+  });
+}
+
+@collection
+class RainForecastCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  List<String>? times; // Array of ISO timestamp strings
+  List<double?>? precipitation; // Array of precipitation values in mm
+  String? resolution; // '15min' or 'hourly'
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 30 minutes
+
+  RainForecastCache({
+    required this.locationKey,
+    this.lat,
+    this.lon,
+    this.times,
+    this.precipitation,
+    this.resolution,
+    this.cachedAt,
+    this.expiresAt,
+  });
+}
+
+@collection
+class ElevationCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  String? cachedDataJson; // Store the entire elevation data response as JSON
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 7 days (elevation doesn't change)
+
+  ElevationCache({
+    required this.locationKey,
+    this.lat,
+    this.lon,
+    this.cachedDataJson,
+    this.cachedAt,
+    this.expiresAt,
+  });
 }

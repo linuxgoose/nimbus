@@ -35,10 +35,12 @@ class _HourlyState extends State<Hourly> {
     final time = widget.time;
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildTimeText(textTheme, time),
+        const SizedBox(height: 6),
         _buildWeatherImage(),
+        const SizedBox(height: 6),
         _buildTemperatureText(textTheme),
       ],
     );
@@ -46,26 +48,36 @@ class _HourlyState extends State<Hourly> {
 
   Widget _buildTimeText(TextTheme textTheme, String time) => Column(
     children: [
-      Text(statusData.getTimeFormat(time), style: textTheme.labelLarge),
+      Text(
+        statusData.getTimeFormat(time),
+        style: textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 2),
       Text(
         DateFormat('E', locale.languageCode).format(DateTime.tryParse(time)!),
-        style: textTheme.labelLarge?.copyWith(color: Colors.grey),
+        style: textTheme.labelSmall?.copyWith(
+          color: textTheme.bodySmall?.color?.withOpacity(0.6),
+        ),
       ),
     ],
   );
 
-  Widget _buildWeatherImage() => Image.asset(
-    statusWeather.getImageToday(
-      widget.weather,
-      widget.time,
-      widget.timeDay,
-      widget.timeNight,
+  Widget _buildWeatherImage() => SizedBox(
+    width: 36,
+    height: 36,
+    child: Image.asset(
+      statusWeather.getImageToday(
+        widget.weather,
+        widget.time,
+        widget.timeDay,
+        widget.timeNight,
+      ),
+      fit: BoxFit.contain,
     ),
-    scale: 3,
   );
 
   Widget _buildTemperatureText(TextTheme textTheme) => Text(
     statusData.getDegree((widget.degree ?? 0).round()),
-    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
   );
 }

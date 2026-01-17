@@ -127,12 +127,45 @@ Future<void> initializeTimeZone() async {
 }
 
 Future<void> initializeIsar() async {
-  isar = await Isar.open([
-    SettingsSchema,
-    MainWeatherCacheSchema,
-    LocationCacheSchema,
-    WeatherCardSchema,
-  ], directory: (await getApplicationSupportDirectory()).path);
+  try {
+    isar = await Isar.open([
+      SettingsSchema,
+      MainWeatherCacheSchema,
+      LocationCacheSchema,
+      WeatherCardSchema,
+      TideLocationSchema,
+      ElevationLocationSchema,
+      TideCacheSchema,
+      AqiCacheSchema,
+      AlertHistorySchema,
+      RainForecastCacheSchema,
+      ElevationCacheSchema,
+    ], directory: (await getApplicationSupportDirectory()).path);
+  } catch (e) {
+    // If schema is invalid (e.g., after adding new collections), delete and recreate
+    final dir = await getApplicationSupportDirectory();
+    final isarFile = File('${dir.path}/default.isar');
+    final isarLockFile = File('${dir.path}/default.isar.lock');
+
+    if (await isarFile.exists()) await isarFile.delete();
+    if (await isarLockFile.exists()) await isarLockFile.delete();
+
+    // Retry opening
+    isar = await Isar.open([
+      SettingsSchema,
+      MainWeatherCacheSchema,
+      LocationCacheSchema,
+      WeatherCardSchema,
+      TideLocationSchema,
+      ElevationLocationSchema,
+      TideCacheSchema,
+      AqiCacheSchema,
+      AlertHistorySchema,
+      RainForecastCacheSchema,
+      ElevationCacheSchema,
+    ], directory: dir.path);
+  }
+
   settings = isar.settings.where().findFirstSync() ?? Settings();
   locationCache =
       isar.locationCaches.where().findFirstSync() ?? LocationCache();
@@ -144,6 +177,18 @@ Future<void> initializeIsar() async {
 
   if (settings.theme == null) {
     settings.theme = 'system';
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+  }
+
+  // Initialize new alert settings if they don't exist
+  if (settings.alertMinSeverity.isEmpty) {
+    settings.alertMinSeverity = 'all';
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+  }
+
+  // Initialize weatherDataSource if not set
+  if (settings.weatherDataSource.isEmpty) {
+    settings.weatherDataSource = 'openmeteo';
     isar.writeTxnSync(() => isar.settings.putSync(settings));
   }
 }

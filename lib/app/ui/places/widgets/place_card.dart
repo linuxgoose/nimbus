@@ -136,13 +136,17 @@ class _PlaceCardState extends State<PlaceCard> {
   );
 
   Widget _buildWeatherImage(int currentTimeIndex, int currentDayIndex) =>
-      Image.asset(
-        statusWeather.getImageNow(
-          widget.weather[currentTimeIndex],
-          widget.time[currentTimeIndex],
-          widget.timeDay[currentDayIndex],
-          widget.timeNight[currentDayIndex],
+      SizedBox(
+        width: 60,
+        height: 60,
+        child: Image.asset(
+          statusWeather.getImageNow(
+            widget.weather[currentTimeIndex],
+            widget.time[currentTimeIndex],
+            widget.timeDay[currentDayIndex],
+            widget.timeNight[currentDayIndex],
+          ),
+          fit: BoxFit.contain,
         ),
-        scale: 6.5,
       );
 }
