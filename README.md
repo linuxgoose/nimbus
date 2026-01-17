@@ -54,6 +54,21 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - Color-coded health recommendations
   - 1-hour caching to reduce API calls
   - Manual cache inspection and clearing
+- **Aurora Watch:** Track northern lights activity with:
+  - Real-time Kp-index from NOAA Space Weather Prediction Center
+  - AuroraWatch UK alerts for the United Kingdom
+  - 3-day aurora forecast with hourly predictions
+  - Activity levels and visibility indicators
+  - Color-coded alerts based on geomagnetic activity
+  - 30-minute caching for optimal performance
+- **Moon Phases:** Comprehensive lunar information with:
+  - Current moon phase with emoji visualization
+  - Phase name and illumination percentage
+  - Progress indicator through lunar cycle
+  - Predictions for next full and new moon
+  - Educational information about moon phases
+  - Astronomical calculations using Julian Date method
+- **Elevation Data:** View elevation above sea level for any location
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.
 - **Multiple Locations:** Add and manage weather for multiple cities.
