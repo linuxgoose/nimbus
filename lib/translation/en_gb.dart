@@ -192,5 +192,24 @@ class EnGb {
         'The Moon completes a full cycle approximately every 29.5 days, transitioning through eight distinct phases. These phases affect tides, wildlife behaviour, and have been observed by cultures throughout human history.',
     'in': 'in',
     'days': 'days',
+    'flood_monitoring': 'Flood Monitoring',
+    'flood_warning': 'Flood Warning',
+    'flood_alert': 'Flood Alert',
+    'severe_flood_warning': 'Severe Flood Warning',
+    'flood_summary': 'Flood Summary',
+    'active_warnings': 'Active Warnings',
+    'monitoring_stations': 'Monitoring Stations',
+    'no_flood_warnings': 'No Active Flood Warnings',
+    'no_flood_warnings_desc':
+        'There are currently no flood warnings in your area',
+    'flood_info':
+        'Real-time flood monitoring data for England provided by the Environment Agency.',
+    'flood_coverage':
+        'Coverage: England only. For Scotland, Wales, and Northern Ireland, check regional services.',
+    'hide_flood_monitoring': 'Hide Flood Monitoring',
+    'flood_notifications': 'Flood Notifications',
+    'flood_search_radius': 'Search Radius',
+    'flood_radius_desc':
+        'Set the radius to search for flood warnings around your location',
   };
 }

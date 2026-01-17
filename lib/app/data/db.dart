@@ -24,6 +24,9 @@ class Settings {
   bool hideAurora = false;
   bool auroraNotifications = false;
   double auroraNotificationThreshold = 5.0; // Kp index threshold
+  bool hideFlood = false;
+  bool floodNotifications = false;
+  double floodRadiusKm = 100.0; // Radius to check for flood warnings
   bool rainNotifications = false;
   double rainNotificationThreshold = 1.0; // mm of rain threshold
   String? widgetBackgroundColor;

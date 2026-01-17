@@ -68,6 +68,17 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - Predictions for next full and new moon
   - Educational information about moon phases
   - Astronomical calculations using Julian Date method
+- **UK Flood Monitoring:** Real-time flood and river data across the UK with:
+  - Active flood warnings and alerts from regional agencies
+  - England: Environment Agency flood warnings and river stations
+  - Scotland: SEPA (Scottish Environment Protection Agency) warnings
+  - Wales: Natural Resources Wales flood alerts
+  - Interactive map showing flood areas and monitoring stations
+  - Severity levels (Severe Warning, Warning, Alert)
+  - River level monitoring stations (England)
+  - Location-based filtering (100km radius)
+  - Color-coded warning indicators
+  - Detailed warning information and updates
 - **Elevation Data:** View elevation above sea level for any location
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.
@@ -103,7 +114,7 @@ Weather data is powered by **multiple sources** for optimal accuracy and coverag
   - Enhanced short-term precipitation forecasting
   - Official government weather warnings when available
 
-Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day). Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data.
+Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day). Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data. UK flood monitoring data is provided by the [Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference) (England), [SEPA](https://www2.sepa.org.uk/fwa/) (Scotland), and [Natural Resources Wales](https://api.naturalresources.wales/) with real-time warnings and river levels.
 
 **Weather Provider Selection**: Choose your preferred weather data source in Settings → Weather Provider:
 - **Open-Meteo**: Global coverage (default)

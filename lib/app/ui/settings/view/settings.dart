@@ -63,6 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildTidesCard(context),
         _buildElevationCard(context),
         _buildAuroraCard(context),
+        _buildFloodMonitoringCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -343,6 +344,36 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     ),
   );
+
+  Widget _buildFloodMonitoringCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.waves),
+    text: 'UK Flood Monitoring',
+    onPressed: () => _showFloodMonitoringBottomSheet(context),
+  );
+
+  void _showFloodMonitoringBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) => StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildFloodTitle(context),
+                  _buildHideFloodSettingCard(context, setState),
+                  _buildFloodNotificationsSettingCard(context, setState),
+                  _buildFloodRadiusSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 
   Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
     icon: const Icon(LucideIcons.triangleAlert),
@@ -832,7 +863,7 @@ class _SettingsPageState extends State<SettingsPage> {
     onChange: (value) {
       settings.auroraNotifications = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
-      if (value || settings.rainNotifications) {
+      if (value || settings.rainNotifications || settings.floodNotifications) {
         WeatherController.scheduleNotificationChecks();
       } else {
         WeatherController.cancelNotificationChecks();
@@ -855,6 +886,120 @@ class _SettingsPageState extends State<SettingsPage> {
     ),
     onPressed: () => _showAuroraThresholdDialog(context, setState),
   );
+
+  Widget _buildFloodTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'UK Flood Monitoring',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideFloodSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Flood Monitoring',
+    switcher: true,
+    value: settings.hideFlood,
+    onChange: (value) {
+      settings.hideFlood = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildFloodNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Flood Notifications',
+    switcher: true,
+    value: settings.floodNotifications,
+    onChange: (value) {
+      settings.floodNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value || settings.rainNotifications || settings.auroraNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
+      setState(() {});
+    },
+  );
+
+  Widget _buildFloodRadiusSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.radius),
+    text: 'Search Radius',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: '${settings.floodRadiusKm.toStringAsFixed(0)} km',
+    ),
+    onPressed: () => _showFloodRadiusDialog(context, setState),
+  );
+
+  void _showFloodRadiusDialog(BuildContext context, StateSetter setState) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Flood Search Radius'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Set the radius to search for flood warnings around your location (25-200 km).',
+              style: context.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            StatefulBuilder(
+              builder: (context, setDialogState) => Column(
+                children: [
+                  Text(
+                    '${settings.floodRadiusKm.toStringAsFixed(0)} km',
+                    style: context.textTheme.titleLarge,
+                  ),
+                  Slider(
+                    value: settings.floodRadiusKm,
+                    min: 25,
+                    max: 200,
+                    divisions: 35,
+                    label: '${settings.floodRadiusKm.toStringAsFixed(0)} km',
+                    onChanged: (value) {
+                      setDialogState(() {
+                        settings.floodRadiusKm = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Get.back();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildElevationApiKeySettingCard(
     BuildContext context,
