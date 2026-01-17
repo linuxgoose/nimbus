@@ -121,17 +121,15 @@ class _NowState extends State<Now> {
     ),
   );
 
-  Widget _buildWeatherImage(double height) => Image(
-    image: AssetImage(
-      statusWeather.getImageNow(
-        widget.weather,
-        widget.time,
-        widget.timeDay,
-        widget.timeNight,
-      ),
+  Widget _buildWeatherImage(double height) => Icon(
+    statusWeather.getIconNow(
+      widget.weather,
+      widget.time,
+      widget.timeDay,
+      widget.timeNight,
     ),
-    fit: BoxFit.fill,
-    height: height,
+    size: height,
+    color: context.theme.colorScheme.primary,
   );
 
   Widget _buildTemperatureText(

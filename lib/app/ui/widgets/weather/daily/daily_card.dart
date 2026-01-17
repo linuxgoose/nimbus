@@ -79,8 +79,9 @@ class _DailyCardState extends State<DailyCard> {
     ),
   );
 
-  Widget _buildWeatherImage() => Image.asset(
-    statusWeather.getImageNowDaily(widget.weathercodeDaily),
-    scale: 6.5,
+  Widget _buildWeatherImage() => Icon(
+    statusWeather.getIconNowDaily(widget.weathercodeDaily),
+    size: 48,
+    color: context.theme.colorScheme.primary,
   );
 }

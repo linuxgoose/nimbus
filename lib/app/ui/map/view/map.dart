@@ -327,9 +327,10 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Image.asset(
-            statusWeather.getImageNow(weathercode, time, sunrise, sunset),
-            scale: 18,
+          child: Icon(
+            statusWeather.getIconNow(weathercode, time, sunrise, sunset),
+            size: 24,
+            color: context.theme.colorScheme.primary,
           ),
         ),
         Text(

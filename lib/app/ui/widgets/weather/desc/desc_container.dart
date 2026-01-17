@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/ui/widgets/weather/desc/desc.dart';
 import 'package:nimbus/app/ui/widgets/weather/desc/message.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
@@ -117,7 +118,7 @@ class _DescContainerState extends State<DescContainer> {
 
     void addDescriptionIfNotNull({
       required dynamic value,
-      required String imageName,
+      required IconData icon,
       required String desc,
       String? message,
     }) {
@@ -130,7 +131,7 @@ class _DescContainerState extends State<DescContainer> {
           value != 'null ${'W/m2'.tr}') {
         descriptions.add(
           DescWeather(
-            imageName: imageName,
+            icon: icon,
             value: value.toString(),
             desc: desc,
             message: message ?? '',
@@ -144,143 +145,127 @@ class _DescContainerState extends State<DescContainer> {
     final weatherData = [
       {
         'value': statusData.getDegree(widget.apparentTemperatureMin?.round()),
-        'imageName':
-            'assets/images/wi-snowflake${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.thermometer,
         'desc': 'apparentTemperatureMin'.tr,
       },
       {
         'value': statusData.getDegree(widget.apparentTemperatureMax?.round()),
-        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.thermometer,
         'desc': 'apparentTemperatureMax'.tr,
       },
       {
         'value': widget.uvIndexMax?.round(),
-        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.sun,
         'desc': 'uvIndex'.tr,
         'message': message.getUvIndex(widget.uvIndexMax?.round()),
       },
       {
         'value': '${widget.windDirection10MDominant}°',
-        'imageName':
-            'assets/images/wi-wind-direction${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.compass,
         'desc': 'direction'.tr,
         'message': message.getDirection(widget.windDirection10MDominant),
       },
       {
         'value': statusData.getSpeed(widget.windSpeed10MMax?.round()),
-        'imageName':
-            'assets/images/wi-wind-speed${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.wind,
         'desc': 'wind'.tr,
       },
       {
         'value': statusData.getSpeed(widget.windGusts10MMax?.round()),
-        'imageName':
-            'assets/images/wi-wind-gust${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.wind,
         'desc': 'windgusts'.tr,
       },
       {
         'value': '${widget.precipitationProbabilityMax}%',
-        'imageName':
-            'assets/images/wi-umbrella${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.umbrella,
         'desc': 'precipitationProbability'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.rainSum),
-        'imageName': 'assets/images/wi-rain${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.cloudRain,
         'desc': 'rain'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.precipitationSum),
-        'imageName':
-            'assets/images/wi-precipitation${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.cloudDrizzle,
         'desc': 'precipitation'.tr,
       },
       {
         'value': statusData.getDegree(widget.dewpoint2M?.round()),
-        'imageName':
-            'assets/images/wi-dewpoint${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.droplets,
         'desc': 'dewpoint'.tr,
       },
       {
         'value': statusData.getDegree(widget.feels?.round()),
-        'imageName':
-            'assets/images/wi-thermometer${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.thermometer,
         'desc': 'feels'.tr,
       },
       {
         'value': statusData.getVisibility(widget.visibility),
-        'imageName': 'assets/images/wi-fog${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.eye,
         'desc': 'visibility'.tr,
       },
       {
         'value': '${widget.direction}°',
-        'imageName':
-            'assets/images/wi-wind-direction${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.compass,
         'desc': 'direction'.tr,
         'message': message.getDirection(widget.direction),
       },
       {
         'value': statusData.getSpeed(widget.wind?.round()),
-        'imageName':
-            'assets/images/wi-wind-speed${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.wind,
         'desc': 'wind'.tr,
       },
       {
         'value': statusData.getSpeed(widget.windgusts?.round()),
-        'imageName':
-            'assets/images/wi-wind-gust${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.wind,
         'desc': 'windgusts'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.evaporation?.abs()),
-        'imageName':
-            'assets/images/wi-raindrops${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.droplet,
         'desc': 'evaporation'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.precipitation),
-        'imageName':
-            'assets/images/wi-precipitation${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.cloudDrizzle,
         'desc': 'precipitation'.tr,
       },
       {
         'value': statusData.getPrecipitation(widget.rain),
-        'imageName': 'assets/images/wi-rain${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.cloudRain,
         'desc': 'rain'.tr,
       },
       {
         'value': '${widget.precipitationProbability}%',
-        'imageName':
-            'assets/images/wi-umbrella${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': LucideIcons.umbrella,
         'desc': 'precipitationProbability'.tr,
       },
       {
         'value': '${widget.humidity}%',
-        'imageName':
-            'assets/images/wi-humidity${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': Icons.water_rounded,
         'desc': 'humidity'.tr,
       },
       {
         'value': '${widget.cloudcover}%',
-        'imageName': 'assets/images/wi-cloudy${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': Icons.cloud_rounded,
         'desc': 'cloudcover'.tr,
       },
       {
         'value': statusData.getPressure(widget.pressure?.round()),
-        'imageName':
-            'assets/images/wi-barometer${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': Icons.compress_rounded,
         'desc': 'pressure'.tr,
         'message': message.getPressure(widget.pressure?.round()),
       },
       {
         'value': widget.uvIndex?.round(),
-        'imageName': 'assets/images/wi-sun${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': Icons.wb_sunny_rounded,
         'desc': 'uvIndex'.tr,
         'message': message.getUvIndex(widget.uvIndex?.round()),
       },
       {
         'value': '${widget.shortwaveRadiation?.round()} ${'W/m2'.tr}',
-        'imageName': 'assets/images/wi-hot${Get.isDarkMode ? "-w" : ""}.png',
+        'icon': Icons.light_mode_rounded,
         'desc': 'shortwaveRadiation'.tr,
       },
     ];
@@ -288,7 +273,7 @@ class _DescContainerState extends State<DescContainer> {
     for (var data in weatherData) {
       addDescriptionIfNotNull(
         value: data['value'],
-        imageName: '${data['imageName']}',
+        icon: data['icon'] as IconData,
         desc: '${data['desc']}',
         message: '${data['message']}',
       );

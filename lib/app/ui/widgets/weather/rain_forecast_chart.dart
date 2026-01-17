@@ -180,7 +180,6 @@ class _RainForecastChartState extends State<RainForecastChart> {
     final hasRain = maxPrecip > 0;
 
     // Display all data points (API already limits to 6 hours via forecast_hours=6)
-    final firstTime = _times.first;
     final dataPointsToShow = _times.length;
 
     return LineChart(
