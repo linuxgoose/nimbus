@@ -33,118 +33,133 @@ const SettingsSchema = CollectionSchema(
       type: IsarType.string,
     ),
     r'degrees': PropertySchema(id: 3, name: r'degrees', type: IsarType.string),
-    r'hideAqi': PropertySchema(id: 4, name: r'hideAqi', type: IsarType.bool),
-    r'hideMap': PropertySchema(id: 5, name: r'hideMap', type: IsarType.bool),
-    r'hideTides': PropertySchema(
+    r'elevationApiKey': PropertySchema(
+      id: 4,
+      name: r'elevationApiKey',
+      type: IsarType.string,
+    ),
+    r'hideAqi': PropertySchema(id: 5, name: r'hideAqi', type: IsarType.bool),
+    r'hideElevation': PropertySchema(
       id: 6,
+      name: r'hideElevation',
+      type: IsarType.bool,
+    ),
+    r'hideMap': PropertySchema(id: 7, name: r'hideMap', type: IsarType.bool),
+    r'hideTides': PropertySchema(
+      id: 8,
       name: r'hideTides',
       type: IsarType.bool,
     ),
     r'language': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 8,
+      id: 10,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 9, name: r'location', type: IsarType.bool),
+    r'location': PropertySchema(id: 11, name: r'location', type: IsarType.bool),
     r'materialColor': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'notifications',
       type: IsarType.bool,
     ),
-    r'onboard': PropertySchema(id: 13, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 15, name: r'onboard', type: IsarType.bool),
     r'preferMetNoInHybrid': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'preferMetNoInHybrid',
       type: IsarType.bool,
     ),
     r'pressure': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 19,
+      id: 21,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
     r'showRainForecast': PropertySchema(
-      id: 20,
+      id: 22,
       name: r'showRainForecast',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 21, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 23, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 22,
+      id: 24,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 23, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 25, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 24,
+      id: 26,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 25,
+      id: 27,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 26,
+      id: 28,
       name: r'timeformat',
       type: IsarType.string,
     ),
+    r'useDummyElevation': PropertySchema(
+      id: 29,
+      name: r'useDummyElevation',
+      type: IsarType.bool,
+    ),
     r'useDummyTides': PropertySchema(
-      id: 27,
+      id: 30,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 28,
+      id: 31,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 29,
+      id: 32,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 30,
+      id: 33,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 31, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 34, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -171,6 +186,12 @@ int _settingsEstimateSize(
   bytesCount += 3 + object.alertMinSeverity.length * 3;
   bytesCount += 3 + object.aqiIndex.length * 3;
   bytesCount += 3 + object.degrees.length * 3;
+  {
+    final value = object.elevationApiKey;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.language;
     if (value != null) {
@@ -231,34 +252,37 @@ void _settingsSerialize(
   writer.writeBool(offsets[1], object.amoledTheme);
   writer.writeString(offsets[2], object.aqiIndex);
   writer.writeString(offsets[3], object.degrees);
-  writer.writeBool(offsets[4], object.hideAqi);
-  writer.writeBool(offsets[5], object.hideMap);
-  writer.writeBool(offsets[6], object.hideTides);
-  writer.writeString(offsets[7], object.language);
-  writer.writeBool(offsets[8], object.largeElement);
-  writer.writeBool(offsets[9], object.location);
-  writer.writeBool(offsets[10], object.materialColor);
-  writer.writeString(offsets[11], object.measurements);
-  writer.writeBool(offsets[12], object.notifications);
-  writer.writeBool(offsets[13], object.onboard);
-  writer.writeBool(offsets[14], object.preferMetNoInHybrid);
-  writer.writeString(offsets[15], object.pressure);
-  writer.writeBool(offsets[16], object.roundDegree);
-  writer.writeBool(offsets[17], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[18], object.showAlertsOnMap);
-  writer.writeBool(offsets[19], object.showDummyAlerts);
-  writer.writeBool(offsets[20], object.showRainForecast);
-  writer.writeString(offsets[21], object.theme);
-  writer.writeString(offsets[22], object.tidesApiKey);
-  writer.writeString(offsets[23], object.timeEnd);
-  writer.writeLong(offsets[24], object.timeRange);
-  writer.writeString(offsets[25], object.timeStart);
-  writer.writeString(offsets[26], object.timeformat);
-  writer.writeBool(offsets[27], object.useDummyTides);
-  writer.writeString(offsets[28], object.weatherDataSource);
-  writer.writeString(offsets[29], object.widgetBackgroundColor);
-  writer.writeString(offsets[30], object.widgetTextColor);
-  writer.writeString(offsets[31], object.wind);
+  writer.writeString(offsets[4], object.elevationApiKey);
+  writer.writeBool(offsets[5], object.hideAqi);
+  writer.writeBool(offsets[6], object.hideElevation);
+  writer.writeBool(offsets[7], object.hideMap);
+  writer.writeBool(offsets[8], object.hideTides);
+  writer.writeString(offsets[9], object.language);
+  writer.writeBool(offsets[10], object.largeElement);
+  writer.writeBool(offsets[11], object.location);
+  writer.writeBool(offsets[12], object.materialColor);
+  writer.writeString(offsets[13], object.measurements);
+  writer.writeBool(offsets[14], object.notifications);
+  writer.writeBool(offsets[15], object.onboard);
+  writer.writeBool(offsets[16], object.preferMetNoInHybrid);
+  writer.writeString(offsets[17], object.pressure);
+  writer.writeBool(offsets[18], object.roundDegree);
+  writer.writeBool(offsets[19], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[20], object.showAlertsOnMap);
+  writer.writeBool(offsets[21], object.showDummyAlerts);
+  writer.writeBool(offsets[22], object.showRainForecast);
+  writer.writeString(offsets[23], object.theme);
+  writer.writeString(offsets[24], object.tidesApiKey);
+  writer.writeString(offsets[25], object.timeEnd);
+  writer.writeLong(offsets[26], object.timeRange);
+  writer.writeString(offsets[27], object.timeStart);
+  writer.writeString(offsets[28], object.timeformat);
+  writer.writeBool(offsets[29], object.useDummyElevation);
+  writer.writeBool(offsets[30], object.useDummyTides);
+  writer.writeString(offsets[31], object.weatherDataSource);
+  writer.writeString(offsets[32], object.widgetBackgroundColor);
+  writer.writeString(offsets[33], object.widgetTextColor);
+  writer.writeString(offsets[34], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -272,35 +296,38 @@ Settings _settingsDeserialize(
   object.amoledTheme = reader.readBool(offsets[1]);
   object.aqiIndex = reader.readString(offsets[2]);
   object.degrees = reader.readString(offsets[3]);
-  object.hideAqi = reader.readBool(offsets[4]);
-  object.hideMap = reader.readBool(offsets[5]);
-  object.hideTides = reader.readBool(offsets[6]);
+  object.elevationApiKey = reader.readStringOrNull(offsets[4]);
+  object.hideAqi = reader.readBool(offsets[5]);
+  object.hideElevation = reader.readBool(offsets[6]);
+  object.hideMap = reader.readBool(offsets[7]);
+  object.hideTides = reader.readBool(offsets[8]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[7]);
-  object.largeElement = reader.readBool(offsets[8]);
-  object.location = reader.readBool(offsets[9]);
-  object.materialColor = reader.readBool(offsets[10]);
-  object.measurements = reader.readString(offsets[11]);
-  object.notifications = reader.readBool(offsets[12]);
-  object.onboard = reader.readBool(offsets[13]);
-  object.preferMetNoInHybrid = reader.readBool(offsets[14]);
-  object.pressure = reader.readString(offsets[15]);
-  object.roundDegree = reader.readBool(offsets[16]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[17]);
-  object.showAlertsOnMap = reader.readBool(offsets[18]);
-  object.showDummyAlerts = reader.readBool(offsets[19]);
-  object.showRainForecast = reader.readBool(offsets[20]);
-  object.theme = reader.readStringOrNull(offsets[21]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[22]);
-  object.timeEnd = reader.readStringOrNull(offsets[23]);
-  object.timeRange = reader.readLongOrNull(offsets[24]);
-  object.timeStart = reader.readStringOrNull(offsets[25]);
-  object.timeformat = reader.readString(offsets[26]);
-  object.useDummyTides = reader.readBool(offsets[27]);
-  object.weatherDataSource = reader.readString(offsets[28]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[29]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[30]);
-  object.wind = reader.readString(offsets[31]);
+  object.language = reader.readStringOrNull(offsets[9]);
+  object.largeElement = reader.readBool(offsets[10]);
+  object.location = reader.readBool(offsets[11]);
+  object.materialColor = reader.readBool(offsets[12]);
+  object.measurements = reader.readString(offsets[13]);
+  object.notifications = reader.readBool(offsets[14]);
+  object.onboard = reader.readBool(offsets[15]);
+  object.preferMetNoInHybrid = reader.readBool(offsets[16]);
+  object.pressure = reader.readString(offsets[17]);
+  object.roundDegree = reader.readBool(offsets[18]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[19]);
+  object.showAlertsOnMap = reader.readBool(offsets[20]);
+  object.showDummyAlerts = reader.readBool(offsets[21]);
+  object.showRainForecast = reader.readBool(offsets[22]);
+  object.theme = reader.readStringOrNull(offsets[23]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[24]);
+  object.timeEnd = reader.readStringOrNull(offsets[25]);
+  object.timeRange = reader.readLongOrNull(offsets[26]);
+  object.timeStart = reader.readStringOrNull(offsets[27]);
+  object.timeformat = reader.readString(offsets[28]);
+  object.useDummyElevation = reader.readBool(offsets[29]);
+  object.useDummyTides = reader.readBool(offsets[30]);
+  object.weatherDataSource = reader.readString(offsets[31]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[32]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[33]);
+  object.wind = reader.readString(offsets[34]);
   return object;
 }
 
@@ -320,33 +347,33 @@ P _settingsDeserializeProp<P>(
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
       return (reader.readBool(offset)) as P;
     case 7:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 8:
       return (reader.readBool(offset)) as P;
     case 9:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 10:
       return (reader.readBool(offset)) as P;
     case 11:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 12:
       return (reader.readBool(offset)) as P;
     case 13:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 14:
       return (reader.readBool(offset)) as P;
     case 15:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 16:
       return (reader.readBool(offset)) as P;
     case 17:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 18:
       return (reader.readBool(offset)) as P;
     case 19:
@@ -354,26 +381,32 @@ P _settingsDeserializeProp<P>(
     case 20:
       return (reader.readBool(offset)) as P;
     case 21:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 22:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 23:
       return (reader.readStringOrNull(offset)) as P;
     case 24:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 25:
       return (reader.readStringOrNull(offset)) as P;
     case 26:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 27:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 28:
       return (reader.readString(offset)) as P;
     case 29:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 30:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 31:
+      return (reader.readString(offset)) as P;
+    case 32:
+      return (reader.readStringOrNull(offset)) as P;
+    case 33:
+      return (reader.readStringOrNull(offset)) as P;
+    case 34:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -915,12 +948,181 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'elevationApiKey'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'elevationApiKey'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'elevationApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'elevationApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'elevationApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'elevationApiKey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'elevationApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'elevationApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'elevationApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'elevationApiKey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'elevationApiKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  elevationApiKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'elevationApiKey', value: ''),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> hideAqiEqualTo(
     bool value,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'hideAqi', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> hideElevationEqualTo(
+    bool value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hideElevation', value: value),
       );
     });
   }
@@ -2439,6 +2641,15 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  useDummyElevationEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'useDummyElevation', value: value),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> useDummyTidesEqualTo(
     bool value,
   ) {
@@ -3113,6 +3324,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByElevationApiKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'elevationApiKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByElevationApiKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'elevationApiKey', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAqi() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideAqi', Sort.asc);
@@ -3122,6 +3345,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAqiDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideAqi', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideElevation() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideElevation', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideElevationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideElevation', Sort.desc);
     });
   }
 
@@ -3391,6 +3626,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByUseDummyElevation() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyElevation', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByUseDummyElevationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyElevation', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByUseDummyTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'useDummyTides', Sort.asc);
@@ -3503,6 +3750,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByElevationApiKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'elevationApiKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByElevationApiKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'elevationApiKey', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAqi() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideAqi', Sort.asc);
@@ -3512,6 +3771,18 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAqiDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideAqi', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideElevation() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideElevation', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideElevationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideElevation', Sort.desc);
     });
   }
 
@@ -3793,6 +4064,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByUseDummyElevation() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyElevation', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByUseDummyElevationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'useDummyElevation', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByUseDummyTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'useDummyTides', Sort.asc);
@@ -3890,9 +4173,26 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByElevationApiKey({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'elevationApiKey',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByHideAqi() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hideAqi');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByHideElevation() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideElevation');
     });
   }
 
@@ -4044,6 +4344,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByUseDummyElevation() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'useDummyElevation');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByUseDummyTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'useDummyTides');
@@ -4124,9 +4430,21 @@ extension SettingsQueryProperty
     });
   }
 
+  QueryBuilder<Settings, String?, QQueryOperations> elevationApiKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'elevationApiKey');
+    });
+  }
+
   QueryBuilder<Settings, bool, QQueryOperations> hideAqiProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hideAqi');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> hideElevationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideElevation');
     });
   }
 
@@ -4260,6 +4578,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, String, QQueryOperations> timeformatProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'timeformat');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> useDummyElevationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'useDummyElevation');
     });
   }
 
@@ -27926,6 +28250,1320 @@ extension RainForecastCacheQueryProperty
   timesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'times');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+extension GetElevationCacheCollection on Isar {
+  IsarCollection<ElevationCache> get elevationCaches => this.collection();
+}
+
+const ElevationCacheSchema = CollectionSchema(
+  name: r'ElevationCache',
+  id: 6874884414522269239,
+  properties: {
+    r'cachedAt': PropertySchema(
+      id: 0,
+      name: r'cachedAt',
+      type: IsarType.dateTime,
+    ),
+    r'cachedDataJson': PropertySchema(
+      id: 1,
+      name: r'cachedDataJson',
+      type: IsarType.string,
+    ),
+    r'expiresAt': PropertySchema(
+      id: 2,
+      name: r'expiresAt',
+      type: IsarType.dateTime,
+    ),
+    r'lat': PropertySchema(id: 3, name: r'lat', type: IsarType.double),
+    r'locationKey': PropertySchema(
+      id: 4,
+      name: r'locationKey',
+      type: IsarType.string,
+    ),
+    r'lon': PropertySchema(id: 5, name: r'lon', type: IsarType.double),
+  },
+
+  estimateSize: _elevationCacheEstimateSize,
+  serialize: _elevationCacheSerialize,
+  deserialize: _elevationCacheDeserialize,
+  deserializeProp: _elevationCacheDeserializeProp,
+  idName: r'id',
+  indexes: {
+    r'locationKey': IndexSchema(
+      id: 1950685211417560871,
+      name: r'locationKey',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'locationKey',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+      ],
+    ),
+  },
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _elevationCacheGetId,
+  getLinks: _elevationCacheGetLinks,
+  attach: _elevationCacheAttach,
+  version: '3.3.0',
+);
+
+int _elevationCacheEstimateSize(
+  ElevationCache object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.cachedDataJson;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  bytesCount += 3 + object.locationKey.length * 3;
+  return bytesCount;
+}
+
+void _elevationCacheSerialize(
+  ElevationCache object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDateTime(offsets[0], object.cachedAt);
+  writer.writeString(offsets[1], object.cachedDataJson);
+  writer.writeDateTime(offsets[2], object.expiresAt);
+  writer.writeDouble(offsets[3], object.lat);
+  writer.writeString(offsets[4], object.locationKey);
+  writer.writeDouble(offsets[5], object.lon);
+}
+
+ElevationCache _elevationCacheDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = ElevationCache(
+    cachedAt: reader.readDateTimeOrNull(offsets[0]),
+    cachedDataJson: reader.readStringOrNull(offsets[1]),
+    expiresAt: reader.readDateTimeOrNull(offsets[2]),
+    lat: reader.readDoubleOrNull(offsets[3]),
+    locationKey: reader.readString(offsets[4]),
+    lon: reader.readDoubleOrNull(offsets[5]),
+  );
+  object.id = id;
+  return object;
+}
+
+P _elevationCacheDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    case 2:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readDoubleOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+Id _elevationCacheGetId(ElevationCache object) {
+  return object.id;
+}
+
+List<IsarLinkBase<dynamic>> _elevationCacheGetLinks(ElevationCache object) {
+  return [];
+}
+
+void _elevationCacheAttach(
+  IsarCollection<dynamic> col,
+  Id id,
+  ElevationCache object,
+) {
+  object.id = id;
+}
+
+extension ElevationCacheByIndex on IsarCollection<ElevationCache> {
+  Future<ElevationCache?> getByLocationKey(String locationKey) {
+    return getByIndex(r'locationKey', [locationKey]);
+  }
+
+  ElevationCache? getByLocationKeySync(String locationKey) {
+    return getByIndexSync(r'locationKey', [locationKey]);
+  }
+
+  Future<bool> deleteByLocationKey(String locationKey) {
+    return deleteByIndex(r'locationKey', [locationKey]);
+  }
+
+  bool deleteByLocationKeySync(String locationKey) {
+    return deleteByIndexSync(r'locationKey', [locationKey]);
+  }
+
+  Future<List<ElevationCache?>> getAllByLocationKey(
+    List<String> locationKeyValues,
+  ) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return getAllByIndex(r'locationKey', values);
+  }
+
+  List<ElevationCache?> getAllByLocationKeySync(
+    List<String> locationKeyValues,
+  ) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'locationKey', values);
+  }
+
+  Future<int> deleteAllByLocationKey(List<String> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'locationKey', values);
+  }
+
+  int deleteAllByLocationKeySync(List<String> locationKeyValues) {
+    final values = locationKeyValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'locationKey', values);
+  }
+
+  Future<Id> putByLocationKey(ElevationCache object) {
+    return putByIndex(r'locationKey', object);
+  }
+
+  Id putByLocationKeySync(ElevationCache object, {bool saveLinks = true}) {
+    return putByIndexSync(r'locationKey', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByLocationKey(List<ElevationCache> objects) {
+    return putAllByIndex(r'locationKey', objects);
+  }
+
+  List<Id> putAllByLocationKeySync(
+    List<ElevationCache> objects, {
+    bool saveLinks = true,
+  }) {
+    return putAllByIndexSync(r'locationKey', objects, saveLinks: saveLinks);
+  }
+}
+
+extension ElevationCacheQueryWhereSort
+    on QueryBuilder<ElevationCache, ElevationCache, QWhere> {
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+}
+
+extension ElevationCacheQueryWhere
+    on QueryBuilder<ElevationCache, ElevationCache, QWhereClause> {
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause> idEqualTo(
+    Id id,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause> idNotEqualTo(
+    Id id,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause>
+  locationKeyEqualTo(String locationKey) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'locationKey',
+          value: [locationKey],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterWhereClause>
+  locationKeyNotEqualTo(String locationKey) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [],
+                upper: [locationKey],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [locationKey],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [locationKey],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'locationKey',
+                lower: [],
+                upper: [locationKey],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+}
+
+extension ElevationCacheQueryFilter
+    on QueryBuilder<ElevationCache, ElevationCache, QFilterCondition> {
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cachedAt'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cachedAt'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cachedAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedAtGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cachedAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedAtLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cachedAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cachedAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cachedDataJson'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cachedDataJson'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cachedDataJson',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'cachedDataJson',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'cachedDataJson',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cachedDataJson', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  cachedDataJsonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'cachedDataJson', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  expiresAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'expiresAt'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  expiresAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'expiresAt'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  expiresAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'expiresAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  expiresAtGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'expiresAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  expiresAtLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'expiresAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  expiresAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'expiresAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition> idEqualTo(
+    Id value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  idGreaterThan(Id value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  idLessThan(Id value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition> idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  latIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  latIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  latEqualTo(double? value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  latGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  latLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  latBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lat',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyEqualTo(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'locationKey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'locationKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'locationKey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'locationKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  locationKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'locationKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  lonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  lonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  lonEqualTo(double? value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  lonGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  lonLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterFilterCondition>
+  lonBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lon',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+}
+
+extension ElevationCacheQueryObject
+    on QueryBuilder<ElevationCache, ElevationCache, QFilterCondition> {}
+
+extension ElevationCacheQueryLinks
+    on QueryBuilder<ElevationCache, ElevationCache, QFilterCondition> {}
+
+extension ElevationCacheQuerySortBy
+    on QueryBuilder<ElevationCache, ElevationCache, QSortBy> {
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> sortByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  sortByCachedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  sortByCachedDataJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  sortByCachedDataJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> sortByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  sortByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> sortByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> sortByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  sortByLocationKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  sortByLocationKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> sortByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> sortByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+}
+
+extension ElevationCacheQuerySortThenBy
+    on QueryBuilder<ElevationCache, ElevationCache, QSortThenBy> {
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  thenByCachedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  thenByCachedDataJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  thenByCachedDataJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'cachedDataJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  thenByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  thenByLocationKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy>
+  thenByLocationKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'locationKey', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QAfterSortBy> thenByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+}
+
+extension ElevationCacheQueryWhereDistinct
+    on QueryBuilder<ElevationCache, ElevationCache, QDistinct> {
+  QueryBuilder<ElevationCache, ElevationCache, QDistinct> distinctByCachedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'cachedAt');
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QDistinct>
+  distinctByCachedDataJson({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'cachedDataJson',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QDistinct>
+  distinctByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QDistinct> distinctByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lat');
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QDistinct>
+  distinctByLocationKey({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'locationKey', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<ElevationCache, ElevationCache, QDistinct> distinctByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lon');
+    });
+  }
+}
+
+extension ElevationCacheQueryProperty
+    on QueryBuilder<ElevationCache, ElevationCache, QQueryProperty> {
+  QueryBuilder<ElevationCache, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<ElevationCache, DateTime?, QQueryOperations> cachedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedAt');
+    });
+  }
+
+  QueryBuilder<ElevationCache, String?, QQueryOperations>
+  cachedDataJsonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'cachedDataJson');
+    });
+  }
+
+  QueryBuilder<ElevationCache, DateTime?, QQueryOperations>
+  expiresAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<ElevationCache, double?, QQueryOperations> latProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lat');
+    });
+  }
+
+  QueryBuilder<ElevationCache, String, QQueryOperations> locationKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'locationKey');
+    });
+  }
+
+  QueryBuilder<ElevationCache, double?, QQueryOperations> lonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lon');
     });
   }
 }

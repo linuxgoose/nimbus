@@ -61,6 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildWeatherProviderCard(context),
         _buildFunctionsCard(context),
         _buildTidesCard(context),
+        _buildElevationCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -271,6 +272,41 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildTidesTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.all(20),
     child: Text('Tides', style: context.textTheme.headlineSmall),
+  );
+
+  Widget _buildElevationCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.mountain),
+    text: 'Elevation',
+    onPressed: () => _showElevationBottomSheet(context),
+  );
+
+  void _showElevationBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildElevationTitle(context),
+              _buildHideElevationSettingCard(context, setState),
+              _buildUseDummyElevationSettingCard(context, setState),
+              _buildElevationApiKeySettingCard(context, setState),
+              _buildCheckElevationCacheSettingCard(context, setState),
+              _buildClearElevationCacheSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildElevationTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Elevation', style: context.textTheme.headlineSmall),
   );
 
   Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
@@ -681,6 +717,211 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.pop(context);
                 // ignore: void_checks
                 showSnackBar(content: 'Cleared tide cache entries');
+                setState(() {});
+              },
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildHideElevationSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Elevation',
+    switcher: true,
+    value: settings.hideElevation,
+    onChange: (value) {
+      settings.hideElevation = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildUseDummyElevationSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.testTube),
+    text: 'Use Dummy Elevation Data',
+    switcher: true,
+    value: settings.useDummyElevation,
+    onChange: (value) {
+      settings.useDummyElevation = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildElevationApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.key),
+    text: 'Open-Elevation API Key',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.elevationApiKey?.isNotEmpty == true
+          ? '${settings.elevationApiKey!.substring(0, 8)}...'
+          : 'Not set (Public API)',
+    ),
+    onPressed: () => _showElevationApiKeyDialog(context, setState),
+  );
+
+  void _showElevationApiKeyDialog(BuildContext context, StateSetter setState) {
+    final controller = TextEditingController(
+      text: settings.elevationApiKey ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Open-Elevation API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'The public API is free and requires no key. You can optionally use your own self-hosted instance:',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://github.com/Jorl17/open-elevation',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key (Optional)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.elevationApiKey = controller.text.trim();
+              if (settings.elevationApiKey!.isEmpty) {
+                settings.elevationApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckElevationCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Check Elevation Cache',
+    onPressed: () {
+      final cacheCount = isar.elevationCaches.countSync();
+      final caches = isar.elevationCaches
+          .getAllSync([])
+          .whereType<ElevationCache>()
+          .toList();
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Elevation Cache Status'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total cached locations: $cacheCount'),
+              if (caches.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Cached Locations:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                ...caches
+                    .take(5)
+                    .map(
+                      (cache) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          '${cache.lat?.toStringAsFixed(4)}, ${cache.lon?.toStringAsFixed(4)}',
+                          style: context.textTheme.bodySmall,
+                        ),
+                      ),
+                    ),
+                if (caches.length > 5)
+                  Text(
+                    '... and ${caches.length - 5} more',
+                    style: context.textTheme.bodySmall,
+                  ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _buildClearElevationCacheSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.trash2),
+    text: 'Clear Elevation Cache',
+    onPressed: () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Clear Elevation Cache'),
+          content: const Text(
+            'Are you sure you want to clear all cached elevation data?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                isar.writeTxnSync(() {
+                  isar.elevationCaches.clearSync();
+                });
+                Navigator.pop(context);
+                // ignore: void_checks
+                showSnackBar(content: 'Cleared elevation cache entries');
                 setState(() {});
               },
               child: const Text('Clear'),

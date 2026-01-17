@@ -16,6 +16,7 @@ import 'package:nimbus/app/ui/widgets/weather/rain_forecast_chart.dart';
 import 'package:nimbus/app/ui/radar/view/radar_page.dart';
 import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:nimbus/app/ui/tides/view/tides_page.dart';
+import 'package:nimbus/app/ui/elevation/view/elevation_page.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -133,6 +134,7 @@ class _MainPageState extends State<MainPage> {
       _buildRadarTile(),
       if (!settings.hideAqi) _buildAqiTile(),
       if (!settings.hideTides) _buildTidesTile(),
+      if (!settings.hideElevation) _buildElevationTile(),
       _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
       _buildSunsetSunriseWidget(sunrise, sunset),
       _buildHourlyDescContainer(mainWeather, hourOfDay),
@@ -594,6 +596,59 @@ class _MainPageState extends State<MainPage> {
                   const SizedBox(height: 4),
                   Text(
                     'View tide times and heights',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.arrowRight,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildElevationTile() => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () =>
+          Get.to(() => const ElevationPage(), transition: Transition.downToUp),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                LucideIcons.mountain,
+                size: 32,
+                color: context.theme.colorScheme.onTertiaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Elevation',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'View elevation above sea level',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.onSurfaceVariant,
                     ),

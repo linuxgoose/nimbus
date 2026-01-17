@@ -18,6 +18,9 @@ class Settings {
   bool hideAqi = false;
   bool useDummyTides = true;
   String? tidesApiKey;
+  bool hideElevation = false;
+  bool useDummyElevation = true;
+  String? elevationApiKey;
   String? widgetBackgroundColor;
   String? widgetTextColor;
   String degrees = 'celsius';
@@ -502,6 +505,29 @@ class RainForecastCache {
     this.times,
     this.precipitation,
     this.resolution,
+    this.cachedAt,
+    this.expiresAt,
+  });
+}
+
+@collection
+class ElevationCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+  double? lat;
+  double? lon;
+
+  String? cachedDataJson; // Store the entire elevation data response as JSON
+  DateTime? cachedAt;
+  DateTime? expiresAt; // Cache expires after 7 days (elevation doesn't change)
+
+  ElevationCache({
+    required this.locationKey,
+    this.lat,
+    this.lon,
+    this.cachedDataJson,
     this.cachedAt,
     this.expiresAt,
   });
