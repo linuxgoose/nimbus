@@ -241,5 +241,28 @@ class EnGb {
         'Agricultural weather data from Open-Meteo provides essential '
         'metrics for farming and crop management.',
     'hide_agriculture': 'Hide Agriculture',
+
+    // Marine
+    'marine': 'Marine',
+    'marine_subtitle': 'Wave height, swell & ocean conditions',
+    'marine_conditions': 'Marine Conditions',
+    'current_marine_conditions': 'Current Conditions',
+    'total_wave_height': 'Total Wave Height',
+    'wind_wave_height': 'Wind Wave Height',
+    'swell_height': 'Swell Height',
+    'ocean_current': 'Ocean Current',
+    'wave_period': 'Wave Period',
+    'wave_height_chart': 'Wave Height (48h Forecast)',
+    'wave_height_desc': 'Total wave and wind wave heights',
+    'swell_chart': 'Swell Height (48h Forecast)',
+    'swell_desc': 'Long-period waves from distant storms',
+    'current_speed': 'Speed',
+    'current_direction': 'Direction',
+    'time_between_waves': 'Time between wave crests',
+    'about_marine_data': 'About Marine Data',
+    'marine_info':
+        'Marine weather data from Open-Meteo provides essential information '
+        'for maritime activities, surfing, fishing, and coastal planning.',
+    'hide_marine': 'Hide Marine',
   };
 }

@@ -92,6 +92,16 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - 7-day agricultural weather forecast
   - Real-time conditions and recommendations
   - Toggle visibility in settings
+- **Marine Conditions:** Ocean and wave data for maritime activities with:
+  - Total wave height and wind wave height monitoring
+  - Swell wave analysis (long-period waves from distant storms)
+  - Ocean current velocity and direction
+  - Wave period measurements and characteristics
+  - 48-hour wave height and swell forecasts with interactive charts
+  - 7-day marine forecast with dominant wave direction
+  - Wave categories (Calm, Smooth, Slight, Moderate, Rough, etc.)
+  - Safety recommendations based on current conditions
+  - Toggle visibility in settings
 - **Elevation Data:** View elevation above sea level for any location
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.

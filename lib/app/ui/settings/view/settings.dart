@@ -65,6 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildAuroraCard(context),
         _buildFloodMonitoringCard(context),
         _buildAgricultureCard(context),
+        _buildMarineCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -358,6 +359,12 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showAgricultureBottomSheet(context),
   );
 
+  Widget _buildMarineCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.waves),
+    text: 'Marine',
+    onPressed: () => _showMarineBottomSheet(context),
+  );
+
   void _showFloodMonitoringBottomSheet(BuildContext context) =>
       showModalBottomSheet(
         context: context,
@@ -403,6 +410,27 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       );
+
+  void _showMarineBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      builder: (context, scrollController) => StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildMarineTitle(context),
+              _buildHideMarineSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 
   Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
     icon: const Icon(LucideIcons.triangleAlert),
@@ -999,6 +1027,32 @@ class _SettingsPageState extends State<SettingsPage> {
     value: settings.hideAgriculture,
     onChange: (value) {
       settings.hideAgriculture = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildMarineTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'Marine',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideMarineSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Marine',
+    switcher: true,
+    value: settings.hideMarine,
+    onChange: (value) {
+      settings.hideMarine = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
     },

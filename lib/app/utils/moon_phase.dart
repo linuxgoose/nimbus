@@ -1,5 +1,3 @@
-import 'dart:math';
-
 /// Calculates moon phases and provides moon information
 class MoonPhase {
   /// Calculate the moon phase for a given date

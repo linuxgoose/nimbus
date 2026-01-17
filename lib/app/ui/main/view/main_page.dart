@@ -21,6 +21,7 @@ import 'package:nimbus/app/ui/aurora/view/aurora_page.dart';
 import 'package:nimbus/app/ui/moon/moon_phase_tile.dart';
 import 'package:nimbus/app/ui/flood/flood_tile.dart';
 import 'package:nimbus/app/ui/agriculture/agriculture_tile.dart';
+import 'package:nimbus/app/ui/marine/marine_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -149,11 +150,12 @@ class _MainPageState extends State<MainPage> {
         if (!settings.hideElevation) _buildElevationTile(),
         if (!settings.hideAurora) _buildAuroraTile(),
         if (!settings.hideFlood) const FloodTile(),
-        if (!settings.hideAgriculture) const AgricultureTile(),
         _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
         _buildSunsetSunriseWidget(sunrise, sunset),
         _buildHourlyDescContainer(mainWeather, hourOfDay),
         _buildDailyContainer(weatherCard),
+        if (!settings.hideAgriculture) const AgricultureTile(),
+        if (!settings.hideMarine) const MarineTile(),
         const MoonPhaseTile(),
       ],
     );
