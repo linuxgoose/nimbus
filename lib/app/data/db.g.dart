@@ -188,48 +188,53 @@ const SettingsSchema = CollectionSchema(
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 39, name: r'timeEnd', type: IsarType.string),
+    r'tidesSource': PropertySchema(
+      id: 39,
+      name: r'tidesSource',
+      type: IsarType.string,
+    ),
+    r'timeEnd': PropertySchema(id: 40, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 40,
+      id: 41,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 41,
+      id: 42,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 42,
+      id: 43,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyElevation': PropertySchema(
-      id: 43,
+      id: 44,
       name: r'useDummyElevation',
       type: IsarType.bool,
     ),
     r'useDummyTides': PropertySchema(
-      id: 44,
+      id: 45,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 45,
+      id: 46,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 46,
+      id: 47,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 47,
+      id: 48,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 48, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 49, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -285,6 +290,7 @@ int _settingsEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.tidesSource.length * 3;
   {
     final value = object.timeEnd;
     if (value != null) {
@@ -360,16 +366,17 @@ void _settingsSerialize(
   writer.writeString(offsets[36], object.theme);
   writer.writeString(offsets[37], object.tideDatum);
   writer.writeString(offsets[38], object.tidesApiKey);
-  writer.writeString(offsets[39], object.timeEnd);
-  writer.writeLong(offsets[40], object.timeRange);
-  writer.writeString(offsets[41], object.timeStart);
-  writer.writeString(offsets[42], object.timeformat);
-  writer.writeBool(offsets[43], object.useDummyElevation);
-  writer.writeBool(offsets[44], object.useDummyTides);
-  writer.writeString(offsets[45], object.weatherDataSource);
-  writer.writeString(offsets[46], object.widgetBackgroundColor);
-  writer.writeString(offsets[47], object.widgetTextColor);
-  writer.writeString(offsets[48], object.wind);
+  writer.writeString(offsets[39], object.tidesSource);
+  writer.writeString(offsets[40], object.timeEnd);
+  writer.writeLong(offsets[41], object.timeRange);
+  writer.writeString(offsets[42], object.timeStart);
+  writer.writeString(offsets[43], object.timeformat);
+  writer.writeBool(offsets[44], object.useDummyElevation);
+  writer.writeBool(offsets[45], object.useDummyTides);
+  writer.writeString(offsets[46], object.weatherDataSource);
+  writer.writeString(offsets[47], object.widgetBackgroundColor);
+  writer.writeString(offsets[48], object.widgetTextColor);
+  writer.writeString(offsets[49], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -419,16 +426,17 @@ Settings _settingsDeserialize(
   object.theme = reader.readStringOrNull(offsets[36]);
   object.tideDatum = reader.readString(offsets[37]);
   object.tidesApiKey = reader.readStringOrNull(offsets[38]);
-  object.timeEnd = reader.readStringOrNull(offsets[39]);
-  object.timeRange = reader.readLongOrNull(offsets[40]);
-  object.timeStart = reader.readStringOrNull(offsets[41]);
-  object.timeformat = reader.readString(offsets[42]);
-  object.useDummyElevation = reader.readBool(offsets[43]);
-  object.useDummyTides = reader.readBool(offsets[44]);
-  object.weatherDataSource = reader.readString(offsets[45]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[46]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[47]);
-  object.wind = reader.readString(offsets[48]);
+  object.tidesSource = reader.readString(offsets[39]);
+  object.timeEnd = reader.readStringOrNull(offsets[40]);
+  object.timeRange = reader.readLongOrNull(offsets[41]);
+  object.timeStart = reader.readStringOrNull(offsets[42]);
+  object.timeformat = reader.readString(offsets[43]);
+  object.useDummyElevation = reader.readBool(offsets[44]);
+  object.useDummyTides = reader.readBool(offsets[45]);
+  object.weatherDataSource = reader.readString(offsets[46]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[47]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[48]);
+  object.wind = reader.readString(offsets[49]);
   return object;
 }
 
@@ -518,24 +526,26 @@ P _settingsDeserializeProp<P>(
     case 38:
       return (reader.readStringOrNull(offset)) as P;
     case 39:
-      return (reader.readStringOrNull(offset)) as P;
-    case 40:
-      return (reader.readLongOrNull(offset)) as P;
-    case 41:
-      return (reader.readStringOrNull(offset)) as P;
-    case 42:
       return (reader.readString(offset)) as P;
+    case 40:
+      return (reader.readStringOrNull(offset)) as P;
+    case 41:
+      return (reader.readLongOrNull(offset)) as P;
+    case 42:
+      return (reader.readStringOrNull(offset)) as P;
     case 43:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 44:
       return (reader.readBool(offset)) as P;
     case 45:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 46:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 47:
       return (reader.readStringOrNull(offset)) as P;
     case 48:
+      return (reader.readStringOrNull(offset)) as P;
+    case 49:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2965,6 +2975,154 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'tidesSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  tidesSourceGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'tidesSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'tidesSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'tidesSource',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'tidesSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'tidesSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'tidesSource',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'tidesSource',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesSourceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'tidesSource', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  tidesSourceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'tidesSource', value: ''),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> timeEndIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -4623,6 +4781,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByTidesSource() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesSource', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByTidesSourceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesSource', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByTimeEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timeEnd', Sort.asc);
@@ -5235,6 +5405,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByTidesSource() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesSource', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByTidesSourceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tidesSource', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByTimeEnd() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'timeEnd', Sort.asc);
@@ -5631,6 +5813,14 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByTidesSource({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tidesSource', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByTimeEnd({
     bool caseSensitive = true,
   }) {
@@ -5957,6 +6147,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, String?, QQueryOperations> tidesApiKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'tidesApiKey');
+    });
+  }
+
+  QueryBuilder<Settings, String, QQueryOperations> tidesSourceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tidesSource');
     });
   }
 

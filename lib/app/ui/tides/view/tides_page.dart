@@ -182,6 +182,13 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   String _getDatumDisplayText() {
+    // Environment Agency doesn't support datum selection
+    if (!settings.useDummyTides &&
+        settings.tidesSource == 'environment_agency') {
+      return 'above chart datum';
+    }
+
+    // Stormglass supports datum selection
     switch (settings.tideDatum) {
       case 'mllw':
         return 'relative to MLLW';
@@ -261,6 +268,9 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   Widget _buildTideView() {
+    final isEnvironmentAgency =
+        !settings.useDummyTides && settings.tidesSource == 'environment_agency';
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -269,19 +279,27 @@ class _TidesPageState extends State<TidesPage> {
         _buildLocationCard(),
         const SizedBox(height: 16),
         _buildCurrentTideCard(),
-        const SizedBox(height: 16),
-        _buildNextTidesCard(),
-        const SizedBox(height: 16),
-        _buildTideChartCard(),
+        if (!isEnvironmentAgency) ...[
+          const SizedBox(height: 16),
+          _buildNextTidesCard(),
+          const SizedBox(height: 16),
+          _buildTideChartCard(),
+        ],
       ],
     );
   }
 
   Widget _buildDataSourceWarning() {
-    if (!settings.useDummyTides &&
-        settings.tidesApiKey != null &&
-        settings.tidesApiKey!.isNotEmpty) {
-      return const SizedBox.shrink();
+    // Don't show warning if using real data from any source
+    if (!settings.useDummyTides) {
+      // Environment Agency doesn't need an API key
+      if (settings.tidesSource == 'environment_agency') {
+        return const SizedBox.shrink();
+      }
+      // Stormglass needs an API key
+      if (settings.tidesApiKey != null && settings.tidesApiKey!.isNotEmpty) {
+        return const SizedBox.shrink();
+      }
     }
 
     return Card(
@@ -309,7 +327,9 @@ class _TidesPageState extends State<TidesPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Enable real tide data in Settings > Tides',
+                    settings.tidesSource == 'environment_agency'
+                        ? 'UK Environment Agency selected but using demo data. Check your location is in UK waters.'
+                        : 'Enable real tide data in Settings > Tides',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.onErrorContainer,
                     ),
@@ -324,43 +344,110 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   Widget _buildLocationCard() {
+    final showEnvAgencyNote =
+        !settings.useDummyTides && settings.tidesSource == 'environment_agency';
+    final stationName = _tideData?['station']?['name'] as String?;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: context.theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                LucideIcons.waves,
-                color: context.theme.colorScheme.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _selectedLocation?.name ?? 'Unknown Location',
-                    style: context.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${_selectedLocation?.lat?.toStringAsFixed(4)}, ${_selectedLocation?.lon?.toStringAsFixed(4)}',
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: context.theme.colorScheme.onSurfaceVariant,
-                    ),
+                  child: Icon(
+                    LucideIcons.waves,
+                    color: context.theme.colorScheme.onPrimaryContainer,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _selectedLocation?.name ?? 'Unknown Location',
+                        style: context.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${_selectedLocation?.lat?.toStringAsFixed(4)}, ${_selectedLocation?.lon?.toStringAsFixed(4)}',
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      if (stationName != null &&
+                          stationName != 'Nearby Station' &&
+                          stationName != 'Unknown Station') ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.radio,
+                              size: 12,
+                              color: context.theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                'Station: $stationName',
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  color: context
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 11,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
+            if (showEnvAgencyNote) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.secondaryContainer
+                      .withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      LucideIcons.info,
+                      size: 16,
+                      color: context.theme.colorScheme.onSecondaryContainer,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'UK Environment Agency provides real-time water levels only. Predictions use interpolated data.',
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: context.theme.colorScheme.onSecondaryContainer,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),

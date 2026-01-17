@@ -17,6 +17,7 @@ class Settings {
   bool hideTides = false;
   bool hideAqi = false;
   bool useDummyTides = true;
+  String tidesSource = 'stormglass'; // stormglass, environment_agency
   String? tidesApiKey;
   String tideDatum = 'mllw'; // mllw, mlw, msl, mhw, mhhw
   bool hideElevation = false;

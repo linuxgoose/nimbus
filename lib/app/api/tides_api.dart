@@ -1,12 +1,15 @@
 import 'dart:math' as math;
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:nimbus/main.dart';
 
-// Using Stormglass.io API (Free tier: 50 requests/day)
-// Get your free API key at: https://stormglass.io/
+// Supports multiple tide data sources:
+// 1. Stormglass.io API (Free tier: 50 requests/day) - https://stormglass.io/
+// 2. UK Environment Agency API (Free, no key required) - https://environment.data.gov.uk/
 class TidesAPI {
   final Dio _dio = Dio();
-  static const String _baseUrl =
+
+  static const String _stormglassBaseUrl =
       'https://api.stormglass.io/v2/tide/extremes/point';
 
   Future<Map<String, dynamic>> getTideData(
@@ -15,7 +18,25 @@ class TidesAPI {
     String? apiKey,
     bool useDummyData = true,
   }) async {
-    if (useDummyData || apiKey == null || apiKey.isEmpty) {
+    if (useDummyData) {
+      return _getMockTideData(lat, lon);
+    }
+
+    // Use Environment Agency if selected (UK only, no API key required)
+    if (settings.tidesSource == 'environment_agency') {
+      return _getEnvironmentAgencyData(lat, lon);
+    }
+
+    // Default to Stormglass
+    return _getStormglassData(lat, lon, apiKey);
+  }
+
+  Future<Map<String, dynamic>> _getStormglassData(
+    double lat,
+    double lon,
+    String? apiKey,
+  ) async {
+    if (apiKey == null || apiKey.isEmpty) {
       return _getMockTideData(lat, lon);
     }
 
@@ -24,7 +45,7 @@ class TidesAPI {
       final end = now.add(const Duration(days: 3));
 
       final response = await _dio.get(
-        _baseUrl,
+        _stormglassBaseUrl,
         queryParameters: {
           'lat': lat.toString(),
           'lng': lon.toString(),
@@ -40,6 +61,216 @@ class TidesAPI {
       // Fall back to mock data if API fails
       return _getMockTideData(lat, lon);
     }
+  }
+
+  Future<Map<String, dynamic>> _getEnvironmentAgencyData(
+    double lat,
+    double lon,
+  ) async {
+    try {
+      // UK Environment Agency Flood Monitoring API
+      // Search for nearest stations with water level data
+      final stationResponse = await _dio.get(
+        'https://environment.data.gov.uk/flood-monitoring/id/stations',
+        queryParameters: {
+          'lat': lat.toStringAsFixed(4),
+          'long': lon.toStringAsFixed(4),
+          'dist': '50',
+        },
+      );
+
+      if (stationResponse.data['items'] == null ||
+          (stationResponse.data['items'] as List).isEmpty) {
+        debugPrint('No Environment Agency stations found nearby');
+        return _getMockTideData(lat, lon);
+      }
+
+      // Find a station with tide or water level data
+      Map<String, dynamic>? selectedStation;
+      for (var station in stationResponse.data['items']) {
+        if (station['stationReference'] != null) {
+          selectedStation = station;
+          break;
+        }
+      }
+
+      if (selectedStation == null) {
+        debugPrint('No valid tidal station found');
+        return _getMockTideData(lat, lon);
+      }
+
+      final stationName = selectedStation['label'] ?? 'Unknown Station';
+      final stationRef = selectedStation['stationReference'];
+
+      debugPrint(
+        'Using Environment Agency station: $stationName ($stationRef)',
+      );
+
+      // Get recent readings for this station
+      // Note: Environment Agency uses a simpler date format
+      final readingsResponse = await _dio.get(
+        'https://environment.data.gov.uk/flood-monitoring/id/stations/$stationRef/readings',
+        queryParameters: {'_sorted': '', '_limit': '100'},
+      );
+
+      return _convertEnvironmentAgencyToTideData(
+        readingsResponse.data,
+        lat,
+        lon,
+        stationName,
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Environment Agency API error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Fall back to mock data if API fails
+      return _getMockTideData(lat, lon);
+    }
+  }
+
+  Map<String, dynamic> _convertEnvironmentAgencyToTideData(
+    dynamic data,
+    double lat,
+    double lon,
+    String stationName,
+  ) {
+    final List<Map<String, dynamic>> extremes = [];
+    final List<Map<String, dynamic>> heights = [];
+
+    // Process readings from Environment Agency API
+    if (data['items'] != null && (data['items'] as List).isNotEmpty) {
+      final readings = data['items'] as List;
+
+      // Convert readings to heights
+      for (var reading in readings) {
+        try {
+          final time = DateTime.parse(reading['dateTime']);
+          final value = (reading['value'] as num?)?.toDouble() ?? 0.0;
+
+          heights.add({
+            'dt': time.millisecondsSinceEpoch ~/ 1000,
+            'date': time.toIso8601String(),
+            'height': value,
+          });
+        } catch (e) {
+          debugPrint('Error parsing reading: $e');
+          continue;
+        }
+      }
+
+      // Analyze readings to find high and low tides (extremes)
+      if (heights.length >= 3) {
+        for (int i = 1; i < heights.length - 1; i++) {
+          final prev = heights[i - 1]['height'] as double;
+          final current = heights[i]['height'] as double;
+          final next = heights[i + 1]['height'] as double;
+
+          // Local maximum (high tide)
+          if (current >= prev && current >= next && current > prev) {
+            extremes.add({
+              'dt': heights[i]['dt'],
+              'date': heights[i]['date'],
+              'height': current,
+              'type': 'High',
+            });
+          }
+          // Local minimum (low tide)
+          else if (current <= prev && current <= next && current < prev) {
+            extremes.add({
+              'dt': heights[i]['dt'],
+              'date': heights[i]['date'],
+              'height': current,
+              'type': 'Low',
+            });
+          }
+        }
+      }
+    }
+
+    // Generate mock data if real data not available or insufficient
+    if (heights.isEmpty || extremes.isEmpty) {
+      final now = DateTime.now();
+      for (int day = 0; day < 3; day++) {
+        final baseTime = now.add(Duration(days: day));
+        extremes.addAll([
+          {
+            'dt':
+                baseTime.add(const Duration(hours: 6)).millisecondsSinceEpoch ~/
+                1000,
+            'date': baseTime.add(const Duration(hours: 6)).toIso8601String(),
+            'height': 3.2 + (day * 0.1),
+            'type': 'High',
+          },
+          {
+            'dt':
+                baseTime
+                    .add(const Duration(hours: 12))
+                    .millisecondsSinceEpoch ~/
+                1000,
+            'date': baseTime.add(const Duration(hours: 12)).toIso8601String(),
+            'height': 0.8 - (day * 0.1),
+            'type': 'Low',
+          },
+          {
+            'dt':
+                baseTime
+                    .add(const Duration(hours: 18))
+                    .millisecondsSinceEpoch ~/
+                1000,
+            'date': baseTime.add(const Duration(hours: 18)).toIso8601String(),
+            'height': 3.5 + (day * 0.1),
+            'type': 'High',
+          },
+          {
+            'dt':
+                baseTime
+                    .add(const Duration(hours: 24))
+                    .millisecondsSinceEpoch ~/
+                1000,
+            'date': baseTime.add(const Duration(hours: 24)).toIso8601String(),
+            'height': 0.5 - (day * 0.1),
+            'type': 'Low',
+          },
+        ]);
+      }
+    }
+
+    // Generate hourly heights if not available or need to fill gaps
+    if (heights.isEmpty) {
+      final now = DateTime.now();
+      final startTime = now.subtract(const Duration(hours: 12));
+      final endTime = now.add(const Duration(days: 3));
+      var currentTime = startTime;
+
+      while (currentTime.isBefore(endTime)) {
+        final hoursSinceStart =
+            currentTime.difference(startTime).inMinutes / 60.0;
+        final cyclePosition = (hoursSinceStart % 12) / 12 * 2 * 3.14159;
+        final height =
+            2.0 +
+            1.5 *
+                (1 +
+                    (cyclePosition < 3.14159 ? 1 : -1) *
+                        (1 - (cyclePosition % 3.14159) / 3.14159).abs());
+
+        heights.add({
+          'dt': currentTime.millisecondsSinceEpoch ~/ 1000,
+          'date': currentTime.toIso8601String(),
+          'height': height,
+        });
+
+        currentTime = currentTime.add(const Duration(hours: 1));
+      }
+    }
+
+    return {
+      'status': 200,
+      'callCount': 1,
+      'lat': lat,
+      'lon': lon,
+      'extremes': extremes,
+      'heights': heights,
+      'station': {'name': stationName, 'distance': 0.0},
+    };
   }
 
   Map<String, dynamic> _convertStormglassToTideData(

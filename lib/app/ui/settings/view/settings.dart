@@ -268,6 +268,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildTidesTitle(context),
               _buildHideTidesSettingCard(context, setState),
               _buildUseDummyTidesSettingCard(context, setState),
+              _buildTidesSourceSettingCard(context, setState),
               _buildTidesApiKeySettingCard(context, setState),
               _buildTideDatumSettingCard(context, setState),
               _buildCheckTidesCacheSettingCard(context, setState),
@@ -786,6 +787,43 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildTidesSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Tide Data Source',
+    dropdown: true,
+    dropdownName: _getTidesSourceDisplayName(settings.tidesSource),
+    dropdownList: const <String>['Stormglass', 'UK Environment Agency'],
+    dropdownChange: (String? newValue) async {
+      if (newValue == null) return;
+
+      isar.writeTxnSync(() {
+        if (newValue == 'Stormglass') {
+          settings.tidesSource = 'stormglass';
+        } else if (newValue == 'UK Environment Agency') {
+          settings.tidesSource = 'environment_agency';
+        }
+        isar.settings.putSync(settings);
+      });
+
+      setState(() {});
+    },
+  );
+
+  String _getTidesSourceDisplayName(String source) {
+    switch (source) {
+      case 'stormglass':
+        return 'Stormglass';
+      case 'environment_agency':
+        return 'UK Environment Agency';
+      default:
+        return 'Stormglass';
+    }
   }
 
   Widget _buildTideDatumSettingCard(
