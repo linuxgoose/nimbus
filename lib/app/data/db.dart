@@ -36,7 +36,7 @@ class Settings {
   String weatherDataSource = 'openmeteo'; // openmeteo, metno, hybrid
   bool preferMetNoInHybrid =
       false; // Override Nordic region detection in hybrid mode
-  bool showRainForecast = true; // Show 6-hour rain forecast chart
+  bool hideRainForecast = false; // Hide 6-hour rain forecast chart
   String? language;
   int? timeRange;
   String? timeStart;

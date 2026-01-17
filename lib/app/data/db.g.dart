@@ -45,71 +45,71 @@ const SettingsSchema = CollectionSchema(
       type: IsarType.bool,
     ),
     r'hideMap': PropertySchema(id: 7, name: r'hideMap', type: IsarType.bool),
-    r'hideTides': PropertySchema(
+    r'hideRainForecast': PropertySchema(
       id: 8,
+      name: r'hideRainForecast',
+      type: IsarType.bool,
+    ),
+    r'hideTides': PropertySchema(
+      id: 9,
       name: r'hideTides',
       type: IsarType.bool,
     ),
     r'language': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 11, name: r'location', type: IsarType.bool),
+    r'location': PropertySchema(id: 12, name: r'location', type: IsarType.bool),
     r'materialColor': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'notifications',
       type: IsarType.bool,
     ),
-    r'onboard': PropertySchema(id: 15, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 16, name: r'onboard', type: IsarType.bool),
     r'preferMetNoInHybrid': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'preferMetNoInHybrid',
       type: IsarType.bool,
     ),
     r'pressure': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 18,
+      id: 19,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 21,
-      name: r'showDummyAlerts',
-      type: IsarType.bool,
-    ),
-    r'showRainForecast': PropertySchema(
       id: 22,
-      name: r'showRainForecast',
+      name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
     r'theme': PropertySchema(id: 23, name: r'theme', type: IsarType.string),
@@ -256,21 +256,21 @@ void _settingsSerialize(
   writer.writeBool(offsets[5], object.hideAqi);
   writer.writeBool(offsets[6], object.hideElevation);
   writer.writeBool(offsets[7], object.hideMap);
-  writer.writeBool(offsets[8], object.hideTides);
-  writer.writeString(offsets[9], object.language);
-  writer.writeBool(offsets[10], object.largeElement);
-  writer.writeBool(offsets[11], object.location);
-  writer.writeBool(offsets[12], object.materialColor);
-  writer.writeString(offsets[13], object.measurements);
-  writer.writeBool(offsets[14], object.notifications);
-  writer.writeBool(offsets[15], object.onboard);
-  writer.writeBool(offsets[16], object.preferMetNoInHybrid);
-  writer.writeString(offsets[17], object.pressure);
-  writer.writeBool(offsets[18], object.roundDegree);
-  writer.writeBool(offsets[19], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[20], object.showAlertsOnMap);
-  writer.writeBool(offsets[21], object.showDummyAlerts);
-  writer.writeBool(offsets[22], object.showRainForecast);
+  writer.writeBool(offsets[8], object.hideRainForecast);
+  writer.writeBool(offsets[9], object.hideTides);
+  writer.writeString(offsets[10], object.language);
+  writer.writeBool(offsets[11], object.largeElement);
+  writer.writeBool(offsets[12], object.location);
+  writer.writeBool(offsets[13], object.materialColor);
+  writer.writeString(offsets[14], object.measurements);
+  writer.writeBool(offsets[15], object.notifications);
+  writer.writeBool(offsets[16], object.onboard);
+  writer.writeBool(offsets[17], object.preferMetNoInHybrid);
+  writer.writeString(offsets[18], object.pressure);
+  writer.writeBool(offsets[19], object.roundDegree);
+  writer.writeBool(offsets[20], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[21], object.showAlertsOnMap);
+  writer.writeBool(offsets[22], object.showDummyAlerts);
   writer.writeString(offsets[23], object.theme);
   writer.writeString(offsets[24], object.tidesApiKey);
   writer.writeString(offsets[25], object.timeEnd);
@@ -300,22 +300,22 @@ Settings _settingsDeserialize(
   object.hideAqi = reader.readBool(offsets[5]);
   object.hideElevation = reader.readBool(offsets[6]);
   object.hideMap = reader.readBool(offsets[7]);
-  object.hideTides = reader.readBool(offsets[8]);
+  object.hideRainForecast = reader.readBool(offsets[8]);
+  object.hideTides = reader.readBool(offsets[9]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[9]);
-  object.largeElement = reader.readBool(offsets[10]);
-  object.location = reader.readBool(offsets[11]);
-  object.materialColor = reader.readBool(offsets[12]);
-  object.measurements = reader.readString(offsets[13]);
-  object.notifications = reader.readBool(offsets[14]);
-  object.onboard = reader.readBool(offsets[15]);
-  object.preferMetNoInHybrid = reader.readBool(offsets[16]);
-  object.pressure = reader.readString(offsets[17]);
-  object.roundDegree = reader.readBool(offsets[18]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[19]);
-  object.showAlertsOnMap = reader.readBool(offsets[20]);
-  object.showDummyAlerts = reader.readBool(offsets[21]);
-  object.showRainForecast = reader.readBool(offsets[22]);
+  object.language = reader.readStringOrNull(offsets[10]);
+  object.largeElement = reader.readBool(offsets[11]);
+  object.location = reader.readBool(offsets[12]);
+  object.materialColor = reader.readBool(offsets[13]);
+  object.measurements = reader.readString(offsets[14]);
+  object.notifications = reader.readBool(offsets[15]);
+  object.onboard = reader.readBool(offsets[16]);
+  object.preferMetNoInHybrid = reader.readBool(offsets[17]);
+  object.pressure = reader.readString(offsets[18]);
+  object.roundDegree = reader.readBool(offsets[19]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[20]);
+  object.showAlertsOnMap = reader.readBool(offsets[21]);
+  object.showDummyAlerts = reader.readBool(offsets[22]);
   object.theme = reader.readStringOrNull(offsets[23]);
   object.tidesApiKey = reader.readStringOrNull(offsets[24]);
   object.timeEnd = reader.readStringOrNull(offsets[25]);
@@ -357,25 +357,25 @@ P _settingsDeserializeProp<P>(
     case 8:
       return (reader.readBool(offset)) as P;
     case 9:
-      return (reader.readStringOrNull(offset)) as P;
-    case 10:
       return (reader.readBool(offset)) as P;
+    case 10:
+      return (reader.readStringOrNull(offset)) as P;
     case 11:
       return (reader.readBool(offset)) as P;
     case 12:
       return (reader.readBool(offset)) as P;
     case 13:
-      return (reader.readString(offset)) as P;
-    case 14:
       return (reader.readBool(offset)) as P;
+    case 14:
+      return (reader.readString(offset)) as P;
     case 15:
       return (reader.readBool(offset)) as P;
     case 16:
       return (reader.readBool(offset)) as P;
     case 17:
-      return (reader.readString(offset)) as P;
-    case 18:
       return (reader.readBool(offset)) as P;
+    case 18:
+      return (reader.readString(offset)) as P;
     case 19:
       return (reader.readBool(offset)) as P;
     case 20:
@@ -1137,6 +1137,15 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  hideRainForecastEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hideRainForecast', value: value),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> hideTidesEqualTo(
     bool value,
   ) {
@@ -1754,15 +1763,6 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'showDummyAlerts', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterFilterCondition>
-  showRainForecastEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'showRainForecast', value: value),
       );
     });
   }
@@ -3372,6 +3372,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideRainForecast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideRainForecast', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideRainForecastDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideRainForecast', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideTides', Sort.asc);
@@ -3539,18 +3551,6 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowDummyAlertsDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'showDummyAlerts', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowRainForecast() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showRainForecast', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterSortBy> sortByShowRainForecastDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showRainForecast', Sort.desc);
     });
   }
 
@@ -3798,6 +3798,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideRainForecast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideRainForecast', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideRainForecastDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideRainForecast', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideTides', Sort.asc);
@@ -3977,18 +3989,6 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowDummyAlertsDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'showDummyAlerts', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowRainForecast() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showRainForecast', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QAfterSortBy> thenByShowRainForecastDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'showRainForecast', Sort.desc);
     });
   }
 
@@ -4202,6 +4202,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByHideRainForecast() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideRainForecast');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByHideTides() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hideTides');
@@ -4289,12 +4295,6 @@ extension SettingsQueryWhereDistinct
   QueryBuilder<Settings, Settings, QDistinct> distinctByShowDummyAlerts() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'showDummyAlerts');
-    });
-  }
-
-  QueryBuilder<Settings, Settings, QDistinct> distinctByShowRainForecast() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'showRainForecast');
     });
   }
 
@@ -4454,6 +4454,12 @@ extension SettingsQueryProperty
     });
   }
 
+  QueryBuilder<Settings, bool, QQueryOperations> hideRainForecastProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideRainForecast');
+    });
+  }
+
   QueryBuilder<Settings, bool, QQueryOperations> hideTidesProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hideTides');
@@ -4536,12 +4542,6 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> showDummyAlertsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'showDummyAlerts');
-    });
-  }
-
-  QueryBuilder<Settings, bool, QQueryOperations> showRainForecastProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'showRainForecast');
     });
   }
 

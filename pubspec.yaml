@@ -3,7 +3,7 @@ description: A minimalist weather app built with Flutter featuring real-time hyp
 
 publish_to: "none"
 
-version: 0.0.1+43
+version: 1.1.1+43
 
 environment:
   sdk: ">=3.10.4 <4.0.0"

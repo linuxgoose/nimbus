@@ -107,7 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildWeatherDataSourceSettingCard(context, setState),
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
-                  _buildShowRainForecastSettingCard(context, setState),
+                  _buildHideRainForecastSettingCard(context, setState),
                   const Gap(10),
                 ],
               ),
@@ -1231,18 +1231,20 @@ class _SettingsPageState extends State<SettingsPage> {
     },
   );
 
-  Widget _buildShowRainForecastSettingCard(
+  Widget _buildHideRainForecastSettingCard(
     BuildContext context,
     StateSetter setState,
   ) => SettingCard(
     elevation: 4,
     icon: const Icon(LucideIcons.cloudRain),
-    text: 'Show 6-Hour Rain Forecast',
+    text: 'Hide 6-Hour Rain Forecast',
     switcher: true,
-    value: settings.showRainForecast,
+    value: settings.hideRainForecast,
     onChange: (value) {
-      settings.showRainForecast = value;
+      settings.hideRainForecast = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
+      // Force main page to rebuild by triggering weather controller update
+      weatherController.isLoading.refresh();
       setState(() {});
     },
   );
