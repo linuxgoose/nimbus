@@ -62,6 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildFunctionsCard(context),
         _buildTidesCard(context),
         _buildElevationCard(context),
+        _buildAuroraCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -283,6 +284,12 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showElevationBottomSheet(context),
   );
 
+  Widget _buildAuroraCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.sparkles),
+    text: 'Aurora Watch',
+    onPressed: () => _showAuroraBottomSheet(context),
+  );
+
   void _showElevationBottomSheet(BuildContext context) => showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Padding(
@@ -299,9 +306,6 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildElevationApiKeySettingCard(context, setState),
               _buildCheckElevationCacheSettingCard(context, setState),
               const Gap(10),
-              _buildAuroraTitle(context),
-              _buildHideAuroraSettingCard(context, setState),
-              const Gap(10),
               _buildClearElevationCacheSettingCard(context, setState),
               const Gap(10),
             ],
@@ -314,6 +318,28 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildElevationTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.all(20),
     child: Text('Elevation', style: context.textTheme.headlineSmall),
+  );
+
+  void _showAuroraBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildAuroraTitle(context),
+              _buildHideAuroraSettingCard(context, setState),
+              _buildAuroraNotificationsSettingCard(context, setState),
+              _buildAuroraThresholdSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
   );
 
   Widget _buildWeatherAlertsCard(BuildContext context) => SettingCard(
@@ -792,6 +818,37 @@ class _SettingsPageState extends State<SettingsPage> {
     },
   );
 
+  Widget _buildAuroraNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Aurora Notifications',
+    switcher: true,
+    value: settings.auroraNotifications,
+    onChange: (value) {
+      settings.auroraNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildAuroraThresholdSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.gauge),
+    text: 'Notification Threshold',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: 'Kp ${settings.auroraNotificationThreshold.toStringAsFixed(1)}',
+    ),
+    onPressed: () => _showAuroraThresholdDialog(context, setState),
+  );
+
   Widget _buildElevationApiKeySettingCard(
     BuildContext context,
     StateSetter setState,
@@ -865,6 +922,78 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
     );
+  }
+
+  void _showAuroraThresholdDialog(BuildContext context, StateSetter setState) {
+    double tempThreshold = settings.auroraNotificationThreshold;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Aurora Notification Threshold'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Get notified when the Kp index reaches or exceeds this level at your location.',
+                style: context.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Kp Index: ${tempThreshold.toStringAsFixed(1)}',
+                style: context.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Slider(
+                value: tempThreshold,
+                min: 0.0,
+                max: 9.0,
+                divisions: 18,
+                label: tempThreshold.toStringAsFixed(1),
+                onChanged: (value) {
+                  setDialogState(() {
+                    tempThreshold = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getKpDescription(tempThreshold),
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                settings.auroraNotificationThreshold = tempThreshold;
+                isar.writeTxnSync(() => isar.settings.putSync(settings));
+                setState(() {});
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getKpDescription(double kp) {
+    if (kp >= 9) return 'Extreme storm - Aurora visible worldwide';
+    if (kp >= 7) return 'Severe storm - Aurora visible mid-latitudes';
+    if (kp >= 6) return 'Strong storm - Aurora visible lower latitudes';
+    if (kp >= 5) return 'Minor storm - Aurora visible high latitudes';
+    if (kp >= 4) return 'Active - Aurora possible at high latitudes';
+    return 'Quiet to unsettled - Aurora unlikely';
   }
 
   Widget _buildCheckElevationCacheSettingCard(

@@ -1,7 +1,145 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/main.dart';
 
 class AuroraService {
+  static const cacheDuration = Duration(minutes: 60);
+
+  // Generate location key from coordinates
+  static String _getLocationKey(double lat, double lon) {
+    return '${lat.toStringAsFixed(2)}_${lon.toStringAsFixed(2)}';
+  }
+
+  // Check if cached data is still valid
+  static bool isCacheValid(double lat, double lon) {
+    try {
+      final locationKey = _getLocationKey(lat, lon);
+      final cache = isar.auroraCaches.getByLocationKeySync(locationKey);
+
+      if (cache?.cachedAt == null) {
+        print('🌌 Aurora Cache: No cache found for $locationKey');
+        return false;
+      }
+
+      final age = DateTime.now().difference(cache!.cachedAt!);
+      final isValid = age < cacheDuration;
+      print(
+        '🌌 Aurora Cache: Found cache for $locationKey, age: ${age.inMinutes}min, valid: $isValid',
+      );
+      return isValid;
+    } catch (e) {
+      print('🌌 Aurora Cache: Error checking cache: $e');
+      return false;
+    }
+  }
+
+  // Get cached aurora data
+  static Map<String, dynamic>? getCachedData(double lat, double lon) {
+    try {
+      final locationKey = _getLocationKey(lat, lon);
+      final cache = isar.auroraCaches.getByLocationKeySync(locationKey);
+
+      if (cache == null) return null;
+
+      return {
+        'kp_index': cache.kpIndex,
+        'timestamp': cache.timestamp,
+        'activity_level': cache.activityLevel,
+        'uk_status': cache.ukStatus,
+        'forecast': cache.forecastJson != null
+            ? json.decode(cache.forecastJson!)
+            : null,
+        'cached_at': cache.cachedAt?.toIso8601String(),
+        'source': 'Cache',
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Store aurora data in cache
+  static void cacheData({
+    required double lat,
+    required double lon,
+    required double? kpIndex,
+    required String? timestamp,
+    required String? activityLevel,
+    String? ukStatus,
+    List<dynamic>? forecast,
+  }) {
+    try {
+      final locationKey = _getLocationKey(lat, lon);
+      print('🌌 Aurora Cache: Storing data for $locationKey, Kp: $kpIndex');
+
+      isar.writeTxnSync(() {
+        final newCache = AuroraCache()
+          ..locationKey = locationKey
+          ..latitude = lat
+          ..longitude = lon
+          ..kpIndex = kpIndex
+          ..timestamp = timestamp
+          ..activityLevel = activityLevel
+          ..ukStatus = ukStatus
+          ..forecastJson = forecast != null ? json.encode(forecast) : null
+          ..cachedAt = DateTime.now();
+
+        isar.auroraCaches.putByLocationKeySync(newCache);
+      });
+      print('🌌 Aurora Cache: Successfully stored cache');
+    } catch (e) {
+      print('🌌 Aurora Cache: Error storing cache: $e');
+      // Silently fail - caching is not critical
+    }
+  }
+
+  // Get aurora data with cache support
+  static Future<Map<String, dynamic>?> getAuroraData({
+    required double lat,
+    required double lon,
+    bool forceRefresh = false,
+  }) async {
+    print(
+      '🌌 Aurora: Getting data for $lat, $lon (forceRefresh: $forceRefresh)',
+    );
+
+    // Check cache first unless force refresh
+    if (!forceRefresh && isCacheValid(lat, lon)) {
+      print('🌌 Aurora: Using cached data');
+      final cachedData = getCachedData(lat, lon);
+      if (cachedData != null) return cachedData;
+    }
+
+    print('🌌 Aurora: Fetching fresh data from APIs');
+    // Fetch fresh data
+    final noaaData = await getNoaaAuroraData();
+    if (noaaData == null) return null;
+
+    final ukData = await getAuroraWatchUK();
+    final forecast = await getThreeDayForecast();
+    final activityLevel = getActivityLevel(noaaData['kp_index'] as double);
+
+    print('🌌 Aurora: Caching fresh data');
+    // Cache the fresh data
+    cacheData(
+      lat: lat,
+      lon: lon,
+      kpIndex: noaaData['kp_index'] as double?,
+      timestamp: noaaData['timestamp'] as String?,
+      activityLevel: activityLevel,
+      ukStatus: ukData?['status'] as String?,
+      forecast: forecast,
+    );
+
+    return {
+      ...noaaData,
+      'activity_level': activityLevel,
+      'uk_status': ukData?['status'],
+      'forecast': forecast,
+      'source': 'Live',
+    };
+  }
+
   // NOAA SWPC - Global aurora data
   static Future<Map<String, dynamic>?> getNoaaAuroraData() async {
     try {

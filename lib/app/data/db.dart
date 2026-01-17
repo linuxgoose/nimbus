@@ -22,6 +22,8 @@ class Settings {
   bool useDummyElevation = true;
   String? elevationApiKey;
   bool hideAurora = false;
+  bool auroraNotifications = false;
+  double auroraNotificationThreshold = 5.0; // Kp index threshold
   String? widgetBackgroundColor;
   String? widgetTextColor;
   String degrees = 'celsius';
@@ -475,6 +477,39 @@ class ElevationLocation {
             ? DateTime.parse(json['lastUpdated'] as String)
             : null,
       );
+}
+
+@collection
+class AuroraCache {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String locationKey = ''; // Composite key: "lat_lon"
+
+  double? kpIndex;
+  String? activityLevel;
+  String? timestamp;
+  String? ukStatus;
+  String? forecastJson; // Store 3-day forecast as JSON string
+  DateTime? cachedAt;
+  double? latitude;
+  double? longitude;
+
+  AuroraCache();
+
+  factory AuroraCache.fromJson(Map<String, dynamic> json) => AuroraCache()
+    ..id = json['id'] as int? ?? Isar.autoIncrement
+    ..locationKey = json['locationKey'] as String? ?? ''
+    ..kpIndex = (json['kpIndex'] as num?)?.toDouble()
+    ..activityLevel = json['activityLevel'] as String?
+    ..timestamp = json['timestamp'] as String?
+    ..ukStatus = json['ukStatus'] as String?
+    ..forecastJson = json['forecastJson'] as String?
+    ..cachedAt = json['cachedAt'] != null
+        ? DateTime.parse(json['cachedAt'] as String)
+        : null
+    ..latitude = (json['latitude'] as num?)?.toDouble()
+    ..longitude = (json['longitude'] as num?)?.toDouble();
 }
 
 @collection

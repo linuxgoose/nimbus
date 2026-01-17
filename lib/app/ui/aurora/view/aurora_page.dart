@@ -15,11 +15,13 @@ class AuroraPage extends StatefulWidget {
 class _AuroraPageState extends State<AuroraPage> {
   final weatherController = Get.find<WeatherController>();
 
-  Map<String, dynamic>? noaaData;
+  Map<String, dynamic>? auroraData;
   Map<String, dynamic>? ukData;
   List<Map<String, dynamic>>? forecast;
   bool isLoading = true;
   String? error;
+  bool isFromCache = false;
+  DateTime? cacheTime;
 
   @override
   void initState() {
@@ -27,23 +29,51 @@ class _AuroraPageState extends State<AuroraPage> {
     _loadAuroraData();
   }
 
-  Future<void> _loadAuroraData() async {
+  Future<void> _loadAuroraData({bool forceRefresh = false}) async {
     setState(() {
       isLoading = true;
       error = null;
     });
 
     try {
-      final results = await Future.wait([
-        AuroraService.getNoaaAuroraData(),
-        AuroraService.getAuroraWatchUK(),
-        AuroraService.getThreeDayForecast(),
-      ]);
+      final lat = weatherController.location.lat;
+      final lon = weatherController.location.lon;
+
+      if (lat == null || lon == null) {
+        setState(() {
+          error = 'Location unavailable';
+          isLoading = false;
+        });
+        return;
+      }
+
+      final data = await AuroraService.getAuroraData(
+        lat: lat,
+        lon: lon,
+        forceRefresh: forceRefresh,
+      );
+
+      if (data == null) {
+        setState(() {
+          error = 'Failed to load aurora data';
+          isLoading = false;
+        });
+        return;
+      }
+
+      // Also fetch UK data separately (not cached)
+      final ukDataResult = await AuroraService.getAuroraWatchUK();
 
       setState(() {
-        noaaData = results[0] as Map<String, dynamic>?;
-        ukData = results[1] as Map<String, dynamic>?;
-        forecast = results[2] as List<Map<String, dynamic>>?;
+        auroraData = data;
+        ukData = ukDataResult;
+        forecast = data['forecast'] != null
+            ? (data['forecast'] as List).cast<Map<String, dynamic>>()
+            : null;
+        isFromCache = data['source'] == 'Cache';
+        cacheTime = data['cached_at'] != null
+            ? DateTime.parse(data['cached_at'] as String)
+            : null;
         isLoading = false;
       });
     } catch (e) {
@@ -62,12 +92,12 @@ class _AuroraPageState extends State<AuroraPage> {
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
-            onPressed: _loadAuroraData,
+            onPressed: () => _loadAuroraData(forceRefresh: true),
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _loadAuroraData,
+        onRefresh: () => _loadAuroraData(forceRefresh: true),
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : error != null
@@ -114,7 +144,7 @@ class _AuroraPageState extends State<AuroraPage> {
   }
 
   Widget _buildCurrentActivityCard() {
-    final kp = noaaData?['kp_index'] ?? 0.0;
+    final kp = auroraData?['kp_index'] ?? 0.0;
     final activity = AuroraService.getActivityLevel(kp);
     final colorHex = AuroraService.getKpColor(kp);
     final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
@@ -170,14 +200,35 @@ class _AuroraPageState extends State<AuroraPage> {
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            if (noaaData?['timestamp'] != null) ...[
+            if (auroraData?['timestamp'] != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Updated: ${_formatTime(noaaData!['timestamp'])}',
+                'Updated: ${_formatTime(auroraData!['timestamp'])}',
                 style: context.textTheme.bodySmall?.copyWith(
                   color: context.theme.colorScheme.onSurfaceVariant,
                 ),
               ),
+              if (isFromCache && cacheTime != null) ...[
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      LucideIcons.database,
+                      size: 12,
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Cached ${_getCacheAge()}',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ],
         ),
@@ -187,7 +238,7 @@ class _AuroraPageState extends State<AuroraPage> {
 
   Widget _buildVisibilityCard() {
     final latitude = weatherController.location.lat ?? 0.0;
-    final kp = noaaData?['kp_index'] ?? 0.0;
+    final kp = auroraData?['kp_index'] ?? 0.0;
     final visibility = AuroraService.getVisibilityForLocation(kp, latitude);
 
     return Card(
@@ -554,5 +605,14 @@ class _AuroraPageState extends State<AuroraPage> {
       default:
         return 'No significant aurora activity expected';
     }
+  }
+
+  String _getCacheAge() {
+    if (cacheTime == null) return '';
+
+    final age = DateTime.now().difference(cacheTime!);
+    if (age.inMinutes < 1) return 'just now';
+    if (age.inMinutes < 60) return '${age.inMinutes}m ago';
+    return '${age.inHours}h ago';
   }
 }
