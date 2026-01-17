@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/weather_summary.dart';
@@ -101,6 +102,8 @@ class _NowState extends State<Now> {
                 _buildTemperatureCompactText(context, widget.degree),
                 const Gap(5),
                 _buildMinMaxTemperatureText(context),
+                const Gap(8),
+                _buildSelectedMetrics(context),
                 if (_buildWeatherSummary().isNotEmpty) const Gap(8),
                 if (_buildWeatherSummary().isNotEmpty)
                   Text(
@@ -197,4 +200,91 @@ class _NowState extends State<Now> {
     precipitationProbability: widget.precipitationProbability,
     uvIndex: widget.uvIndex,
   );
+
+  Widget _buildSelectedMetrics(BuildContext context) {
+    final metric1Icon = _getMetricIcon(settings.nowTileMetric1);
+    final metric1Value = _getMetricValueOnly(settings.nowTileMetric1);
+    final metric2Icon = _getMetricIcon(settings.nowTileMetric2);
+    final metric2Value = _getMetricValueOnly(settings.nowTileMetric2);
+
+    return Row(
+      children: [
+        if (metric1Value.isNotEmpty) ...[
+          Icon(
+            metric1Icon,
+            size: 16,
+            color: context.theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            metric1Value,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          if (metric2Value.isNotEmpty) ...[
+            Text(
+              '  •  ',
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Icon(
+              metric2Icon,
+              size: 16,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              metric2Value,
+              style: context.textTheme.bodyMedium?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ],
+    );
+  }
+
+  IconData _getMetricIcon(String metric) {
+    switch (metric) {
+      case 'humidity':
+        return LucideIcons.droplet;
+      case 'wind':
+        return LucideIcons.wind;
+      case 'precipitation':
+        return LucideIcons.cloudRain;
+      case 'uv':
+        return LucideIcons.sun;
+      case 'feels':
+        return LucideIcons.thermometer;
+      case 'none':
+      default:
+        return LucideIcons.handHelping;
+    }
+  }
+
+  String _getMetricValueOnly(String metric) {
+    switch (metric) {
+      case 'humidity':
+        return widget.humidity != null ? '${widget.humidity}%' : '';
+      case 'wind':
+        return widget.windSpeed != null
+            ? statusData.getSpeed(widget.windSpeed!.round())
+            : '';
+      case 'precipitation':
+        return widget.precipitationProbability != null
+            ? '${widget.precipitationProbability}%'
+            : '';
+      case 'uv':
+        return widget.uvIndex != null ? '${widget.uvIndex}' : '';
+      case 'feels':
+        return statusData.getDegree(widget.feels.round());
+      case 'none':
+        return '';
+      default:
+        return '';
+    }
+  }
 }

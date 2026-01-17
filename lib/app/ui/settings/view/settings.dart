@@ -108,6 +108,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
                   _buildHideRainForecastSettingCard(context, setState),
+                  _buildNowTileMetricsTitle(context),
+                  _buildNowTileMetric1Card(context, setState),
+                  _buildNowTileMetric2Card(context, setState),
                   const Gap(10),
                 ],
               ),
@@ -1255,19 +1258,97 @@ class _SettingsPageState extends State<SettingsPage> {
   ) => SettingCard(
     elevation: 4,
     icon: const Icon(LucideIcons.mapPin),
-    text: 'Prefer MET Norway',
+    text: 'Prefer MET Norway in Hybrid Mode',
     switcher: true,
     value: settings.preferMetNoInHybrid,
-    onChange: (value) async {
+    onChange: (value) {
       settings.preferMetNoInHybrid = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
-      // Clear cache and refresh weather data
-      await weatherController.deleteAll(false);
-      await weatherController.setLocation();
-      await weatherController.updateCacheCard(true);
       setState(() {});
     },
   );
+
+  Widget _buildNowTileMetricsTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 20, bottom: 10),
+    child: Text(
+      'Now Tile Metrics',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildNowTileMetric1Card(BuildContext context, StateSetter setState) {
+    final metrics = [
+      'humidity',
+      'wind',
+      'precipitation',
+      'uv',
+      'feels',
+      'none',
+    ];
+    final labels = [
+      'Humidity',
+      'Wind Speed',
+      'Precipitation Probability',
+      'UV Index',
+      'Feels Like',
+      'None',
+    ];
+
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.gauge),
+      text: 'First Metric',
+      dropdown: true,
+      dropdownName: labels[metrics.indexOf(settings.nowTileMetric1)],
+      dropdownList: labels,
+      dropdownChange: (value) {
+        if (value != null) {
+          final index = labels.indexOf(value);
+          settings.nowTileMetric1 = metrics[index];
+          isar.writeTxnSync(() => isar.settings.putSync(settings));
+          setState(() {});
+        }
+      },
+    );
+  }
+
+  Widget _buildNowTileMetric2Card(BuildContext context, StateSetter setState) {
+    final metrics = [
+      'humidity',
+      'wind',
+      'precipitation',
+      'uv',
+      'feels',
+      'none',
+    ];
+    final labels = [
+      'Humidity',
+      'Wind Speed',
+      'Precipitation Probability',
+      'UV Index',
+      'Feels Like',
+      'None',
+    ];
+
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.gauge),
+      text: 'Second Metric',
+      dropdown: true,
+      dropdownName: labels[metrics.indexOf(settings.nowTileMetric2)],
+      dropdownList: labels,
+      dropdownChange: (value) {
+        if (value != null) {
+          final index = labels.indexOf(value);
+          settings.nowTileMetric2 = metrics[index];
+          isar.writeTxnSync(() => isar.settings.putSync(settings));
+          setState(() {});
+        }
+      },
+    );
+  }
 
   Widget _buildDegreesSettingCard(BuildContext context, StateSetter setState) =>
       SettingCard(

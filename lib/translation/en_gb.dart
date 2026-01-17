@@ -17,7 +17,7 @@ class EnGb {
     'humidity': 'Humidity',
     'wind': 'Wind Speed',
     'visibility': 'Visibility',
-    'feels': 'Apparent Temperature',
+    'feels': 'Apparent Temp.',
     'evaporation': 'Evapotranspiration',
     'precipitation': 'Precipitation',
     'direction': 'Wind Direction',

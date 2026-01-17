@@ -81,85 +81,95 @@ const SettingsSchema = CollectionSchema(
       name: r'notifications',
       type: IsarType.bool,
     ),
-    r'onboard': PropertySchema(id: 16, name: r'onboard', type: IsarType.bool),
-    r'preferMetNoInHybrid': PropertySchema(
+    r'nowTileMetric1': PropertySchema(
+      id: 16,
+      name: r'nowTileMetric1',
+      type: IsarType.string,
+    ),
+    r'nowTileMetric2': PropertySchema(
       id: 17,
+      name: r'nowTileMetric2',
+      type: IsarType.string,
+    ),
+    r'onboard': PropertySchema(id: 18, name: r'onboard', type: IsarType.bool),
+    r'preferMetNoInHybrid': PropertySchema(
+      id: 19,
       name: r'preferMetNoInHybrid',
       type: IsarType.bool,
     ),
     r'pressure': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'roundDegree': PropertySchema(
-      id: 19,
+      id: 21,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 20,
+      id: 22,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 21,
+      id: 23,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 22,
+      id: 24,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 23, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 25, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 24,
+      id: 26,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 25, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 27, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 26,
+      id: 28,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 27,
+      id: 29,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 28,
+      id: 30,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyElevation': PropertySchema(
-      id: 29,
+      id: 31,
       name: r'useDummyElevation',
       type: IsarType.bool,
     ),
     r'useDummyTides': PropertySchema(
-      id: 30,
+      id: 32,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 31,
+      id: 33,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 32,
+      id: 34,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 33,
+      id: 35,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 34, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 36, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -199,6 +209,8 @@ int _settingsEstimateSize(
     }
   }
   bytesCount += 3 + object.measurements.length * 3;
+  bytesCount += 3 + object.nowTileMetric1.length * 3;
+  bytesCount += 3 + object.nowTileMetric2.length * 3;
   bytesCount += 3 + object.pressure.length * 3;
   {
     final value = object.theme;
@@ -264,25 +276,27 @@ void _settingsSerialize(
   writer.writeBool(offsets[13], object.materialColor);
   writer.writeString(offsets[14], object.measurements);
   writer.writeBool(offsets[15], object.notifications);
-  writer.writeBool(offsets[16], object.onboard);
-  writer.writeBool(offsets[17], object.preferMetNoInHybrid);
-  writer.writeString(offsets[18], object.pressure);
-  writer.writeBool(offsets[19], object.roundDegree);
-  writer.writeBool(offsets[20], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[21], object.showAlertsOnMap);
-  writer.writeBool(offsets[22], object.showDummyAlerts);
-  writer.writeString(offsets[23], object.theme);
-  writer.writeString(offsets[24], object.tidesApiKey);
-  writer.writeString(offsets[25], object.timeEnd);
-  writer.writeLong(offsets[26], object.timeRange);
-  writer.writeString(offsets[27], object.timeStart);
-  writer.writeString(offsets[28], object.timeformat);
-  writer.writeBool(offsets[29], object.useDummyElevation);
-  writer.writeBool(offsets[30], object.useDummyTides);
-  writer.writeString(offsets[31], object.weatherDataSource);
-  writer.writeString(offsets[32], object.widgetBackgroundColor);
-  writer.writeString(offsets[33], object.widgetTextColor);
-  writer.writeString(offsets[34], object.wind);
+  writer.writeString(offsets[16], object.nowTileMetric1);
+  writer.writeString(offsets[17], object.nowTileMetric2);
+  writer.writeBool(offsets[18], object.onboard);
+  writer.writeBool(offsets[19], object.preferMetNoInHybrid);
+  writer.writeString(offsets[20], object.pressure);
+  writer.writeBool(offsets[21], object.roundDegree);
+  writer.writeBool(offsets[22], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[23], object.showAlertsOnMap);
+  writer.writeBool(offsets[24], object.showDummyAlerts);
+  writer.writeString(offsets[25], object.theme);
+  writer.writeString(offsets[26], object.tidesApiKey);
+  writer.writeString(offsets[27], object.timeEnd);
+  writer.writeLong(offsets[28], object.timeRange);
+  writer.writeString(offsets[29], object.timeStart);
+  writer.writeString(offsets[30], object.timeformat);
+  writer.writeBool(offsets[31], object.useDummyElevation);
+  writer.writeBool(offsets[32], object.useDummyTides);
+  writer.writeString(offsets[33], object.weatherDataSource);
+  writer.writeString(offsets[34], object.widgetBackgroundColor);
+  writer.writeString(offsets[35], object.widgetTextColor);
+  writer.writeString(offsets[36], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -309,25 +323,27 @@ Settings _settingsDeserialize(
   object.materialColor = reader.readBool(offsets[13]);
   object.measurements = reader.readString(offsets[14]);
   object.notifications = reader.readBool(offsets[15]);
-  object.onboard = reader.readBool(offsets[16]);
-  object.preferMetNoInHybrid = reader.readBool(offsets[17]);
-  object.pressure = reader.readString(offsets[18]);
-  object.roundDegree = reader.readBool(offsets[19]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[20]);
-  object.showAlertsOnMap = reader.readBool(offsets[21]);
-  object.showDummyAlerts = reader.readBool(offsets[22]);
-  object.theme = reader.readStringOrNull(offsets[23]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[24]);
-  object.timeEnd = reader.readStringOrNull(offsets[25]);
-  object.timeRange = reader.readLongOrNull(offsets[26]);
-  object.timeStart = reader.readStringOrNull(offsets[27]);
-  object.timeformat = reader.readString(offsets[28]);
-  object.useDummyElevation = reader.readBool(offsets[29]);
-  object.useDummyTides = reader.readBool(offsets[30]);
-  object.weatherDataSource = reader.readString(offsets[31]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[32]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[33]);
-  object.wind = reader.readString(offsets[34]);
+  object.nowTileMetric1 = reader.readString(offsets[16]);
+  object.nowTileMetric2 = reader.readString(offsets[17]);
+  object.onboard = reader.readBool(offsets[18]);
+  object.preferMetNoInHybrid = reader.readBool(offsets[19]);
+  object.pressure = reader.readString(offsets[20]);
+  object.roundDegree = reader.readBool(offsets[21]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[22]);
+  object.showAlertsOnMap = reader.readBool(offsets[23]);
+  object.showDummyAlerts = reader.readBool(offsets[24]);
+  object.theme = reader.readStringOrNull(offsets[25]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[26]);
+  object.timeEnd = reader.readStringOrNull(offsets[27]);
+  object.timeRange = reader.readLongOrNull(offsets[28]);
+  object.timeStart = reader.readStringOrNull(offsets[29]);
+  object.timeformat = reader.readString(offsets[30]);
+  object.useDummyElevation = reader.readBool(offsets[31]);
+  object.useDummyTides = reader.readBool(offsets[32]);
+  object.weatherDataSource = reader.readString(offsets[33]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[34]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[35]);
+  object.wind = reader.readString(offsets[36]);
   return object;
 }
 
@@ -371,42 +387,46 @@ P _settingsDeserializeProp<P>(
     case 15:
       return (reader.readBool(offset)) as P;
     case 16:
-      return (reader.readBool(offset)) as P;
-    case 17:
-      return (reader.readBool(offset)) as P;
-    case 18:
       return (reader.readString(offset)) as P;
+    case 17:
+      return (reader.readString(offset)) as P;
+    case 18:
+      return (reader.readBool(offset)) as P;
     case 19:
       return (reader.readBool(offset)) as P;
     case 20:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 21:
       return (reader.readBool(offset)) as P;
     case 22:
       return (reader.readBool(offset)) as P;
     case 23:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 24:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 25:
       return (reader.readStringOrNull(offset)) as P;
     case 26:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 27:
       return (reader.readStringOrNull(offset)) as P;
     case 28:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 29:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 30:
-      return (reader.readBool(offset)) as P;
-    case 31:
       return (reader.readString(offset)) as P;
+    case 31:
+      return (reader.readBool(offset)) as P;
     case 32:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 33:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 34:
+      return (reader.readStringOrNull(offset)) as P;
+    case 35:
+      return (reader.readStringOrNull(offset)) as P;
+    case 36:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1558,6 +1578,294 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'notifications', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> nowTileMetric1EqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'nowTileMetric1',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1GreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'nowTileMetric1',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1LessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'nowTileMetric1',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> nowTileMetric1Between(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'nowTileMetric1',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1StartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'nowTileMetric1',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1EndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'nowTileMetric1',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1Contains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'nowTileMetric1',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> nowTileMetric1Matches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'nowTileMetric1',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1IsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'nowTileMetric1', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric1IsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'nowTileMetric1', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> nowTileMetric2EqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'nowTileMetric2',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2GreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'nowTileMetric2',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2LessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'nowTileMetric2',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> nowTileMetric2Between(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'nowTileMetric2',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2StartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'nowTileMetric2',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2EndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'nowTileMetric2',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2Contains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'nowTileMetric2',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> nowTileMetric2Matches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'nowTileMetric2',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2IsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'nowTileMetric2', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  nowTileMetric2IsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'nowTileMetric2', value: ''),
       );
     });
   }
@@ -3468,6 +3776,30 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByNowTileMetric1() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric1', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByNowTileMetric1Desc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric1', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByNowTileMetric2() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric2', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByNowTileMetric2Desc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric2', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByOnboard() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'onboard', Sort.asc);
@@ -3906,6 +4238,30 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByNowTileMetric1() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric1', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByNowTileMetric1Desc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric1', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByNowTileMetric2() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric2', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByNowTileMetric2Desc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'nowTileMetric2', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByOnboard() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'onboard', Sort.asc);
@@ -4254,6 +4610,28 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByNowTileMetric1({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'nowTileMetric1',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByNowTileMetric2({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'nowTileMetric2',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByOnboard() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'onboard');
@@ -4499,6 +4877,18 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> notificationsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'notifications');
+    });
+  }
+
+  QueryBuilder<Settings, String, QQueryOperations> nowTileMetric1Property() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nowTileMetric1');
+    });
+  }
+
+  QueryBuilder<Settings, String, QQueryOperations> nowTileMetric2Property() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'nowTileMetric2');
     });
   }
 

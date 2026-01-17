@@ -37,6 +37,8 @@ class Settings {
   bool preferMetNoInHybrid =
       false; // Override Nordic region detection in hybrid mode
   bool hideRainForecast = false; // Hide 6-hour rain forecast chart
+  String nowTileMetric1 = 'humidity'; // First metric to show in now tile
+  String nowTileMetric2 = 'wind'; // Second metric to show in now tile
   String? language;
   int? timeRange;
   String? timeStart;
