@@ -33,13 +33,22 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - 9 customizable color schemes (TITAN, NEXRAD, Weather Channel, Dark Sky, and more)
   - Dynamic legend showing precipitation intensity
   - Location centering and interactive map controls
-- **Tide Predictions:** Comprehensive tide information with:
+- **Tide Predictions:** Comprehensive tide information with multiple data sources:
+  - **Stormglass API**: Global coverage with lat/lon-based predictions (10 requests/day free)
+    - Multiple saved locations with geocoding search
+    - 24-hour offline caching to conserve API quota
+    - Configurable datum selection (MLLW, MLW, MSL, MHW, MHHW)
+  - **UK Tidal API - Discovery**: Authoritative UK tide data from the UK Hydrographic Office
+    - 608+ tide stations across the UK, Channel Islands, and Gibraltar
+    - Station-based predictions using official tidal constants
+    - Searchable station browser with real-time filtering
+    - Save multiple stations with primary station selection
+    - LAT (Lowest Astronomical Tide) datum standard
+    - No caching - always provides fresh predictions
+  - **UK Environment Agency**: Real-time water levels for England (interpolated predictions)
   - Interactive 24-hour tide chart with axis labels
-  - Current tide level and status (rising/falling)
+  - Current tide level and height display
   - Upcoming high and low tide times
-  - Multiple saved locations with geocoding search
-  - Optional real-time data via Stormglass API (10 requests/day free)
-  - 24-hour offline caching to conserve API quota
   - Toggle between real and dummy data for testing
 - **Detailed Weather Data:** Access comprehensive weather statistics including temperature, humidity, wind speed, precipitation probability, UV index, and more.
 - **Weather Alerts:** Receive timely notifications about significant weather changes and conditions, including:
@@ -148,7 +157,14 @@ Weather data is powered by **multiple sources** for optimal accuracy and coverag
   - Enhanced short-term precipitation forecasting
   - Official government weather warnings when available
 
-Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. Tide predictions are powered by [Stormglass.io](https://stormglass.io/) with optional API key integration for real-time data (10 free requests per day). Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data. UK flood monitoring data is provided by the [Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference) (England - warnings and monitoring stations), [SEPA](https://www2.sepa.org.uk/fwa/) (Scotland - warnings only), and [Natural Resources Wales](https://api.naturalresources.wales/) (Wales - warnings only). Northern Ireland's DfI Rivers does not currently provide a public API for automated flood data access.
+Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/docs/geocoding-api) for easy city discovery. Live radar imagery is provided by [RainViewer](https://www.rainviewer.com/) with support for multiple color schemes and real-time precipitation tracking. 
+
+**Tide Data Sources**:
+- **[Stormglass.io](https://stormglass.io/)**: Global tide predictions with optional API key integration (10 free requests per day)
+- **[UK Tidal API - Discovery](https://admiraltyapi.portal.azure-api.net/)**: Official UK tide data from the UK Hydrographic Office with 608+ monitoring stations
+- **[Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference)**: Real-time water levels for England
+
+Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data. UK flood monitoring data is provided by the [Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference) (England - warnings and monitoring stations), [SEPA](https://www2.sepa.org.uk/fwa/) (Scotland - warnings only), and [Natural Resources Wales](https://api.naturalresources.wales/) (Wales - warnings only). Northern Ireland's DfI Rivers does not currently provide a public API for automated flood data access.
 
 **Weather Provider Selection**: Choose your preferred weather data source in Settings → Weather Provider:
 - **Open-Meteo**: Global coverage (default)
