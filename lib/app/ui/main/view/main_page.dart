@@ -18,6 +18,7 @@ import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:nimbus/app/ui/tides/view/tides_page.dart';
 import 'package:nimbus/app/ui/elevation/view/elevation_page.dart';
 import 'package:nimbus/app/ui/aurora/view/aurora_page.dart';
+import 'package:nimbus/app/ui/moon/moon_phase_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -149,6 +150,7 @@ class _MainPageState extends State<MainPage> {
         _buildSunsetSunriseWidget(sunrise, sunset),
         _buildHourlyDescContainer(mainWeather, hourOfDay),
         _buildDailyContainer(weatherCard),
+        const MoonPhaseTile(),
       ],
     );
   }

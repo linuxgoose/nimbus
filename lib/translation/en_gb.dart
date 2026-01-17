@@ -172,5 +172,25 @@ class EnGb {
     'weatherSummaryUseSunscreen': 'High UV - use sun protection.',
     'weatherSummaryHumid': 'High humidity levels.',
     'weatherSummaryGreatDay': 'Great day to be outside!',
+    // Moon Phase translations
+    'moon_phase': 'Moon Phase',
+    'new_moon': 'New Moon',
+    'waxing_crescent': 'Waxing Crescent',
+    'first_quarter': 'First Quarter',
+    'waxing_gibbous': 'Waxing Gibbous',
+    'full_moon': 'Full Moon',
+    'waning_gibbous': 'Waning Gibbous',
+    'last_quarter': 'Last Quarter',
+    'waning_crescent': 'Waning Crescent',
+    'illuminated': 'illuminated',
+    'phase_progress': 'Lunar Cycle Progress',
+    'upcoming_events': 'Upcoming Lunar Events',
+    'next_full_moon': 'Next Full Moon',
+    'next_new_moon': 'Next New Moon',
+    'about_moon_phases': 'About Moon Phases',
+    'moon_phase_info':
+        'The Moon completes a full cycle approximately every 29.5 days, transitioning through eight distinct phases. These phases affect tides, wildlife behaviour, and have been observed by cultures throughout human history.',
+    'in': 'in',
+    'days': 'days',
   };
 }
