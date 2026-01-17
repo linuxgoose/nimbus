@@ -892,4 +892,26 @@ class WeatherController extends GetxController {
       throw Exception('Could not launch $url');
     }
   }
+
+  static void scheduleNotificationChecks() {
+    if (Platform.isAndroid) {
+      Workmanager().registerPeriodicTask(
+        'notificationCheck',
+        'notificationCheck',
+        frequency: const Duration(minutes: 30),
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
+        constraints: Constraints(networkType: NetworkType.connected),
+      );
+      debugPrint(
+        '📅 Scheduled periodic notification checks (every 30 minutes)',
+      );
+    }
+  }
+
+  static void cancelNotificationChecks() {
+    if (Platform.isAndroid) {
+      Workmanager().cancelByUniqueName('notificationCheck');
+      debugPrint('🚫 Cancelled periodic notification checks');
+    }
+  }
 }

@@ -117,74 +117,84 @@ const SettingsSchema = CollectionSchema(
       name: r'pressure',
       type: IsarType.string,
     ),
-    r'roundDegree': PropertySchema(
+    r'rainNotificationThreshold': PropertySchema(
       id: 24,
+      name: r'rainNotificationThreshold',
+      type: IsarType.double,
+    ),
+    r'rainNotifications': PropertySchema(
+      id: 25,
+      name: r'rainNotifications',
+      type: IsarType.bool,
+    ),
+    r'roundDegree': PropertySchema(
+      id: 26,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 25,
+      id: 27,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 26,
+      id: 28,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 27,
+      id: 29,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 28, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 30, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 29,
+      id: 31,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 30, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 32, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 31,
+      id: 33,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 32,
+      id: 34,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 33,
+      id: 35,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyElevation': PropertySchema(
-      id: 34,
+      id: 36,
       name: r'useDummyElevation',
       type: IsarType.bool,
     ),
     r'useDummyTides': PropertySchema(
-      id: 35,
+      id: 37,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 36,
+      id: 38,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 37,
+      id: 39,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 38,
+      id: 40,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 39, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 41, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -299,22 +309,24 @@ void _settingsSerialize(
   writer.writeBool(offsets[21], object.onboard);
   writer.writeBool(offsets[22], object.preferMetNoInHybrid);
   writer.writeString(offsets[23], object.pressure);
-  writer.writeBool(offsets[24], object.roundDegree);
-  writer.writeBool(offsets[25], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[26], object.showAlertsOnMap);
-  writer.writeBool(offsets[27], object.showDummyAlerts);
-  writer.writeString(offsets[28], object.theme);
-  writer.writeString(offsets[29], object.tidesApiKey);
-  writer.writeString(offsets[30], object.timeEnd);
-  writer.writeLong(offsets[31], object.timeRange);
-  writer.writeString(offsets[32], object.timeStart);
-  writer.writeString(offsets[33], object.timeformat);
-  writer.writeBool(offsets[34], object.useDummyElevation);
-  writer.writeBool(offsets[35], object.useDummyTides);
-  writer.writeString(offsets[36], object.weatherDataSource);
-  writer.writeString(offsets[37], object.widgetBackgroundColor);
-  writer.writeString(offsets[38], object.widgetTextColor);
-  writer.writeString(offsets[39], object.wind);
+  writer.writeDouble(offsets[24], object.rainNotificationThreshold);
+  writer.writeBool(offsets[25], object.rainNotifications);
+  writer.writeBool(offsets[26], object.roundDegree);
+  writer.writeBool(offsets[27], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[28], object.showAlertsOnMap);
+  writer.writeBool(offsets[29], object.showDummyAlerts);
+  writer.writeString(offsets[30], object.theme);
+  writer.writeString(offsets[31], object.tidesApiKey);
+  writer.writeString(offsets[32], object.timeEnd);
+  writer.writeLong(offsets[33], object.timeRange);
+  writer.writeString(offsets[34], object.timeStart);
+  writer.writeString(offsets[35], object.timeformat);
+  writer.writeBool(offsets[36], object.useDummyElevation);
+  writer.writeBool(offsets[37], object.useDummyTides);
+  writer.writeString(offsets[38], object.weatherDataSource);
+  writer.writeString(offsets[39], object.widgetBackgroundColor);
+  writer.writeString(offsets[40], object.widgetTextColor);
+  writer.writeString(offsets[41], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -349,22 +361,24 @@ Settings _settingsDeserialize(
   object.onboard = reader.readBool(offsets[21]);
   object.preferMetNoInHybrid = reader.readBool(offsets[22]);
   object.pressure = reader.readString(offsets[23]);
-  object.roundDegree = reader.readBool(offsets[24]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[25]);
-  object.showAlertsOnMap = reader.readBool(offsets[26]);
-  object.showDummyAlerts = reader.readBool(offsets[27]);
-  object.theme = reader.readStringOrNull(offsets[28]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[29]);
-  object.timeEnd = reader.readStringOrNull(offsets[30]);
-  object.timeRange = reader.readLongOrNull(offsets[31]);
-  object.timeStart = reader.readStringOrNull(offsets[32]);
-  object.timeformat = reader.readString(offsets[33]);
-  object.useDummyElevation = reader.readBool(offsets[34]);
-  object.useDummyTides = reader.readBool(offsets[35]);
-  object.weatherDataSource = reader.readString(offsets[36]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[37]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[38]);
-  object.wind = reader.readString(offsets[39]);
+  object.rainNotificationThreshold = reader.readDouble(offsets[24]);
+  object.rainNotifications = reader.readBool(offsets[25]);
+  object.roundDegree = reader.readBool(offsets[26]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[27]);
+  object.showAlertsOnMap = reader.readBool(offsets[28]);
+  object.showDummyAlerts = reader.readBool(offsets[29]);
+  object.theme = reader.readStringOrNull(offsets[30]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[31]);
+  object.timeEnd = reader.readStringOrNull(offsets[32]);
+  object.timeRange = reader.readLongOrNull(offsets[33]);
+  object.timeStart = reader.readStringOrNull(offsets[34]);
+  object.timeformat = reader.readString(offsets[35]);
+  object.useDummyElevation = reader.readBool(offsets[36]);
+  object.useDummyTides = reader.readBool(offsets[37]);
+  object.weatherDataSource = reader.readString(offsets[38]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[39]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[40]);
+  object.wind = reader.readString(offsets[41]);
   return object;
 }
 
@@ -424,7 +438,7 @@ P _settingsDeserializeProp<P>(
     case 23:
       return (reader.readString(offset)) as P;
     case 24:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 25:
       return (reader.readBool(offset)) as P;
     case 26:
@@ -432,28 +446,32 @@ P _settingsDeserializeProp<P>(
     case 27:
       return (reader.readBool(offset)) as P;
     case 28:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 29:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 30:
       return (reader.readStringOrNull(offset)) as P;
     case 31:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 32:
       return (reader.readStringOrNull(offset)) as P;
     case 33:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 34:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 35:
-      return (reader.readBool(offset)) as P;
-    case 36:
       return (reader.readString(offset)) as P;
+    case 36:
+      return (reader.readBool(offset)) as P;
     case 37:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 38:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 39:
+      return (reader.readStringOrNull(offset)) as P;
+    case 40:
+      return (reader.readStringOrNull(offset)) as P;
+    case 41:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2155,6 +2173,93 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'pressure', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  rainNotificationThresholdEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'rainNotificationThreshold',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  rainNotificationThresholdGreaterThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'rainNotificationThreshold',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  rainNotificationThresholdLessThan(
+    double value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'rainNotificationThreshold',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  rainNotificationThresholdBetween(
+    double lower,
+    double upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'rainNotificationThreshold',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  rainNotificationsEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'rainNotifications', value: value),
       );
     });
   }
@@ -4000,6 +4105,32 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByRainNotificationThreshold() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotificationThreshold', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByRainNotificationThresholdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotificationThreshold', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByRainNotifications() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotifications', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByRainNotificationsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotifications', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByRoundDegree() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'roundDegree', Sort.asc);
@@ -4501,6 +4632,32 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByRainNotificationThreshold() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotificationThreshold', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByRainNotificationThresholdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotificationThreshold', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByRainNotifications() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotifications', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByRainNotificationsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'rainNotifications', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByRoundDegree() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'roundDegree', Sort.asc);
@@ -4873,6 +5030,19 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct>
+  distinctByRainNotificationThreshold() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'rainNotificationThreshold');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByRainNotifications() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'rainNotifications');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByRoundDegree() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'roundDegree');
@@ -5147,6 +5317,19 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, String, QQueryOperations> pressureProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'pressure');
+    });
+  }
+
+  QueryBuilder<Settings, double, QQueryOperations>
+  rainNotificationThresholdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'rainNotificationThreshold');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> rainNotificationsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'rainNotifications');
     });
   }
 

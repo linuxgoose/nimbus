@@ -13,6 +13,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
+import 'package:nimbus/app/services/notification_worker.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/ui/geolocation.dart';
 import 'package:nimbus/app/ui/home.dart';
@@ -91,9 +92,13 @@ const List<Map<String, dynamic>> appLanguages = [
 ];
 
 @pragma('vm:entry-point')
-void callbackDispatcher() => Workmanager().executeTask(
-  (task, inputData) => WeatherController().updateWidget(),
-);
+void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
+  if (task == 'notificationCheck') {
+    await NotificationWorker.checkAndNotify();
+    return Future.value(true);
+  }
+  return WeatherController().updateWidget();
+});
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

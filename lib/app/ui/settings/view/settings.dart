@@ -109,6 +109,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
                   _buildHideRainForecastSettingCard(context, setState),
+                  _buildRainNotificationsSettingCard(context, setState),
+                  _buildRainThresholdSettingCard(context, setState),
                   _buildNowTileMetricsTitle(context),
                   _buildNowTileMetric1Card(context, setState),
                   _buildNowTileMetric2Card(context, setState),
@@ -830,6 +832,11 @@ class _SettingsPageState extends State<SettingsPage> {
     onChange: (value) {
       settings.auroraNotifications = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value || settings.rainNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
       setState(() {});
     },
   );
@@ -994,6 +1001,77 @@ class _SettingsPageState extends State<SettingsPage> {
     if (kp >= 5) return 'Minor storm - Aurora visible high latitudes';
     if (kp >= 4) return 'Active - Aurora possible at high latitudes';
     return 'Quiet to unsettled - Aurora unlikely';
+  }
+
+  void _showRainThresholdDialog(BuildContext context, StateSetter setState) {
+    double tempThreshold = settings.rainNotificationThreshold;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Rain Notification Threshold'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Get notified when rain is forecast in the next 6 hours that meets or exceeds this amount.',
+                style: context.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Rain Amount: ${tempThreshold.toStringAsFixed(1)}mm',
+                style: context.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Slider(
+                value: tempThreshold,
+                min: 0.1,
+                max: 10.0,
+                divisions: 99,
+                label: '${tempThreshold.toStringAsFixed(1)}mm',
+                onChanged: (value) {
+                  setDialogState(() {
+                    tempThreshold = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getRainDescription(tempThreshold),
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                settings.rainNotificationThreshold = tempThreshold;
+                isar.writeTxnSync(() => isar.settings.putSync(settings));
+                setState(() {});
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getRainDescription(double mm) {
+    if (mm >= 8) return 'Heavy rain - significant precipitation';
+    if (mm >= 4) return 'Moderate rain - noticeable rainfall';
+    if (mm >= 2) return 'Light rain - light precipitation';
+    if (mm >= 0.5) return 'Light drizzle - minor precipitation';
+    return 'Very light - barely noticeable';
   }
 
   Widget _buildCheckElevationCacheSettingCard(
@@ -1409,6 +1487,42 @@ class _SettingsPageState extends State<SettingsPage> {
       weatherController.isLoading.refresh();
       setState(() {});
     },
+  );
+
+  Widget _buildRainNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Rain Notifications',
+    switcher: true,
+    value: settings.rainNotifications,
+    onChange: (value) {
+      settings.rainNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value || settings.auroraNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
+      setState(() {});
+    },
+  );
+
+  Widget _buildRainThresholdSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.droplet),
+    text: 'Rain Threshold',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: '${settings.rainNotificationThreshold.toStringAsFixed(1)}mm',
+    ),
+    onPressed: () => _showRainThresholdDialog(context, setState),
   );
 
   Widget _buildPreferMetNoSettingCard(

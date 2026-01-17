@@ -24,6 +24,8 @@ class Settings {
   bool hideAurora = false;
   bool auroraNotifications = false;
   double auroraNotificationThreshold = 5.0; // Kp index threshold
+  bool rainNotifications = false;
+  double rainNotificationThreshold = 1.0; // mm of rain threshold
   String? widgetBackgroundColor;
   String? widgetTextColor;
   String degrees = 'celsius';
