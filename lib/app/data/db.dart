@@ -29,6 +29,7 @@ class Settings {
   double floodRadiusKm = 100.0; // Radius to check for flood warnings
   bool hideAgriculture = false;
   bool hideMarine = false;
+  bool hideHiking = false;
   bool rainNotifications = false;
   double rainNotificationThreshold = 1.0; // mm of rain threshold
   String? widgetBackgroundColor;

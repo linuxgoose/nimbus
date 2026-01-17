@@ -102,6 +102,17 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - Wave categories (Calm, Smooth, Slight, Moderate, Rough, etc.)
   - Safety recommendations based on current conditions
   - Toggle visibility in settings
+- **Hiking Conditions:** Comprehensive outdoor trail weather data with:
+  - UV index monitoring with hourly forecasts
+  - Visibility tracking for safe navigation
+  - Wind speed, gusts, and direction analysis
+  - Snow depth and freezing level information
+  - Trail condition ratings (Excellent, Good, Fair, Poor, Hazardous)
+  - 48-hour UV index and visibility charts
+  - 7-day hiking forecast with weather metrics
+  - Temperature, feels-like, and precipitation data
+  - Safety recommendations for outdoor activities
+  - Toggle visibility in settings
 - **Elevation Data:** View elevation above sea level for any location
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.

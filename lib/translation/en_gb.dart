@@ -264,5 +264,30 @@ class EnGb {
         'Marine weather data from Open-Meteo provides essential information '
         'for maritime activities, surfing, fishing, and coastal planning.',
     'hide_marine': 'Hide Marine',
+
+    // Hiking
+    'hiking': 'Hiking',
+    'hiking_subtitle': 'UV index, visibility & trail conditions',
+    'hiking_conditions': 'Hiking Conditions',
+    'current_trail_conditions': 'Current Trail Conditions',
+    'trail_conditions': 'Trail Conditions',
+    'uv_index': 'UV Index',
+    'wind_conditions': 'Wind Conditions',
+    'snow_conditions': 'Snow Conditions',
+    'snow_depth': 'Snow Depth',
+    'freezing_level': 'Freezing Level',
+    'wind_speed': 'Wind Speed',
+    'wind_gusts': 'Wind Gusts',
+    'wind_direction': 'Wind Direction',
+    'uv_index_chart': 'UV Index (48h Forecast)',
+    'visibility_chart': 'Visibility (48h Forecast)',
+    'hiking_forecast': '7-Day Hiking Forecast',
+    'about_hiking_data': 'About Hiking Data',
+    'hiking_info':
+        'This page provides comprehensive hiking weather data including UV index, '
+        'visibility, wind conditions, and snow depth. Data is updated hourly from '
+        'Open-Meteo. Plan your outdoor adventures safely with detailed forecasts '
+        'and safety recommendations.',
+    'hide_hiking': 'Hide Hiking',
   };
 }

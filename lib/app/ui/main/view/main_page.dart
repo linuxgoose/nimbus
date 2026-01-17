@@ -22,6 +22,7 @@ import 'package:nimbus/app/ui/moon/moon_phase_tile.dart';
 import 'package:nimbus/app/ui/flood/flood_tile.dart';
 import 'package:nimbus/app/ui/agriculture/agriculture_tile.dart';
 import 'package:nimbus/app/ui/marine/marine_tile.dart';
+import 'package:nimbus/app/ui/hiking/hiking_tile.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainPage extends StatefulWidget {
@@ -156,6 +157,7 @@ class _MainPageState extends State<MainPage> {
         _buildDailyContainer(weatherCard),
         if (!settings.hideAgriculture) const AgricultureTile(),
         if (!settings.hideMarine) const MarineTile(),
+        if (!settings.hideHiking) const HikingTile(),
         const MoonPhaseTile(),
       ],
     );

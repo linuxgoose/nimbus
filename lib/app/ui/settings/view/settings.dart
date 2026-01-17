@@ -66,6 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildFloodMonitoringCard(context),
         _buildAgricultureCard(context),
         _buildMarineCard(context),
+        _buildHikingCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -365,6 +366,12 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showMarineBottomSheet(context),
   );
 
+  Widget _buildHikingCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.mountain),
+    text: 'Hiking',
+    onPressed: () => _showHikingBottomSheet(context),
+  );
+
   void _showFloodMonitoringBottomSheet(BuildContext context) =>
       showModalBottomSheet(
         context: context,
@@ -424,6 +431,27 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               _buildMarineTitle(context),
               _buildHideMarineSettingCard(context, setState),
+              const Gap(10),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  void _showHikingBottomSheet(BuildContext context) => showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      builder: (context, scrollController) => StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHikingTitle(context),
+              _buildHideHikingSettingCard(context, setState),
               const Gap(10),
             ],
           ),
@@ -1053,6 +1081,32 @@ class _SettingsPageState extends State<SettingsPage> {
     value: settings.hideMarine,
     onChange: (value) {
       settings.hideMarine = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildHikingTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(16),
+    child: Text(
+      'Hiking',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideHikingSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Hiking',
+    switcher: true,
+    value: settings.hideHiking,
+    onChange: (value) {
+      settings.hideHiking = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
     },
