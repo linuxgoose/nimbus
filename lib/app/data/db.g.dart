@@ -23903,6 +23903,936 @@ extension TideLocationQueryProperty
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
+extension GetElevationLocationCollection on Isar {
+  IsarCollection<ElevationLocation> get elevationLocations => this.collection();
+}
+
+const ElevationLocationSchema = CollectionSchema(
+  name: r'ElevationLocation',
+  id: -3657928429576614998,
+  properties: {
+    r'isPrimary': PropertySchema(
+      id: 0,
+      name: r'isPrimary',
+      type: IsarType.bool,
+    ),
+    r'lastUpdated': PropertySchema(
+      id: 1,
+      name: r'lastUpdated',
+      type: IsarType.dateTime,
+    ),
+    r'lat': PropertySchema(id: 2, name: r'lat', type: IsarType.double),
+    r'lon': PropertySchema(id: 3, name: r'lon', type: IsarType.double),
+    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
+  },
+
+  estimateSize: _elevationLocationEstimateSize,
+  serialize: _elevationLocationSerialize,
+  deserialize: _elevationLocationDeserialize,
+  deserializeProp: _elevationLocationDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _elevationLocationGetId,
+  getLinks: _elevationLocationGetLinks,
+  attach: _elevationLocationAttach,
+  version: '3.3.0',
+);
+
+int _elevationLocationEstimateSize(
+  ElevationLocation object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  {
+    final value = object.name;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  return bytesCount;
+}
+
+void _elevationLocationSerialize(
+  ElevationLocation object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeBool(offsets[0], object.isPrimary);
+  writer.writeDateTime(offsets[1], object.lastUpdated);
+  writer.writeDouble(offsets[2], object.lat);
+  writer.writeDouble(offsets[3], object.lon);
+  writer.writeString(offsets[4], object.name);
+}
+
+ElevationLocation _elevationLocationDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = ElevationLocation(
+    isPrimary: reader.readBoolOrNull(offsets[0]) ?? false,
+    lastUpdated: reader.readDateTimeOrNull(offsets[1]),
+    lat: reader.readDoubleOrNull(offsets[2]),
+    lon: reader.readDoubleOrNull(offsets[3]),
+    name: reader.readStringOrNull(offsets[4]),
+  );
+  object.id = id;
+  return object;
+}
+
+P _elevationLocationDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 1:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 2:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+Id _elevationLocationGetId(ElevationLocation object) {
+  return object.id;
+}
+
+List<IsarLinkBase<dynamic>> _elevationLocationGetLinks(
+  ElevationLocation object,
+) {
+  return [];
+}
+
+void _elevationLocationAttach(
+  IsarCollection<dynamic> col,
+  Id id,
+  ElevationLocation object,
+) {
+  object.id = id;
+}
+
+extension ElevationLocationQueryWhereSort
+    on QueryBuilder<ElevationLocation, ElevationLocation, QWhere> {
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+}
+
+extension ElevationLocationQueryWhere
+    on QueryBuilder<ElevationLocation, ElevationLocation, QWhereClause> {
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterWhereClause>
+  idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterWhereClause>
+  idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterWhereClause>
+  idGreaterThan(Id id, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterWhereClause>
+  idLessThan(Id id, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterWhereClause>
+  idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+}
+
+extension ElevationLocationQueryFilter
+    on QueryBuilder<ElevationLocation, ElevationLocation, QFilterCondition> {
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  idEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  idGreaterThan(Id value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  idLessThan(Id value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  isPrimaryEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isPrimary', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lastUpdatedIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastUpdated'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lastUpdatedIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastUpdated'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lastUpdatedEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastUpdated', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lastUpdatedGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastUpdated',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lastUpdatedLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastUpdated',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lastUpdatedBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastUpdated',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  latIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  latIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lat'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  latEqualTo(double? value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  latGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  latLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lat',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  latBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lat',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lonIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lonIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lon'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lonEqualTo(double? value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lonGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lonLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lon',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  lonBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lon',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'name'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'name'),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterFilterCondition>
+  nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
+      );
+    });
+  }
+}
+
+extension ElevationLocationQueryObject
+    on QueryBuilder<ElevationLocation, ElevationLocation, QFilterCondition> {}
+
+extension ElevationLocationQueryLinks
+    on QueryBuilder<ElevationLocation, ElevationLocation, QFilterCondition> {}
+
+extension ElevationLocationQuerySortBy
+    on QueryBuilder<ElevationLocation, ElevationLocation, QSortBy> {
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByIsPrimary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByIsPrimaryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByLastUpdated() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByLastUpdatedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy> sortByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy> sortByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  sortByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+}
+
+extension ElevationLocationQuerySortThenBy
+    on QueryBuilder<ElevationLocation, ElevationLocation, QSortThenBy> {
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByIsPrimary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByIsPrimaryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPrimary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByLastUpdated() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByLastUpdatedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastUpdated', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy> thenByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByLatDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lat', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy> thenByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByLonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lon', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QAfterSortBy>
+  thenByNameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+}
+
+extension ElevationLocationQueryWhereDistinct
+    on QueryBuilder<ElevationLocation, ElevationLocation, QDistinct> {
+  QueryBuilder<ElevationLocation, ElevationLocation, QDistinct>
+  distinctByIsPrimary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isPrimary');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QDistinct>
+  distinctByLastUpdated() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastUpdated');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QDistinct>
+  distinctByLat() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lat');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QDistinct>
+  distinctByLon() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lon');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, ElevationLocation, QDistinct> distinctByName({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+}
+
+extension ElevationLocationQueryProperty
+    on QueryBuilder<ElevationLocation, ElevationLocation, QQueryProperty> {
+  QueryBuilder<ElevationLocation, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, bool, QQueryOperations> isPrimaryProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isPrimary');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, DateTime?, QQueryOperations>
+  lastUpdatedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastUpdated');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, double?, QQueryOperations> latProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lat');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, double?, QQueryOperations> lonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lon');
+    });
+  }
+
+  QueryBuilder<ElevationLocation, String?, QQueryOperations> nameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
+    });
+  }
+}
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
 extension GetTideCacheCollection on Isar {
   IsarCollection<TideCache> get tideCaches => this.collection();
 }

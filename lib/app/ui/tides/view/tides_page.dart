@@ -191,6 +191,11 @@ class _TidesPageState extends State<TidesPage> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: const Icon(LucideIcons.navigation),
+            onPressed: _useCurrentLocation,
+            tooltip: 'Use Current Location',
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.mapPin),
             onPressed: _showLocationPicker,
             tooltip: 'Select Location',
@@ -584,6 +589,21 @@ class _TidesPageState extends State<TidesPage> {
     );
   }
 
+  void _useCurrentLocation() {
+    setState(() {
+      final lat = settings.location ? locationCache.lat : 51.5074;
+      final lon = settings.location ? locationCache.lon : -0.1278;
+
+      _selectedLocation = TideLocation(
+        name: 'Current Location',
+        lat: lat,
+        lon: lon,
+        isPrimary: false,
+      );
+    });
+    _fetchTideData();
+  }
+
   void _showLocationPicker() {
     final locations = isar.tideLocations
         .getAllSync([])
@@ -600,6 +620,15 @@ class _TidesPageState extends State<TidesPage> {
           children: [
             Text('Select Location', style: context.textTheme.titleLarge),
             const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(LucideIcons.navigation),
+              title: const Text('Current Location'),
+              onTap: () {
+                Navigator.pop(context);
+                _useCurrentLocation();
+              },
+            ),
+            if (locations.isNotEmpty) const Divider(),
             if (locations.isEmpty)
               const Center(
                 child: Padding(

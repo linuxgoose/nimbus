@@ -18,6 +18,7 @@ class _ElevationPageState extends State<ElevationPage> {
   final ElevationAPI _elevationAPI = ElevationAPI();
   Map<String, dynamic>? _elevationData;
   bool _isLoading = true;
+  ElevationLocation? _selectedLocation;
   String? _locationName;
   double? _currentLat;
   double? _currentLon;
@@ -149,6 +150,11 @@ class _ElevationPageState extends State<ElevationPage> {
             tooltip: 'Use Current Location',
           ),
           IconButton(
+            icon: const Icon(LucideIcons.mapPin),
+            onPressed: _showLocationPicker,
+            tooltip: 'Saved Locations',
+          ),
+          IconButton(
             icon: const Icon(LucideIcons.search),
             onPressed: _showLocationSearchDialog,
             tooltip: 'Search Location',
@@ -165,6 +171,11 @@ class _ElevationPageState extends State<ElevationPage> {
           : _elevationData == null
           ? _buildErrorState()
           : _buildElevationContent(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showSaveLocationDialog,
+        child: const Icon(LucideIcons.bookmark),
+        tooltip: 'Save Current Location',
+      ),
     );
   }
 
@@ -429,11 +440,166 @@ class _ElevationPageState extends State<ElevationPage> {
 
   void _useCurrentLocation() {
     setState(() {
+      _selectedLocation = null;
       _currentLat = settings.location ? locationCache.lat : 51.5074;
       _currentLon = settings.location ? locationCache.lon : -0.1278;
       _locationName = 'Current Location';
     });
     _loadElevationData();
+  }
+
+  void _showLocationPicker() async {
+    final locations = isar.elevationLocations
+        .getAllSync([])
+        .whereType<ElevationLocation>()
+        .toList();
+
+    if (!mounted) return;
+
+    if (locations.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No saved locations. Use the + button to add one.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Location'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: locations.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                // Current location option
+                return ListTile(
+                  leading: const Icon(LucideIcons.navigation),
+                  title: const Text('Current Location'),
+                  subtitle: Text(
+                    settings.location
+                        ? 'Lat: ${locationCache.lat?.toStringAsFixed(4)}, '
+                              'Lon: ${locationCache.lon?.toStringAsFixed(4)}'
+                        : 'Location permission required',
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _useCurrentLocation();
+                  },
+                );
+              }
+
+              final location = locations[index - 1];
+              return ListTile(
+                leading: const Icon(LucideIcons.mapPin),
+                title: Text(location.name ?? 'Unknown'),
+                subtitle: Text(
+                  'Lat: ${location.lat?.toStringAsFixed(4)}, '
+                  'Lon: ${location.lon?.toStringAsFixed(4)}',
+                ),
+                trailing: IconButton(
+                  icon: const Icon(LucideIcons.trash2),
+                  onPressed: () {
+                    isar.writeTxnSync(
+                      () => isar.elevationLocations.deleteSync(location.id),
+                    );
+                    Navigator.pop(context);
+                    if (_selectedLocation?.id == location.id) {
+                      _useCurrentLocation();
+                    }
+                  },
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _selectedLocation = location;
+                    _locationName = location.name ?? 'Unknown';
+                    _currentLat = location.lat;
+                    _currentLon = location.lon;
+                  });
+                  _loadElevationData();
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSaveLocationDialog() async {
+    final nameController = TextEditingController();
+
+    final currentLat =
+        _currentLat ?? (settings.location ? locationCache.lat : 51.5074);
+    final currentLon =
+        _currentLon ?? (settings.location ? locationCache.lon : -0.1278);
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Save Location'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Location Name',
+                hintText: 'e.g., Denver, Colorado',
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Lat: ${currentLat?.toStringAsFixed(4)}, '
+              'Lon: ${currentLon?.toStringAsFixed(4)}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true && nameController.text.isNotEmpty) {
+      final newLocation = ElevationLocation()
+        ..name = nameController.text
+        ..lat = currentLat
+        ..lon = currentLon
+        ..isPrimary = false
+        ..lastUpdated = DateTime.now();
+      isar.writeTxnSync(() => isar.elevationLocations.putSync(newLocation));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Location "${nameController.text}" saved!'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   void _showLocationSearchDialog() {

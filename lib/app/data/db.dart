@@ -438,6 +438,43 @@ class TideLocation {
 }
 
 @collection
+class ElevationLocation {
+  Id id = Isar.autoIncrement;
+  String? name;
+  double? lat;
+  double? lon;
+  bool isPrimary = false;
+  DateTime? lastUpdated;
+
+  ElevationLocation({
+    this.name,
+    this.lat,
+    this.lon,
+    this.isPrimary = false,
+    this.lastUpdated,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'lat': lat,
+    'lon': lon,
+    'isPrimary': isPrimary,
+    'lastUpdated': lastUpdated?.toIso8601String(),
+  };
+
+  factory ElevationLocation.fromJson(Map<String, dynamic> json) =>
+      ElevationLocation(
+        name: json['name'] as String?,
+        lat: (json['lat'] as num?)?.toDouble(),
+        lon: (json['lon'] as num?)?.toDouble(),
+        isPrimary: json['isPrimary'] as bool? ?? false,
+        lastUpdated: json['lastUpdated'] != null
+            ? DateTime.parse(json['lastUpdated'] as String)
+            : null,
+      );
+}
+
+@collection
 class TideCache {
   Id id = Isar.autoIncrement;
 
