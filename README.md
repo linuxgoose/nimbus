@@ -11,6 +11,14 @@
     </p>
 </p>
 
+## Download
+
+<div align="left">
+<a href="https://github.com/linuxgoose/nimbus/releases">
+  <img src="Screenshots/github_download_buttton.png" alt="github_link" width="150">
+</a>
+</div>
+
 <p align='center'> Your comprehensive weather companion. Stay informed with accurate forecasts and elegant design. </p>
 
 ### Complete Weather Information
