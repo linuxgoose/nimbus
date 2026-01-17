@@ -71,6 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildVersionCard(context),
         _buildGitHubCard(context),
         _buildSupportCard(context),
+        _buildMetNorwayText(context),
         _buildOpenMeteoText(context),
       ],
     ),
@@ -1736,6 +1737,18 @@ class _SettingsPageState extends State<SettingsPage> {
         textAlign: TextAlign.center,
       ),
       onTap: () => weatherController.urlLauncher('https://open-meteo.com/'),
+    ),
+  );
+  Widget _buildMetNorwayText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: GestureDetector(
+      child: Text(
+        'metNorway'.tr,
+        style: context.textTheme.bodyMedium,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => weatherController.urlLauncher('https://api.met.no/'),
     ),
   );
 }
