@@ -93,26 +93,16 @@ class FloodService {
 
   /// Get all flood monitoring stations
   /// Optional lat/lon to get stations near location
+  /// Note: The API doesn't support location filtering, so we fetch all and filter client-side
   static Future<Map<String, dynamic>?> getStations({
     double? lat,
     double? lon,
     int? limit,
   }) async {
     try {
-      var url = '$_baseUrl/id/stations';
-      final params = <String>[];
-
-      if (lat != null && lon != null) {
-        params.add('lat=$lat');
-        params.add('long=$lon');
-      }
-      if (limit != null) {
-        params.add('_limit=$limit');
-      }
-
-      if (params.isNotEmpty) {
-        url += '?${params.join('&')}';
-      }
+      // The Environment Agency API doesn't support lat/long parameters
+      // We fetch all stations and filter by distance in getAllUKStations
+      final url = '$_baseUrl/id/stations';
 
       debugPrint('📊 Calling Stations API: $url');
 
@@ -122,8 +112,12 @@ class FloodService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('✅ Stations API Success');
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final items = data['items'] as List<dynamic>?;
+        debugPrint(
+          '✅ Stations API Success - Found ${items?.length ?? 0} total stations',
+        );
+        return data;
       } else {
         debugPrint('❌ Stations API Error: ${response.statusCode}');
         return null;
@@ -186,125 +180,73 @@ class FloodService {
     }
   }
 
-  /// Get SEPA monitoring stations for Scotland
-  static Future<List<Map<String, dynamic>>> getScotlandStations({
-    required double lat,
-    required double lon,
-    double radiusKm = 50.0,
-  }) async {
-    try {
-      // SEPA provides river level data via their API
-      final url = Uri.parse('$_sepaUrl/v1/stations');
-
-      debugPrint('🏴󠁧󠁢󠁳󠁣󠁴󠁿 Calling SEPA Stations API: $url');
-
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        debugPrint('✅ SEPA Stations API Success');
-        return _parseSEPAStations(data, lat, lon, radiusKm);
-      } else {
-        debugPrint('❌ SEPA Stations API Error: ${response.statusCode}');
-        return [];
-      }
-    } catch (e) {
-      debugPrint('❌ SEPA Stations API Exception: $e');
-      return [];
-    }
-  }
-
-  /// Get NRW monitoring stations for Wales
-  static Future<List<Map<String, dynamic>>> getWalesStations({
-    required double lat,
-    required double lon,
-    double radiusKm = 50.0,
-  }) async {
-    try {
-      // Natural Resources Wales river level stations
-      final url = Uri.parse('$_nrwUrl/stations');
-
-      debugPrint('🏴󠁧󠁢󠁷󠁬󠁳󠁿 Calling NRW Stations API: $url');
-
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        debugPrint('✅ NRW Stations API Success');
-        return _parseNRWStations(data, lat, lon, radiusKm);
-      } else {
-        debugPrint('❌ NRW Stations API Error: ${response.statusCode}');
-        return [];
-      }
-    } catch (e) {
-      debugPrint('❌ NRW Stations API Exception: $e');
-      return [];
-    }
-  }
-
-  /// Get all UK monitoring stations
+  /// Get all UK monitoring stations (England only)
+  /// Note: Scotland and Wales do not provide public APIs for monitoring stations
   static Future<List<Map<String, dynamic>>> getAllUKStations({
     required double lat,
     required double lon,
     double radiusKm = 50.0,
     int? limit,
   }) async {
-    final stations = <Map<String, dynamic>>[];
-    final region = _determineUKRegion(lat, lon);
+    try {
+      final allStations = <Map<String, dynamic>>[];
 
-    // England stations (Environment Agency)
-    final englandData = await getStations(lat: lat, lon: lon, limit: limit);
+      // England stations (Environment Agency)
+      final englandData = await getStations(lat: lat, lon: lon, limit: limit);
 
-    if (englandData != null) {
-      final items = englandData['items'] as List<dynamic>?;
-      if (items != null) {
-        for (var item in items) {
-          final sLat = item['lat'] as double?;
-          final sLon = item['long'] as double?;
-          if (sLat != null && sLon != null) {
-            stations.add({
-              'stationReference': item['stationReference'] as String? ?? '',
-              'label': item['label'] as String? ?? 'Unknown Station',
-              'lat': sLat,
-              'long': sLon,
-              'notation': item['notation'] as String? ?? '',
-              'riverName': item['riverName'] as String?,
-              'region': 'England',
-            });
+      if (englandData != null) {
+        final items = englandData['items'] as List<dynamic>?;
+        debugPrint('🔍 England data items: ${items?.length ?? 0}');
+        if (items != null) {
+          debugPrint('🔍 Starting distance filtering...');
+          for (var item in items) {
+            try {
+              final sLat = item['lat'] as double?;
+              final sLon = item['long'] as double?;
+              if (sLat != null && sLon != null) {
+                // Calculate distance from user location
+                final distance = _calculateDistance(lat, lon, sLat, sLon);
+                if (distance <= radiusKm) {
+                  allStations.add({
+                    'stationReference':
+                        item['stationReference'] as String? ?? '',
+                    'label': item['label'] as String? ?? 'Unknown Station',
+                    'lat': sLat,
+                    'long': sLon,
+                    'notation': item['notation'] as String? ?? '',
+                    'riverName': item['riverName'] as String?,
+                    'region': 'England',
+                    'distance': distance,
+                  });
+                }
+              }
+            } catch (e) {
+              debugPrint('⚠️ Error processing station: $e');
+              continue;
+            }
           }
+          debugPrint(
+            '🔍 Filtering complete, found ${allStations.length} nearby stations',
+          );
         }
       }
-    }
 
-    // Scotland stations if in or near Scotland
-    if (region == 'Scotland' || lat > 54.5) {
-      final scotlandStations = await getScotlandStations(
-        lat: lat,
-        lon: lon,
-        radiusKm: radiusKm,
+      // Sort by distance and apply limit
+      allStations.sort(
+        (a, b) => (a['distance'] as double).compareTo(b['distance'] as double),
       );
-      stations.addAll(scotlandStations);
-    }
+      final stations = limit != null && allStations.length > limit
+          ? allStations.sublist(0, limit)
+          : allStations;
 
-    // Wales stations if in or near Wales
-    if (region == 'Wales' ||
-        (lat > 51.0 && lat < 53.5 && lon > -5.5 && lon < -2.5)) {
-      final walesStations = await getWalesStations(
-        lat: lat,
-        lon: lon,
-        radiusKm: radiusKm,
+      debugPrint(
+        '✅ Total UK monitoring stations within ${radiusKm}km: ${stations.length}',
       );
-      stations.addAll(walesStations);
+      return stations;
+    } catch (e) {
+      debugPrint('❌ Error in getAllUKStations: $e');
+      return [];
     }
-
-    debugPrint('✅ Total UK monitoring stations: ${stations.length}');
-    return stations;
   }
 
   /// Check if location is near a flood area polygon

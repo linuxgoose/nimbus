@@ -62,9 +62,11 @@ class _FloodPageState extends State<FloodPage> {
         monitoringStations = stations;
         isLoading = false;
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error loading flood data: $e');
+      debugPrint('Stack trace: $stackTrace');
       setState(() {
-        error = 'Failed to load flood data';
+        error = 'Failed to load flood data: $e';
         isLoading = false;
       });
     }
@@ -538,7 +540,7 @@ class _FloodPageState extends State<FloodPage> {
             _buildInfoRow('Alert', 'Flooding is possible - be prepared'),
             const SizedBox(height: 12),
             Text(
-              'Note: Monitoring stations show real-time river levels for England, Scotland, and Wales. Northern Ireland does not currently provide a public API for automated flood data access.',
+              'Note: Monitoring stations (river levels) are only available for England via the Environment Agency. Scotland, Wales, and Northern Ireland do not provide public APIs for monitoring station data.',
               style: context.textTheme.bodySmall?.copyWith(
                 color: context.theme.colorScheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
