@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:isar_community/isar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/elevation_api.dart';
 import 'package:nimbus/app/data/db.dart';
@@ -449,10 +450,7 @@ class _ElevationPageState extends State<ElevationPage> {
   }
 
   void _showLocationPicker() async {
-    final locations = isar.elevationLocations
-        .getAllSync([])
-        .whereType<ElevationLocation>()
-        .toList();
+    final locations = isar.elevationLocations.where().findAllSync();
 
     if (!mounted) return;
 
@@ -496,23 +494,64 @@ class _ElevationPageState extends State<ElevationPage> {
 
               final location = locations[index - 1];
               return ListTile(
-                leading: const Icon(LucideIcons.mapPin),
+                leading: Icon(
+                  location.isPrimary ? LucideIcons.star : LucideIcons.mapPin,
+                  color: location.isPrimary ? Colors.amber : null,
+                ),
                 title: Text(location.name ?? 'Unknown'),
                 subtitle: Text(
                   'Lat: ${location.lat?.toStringAsFixed(4)}, '
                   'Lon: ${location.lon?.toStringAsFixed(4)}',
                 ),
-                trailing: IconButton(
-                  icon: const Icon(LucideIcons.trash2),
-                  onPressed: () {
-                    isar.writeTxnSync(
-                      () => isar.elevationLocations.deleteSync(location.id),
-                    );
-                    Navigator.pop(context);
-                    if (_selectedLocation?.id == location.id) {
-                      _useCurrentLocation();
-                    }
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        location.isPrimary
+                            ? LucideIcons.starOff
+                            : LucideIcons.star,
+                      ),
+                      tooltip: location.isPrimary
+                          ? 'Remove as default'
+                          : 'Set as default',
+                      onPressed: () {
+                        isar.writeTxnSync(() {
+                          // Clear all primary flags
+                          final allLocations = isar.elevationLocations
+                              .where()
+                              .findAllSync();
+                          for (var loc in allLocations) {
+                            if (loc.isPrimary) {
+                              loc.isPrimary = false;
+                              isar.elevationLocations.putSync(loc);
+                            }
+                          }
+                          // Set this location as primary
+                          if (!location.isPrimary) {
+                            location.isPrimary = true;
+                            isar.elevationLocations.putSync(location);
+                          }
+                        });
+                        Navigator.pop(context);
+                        if (_selectedLocation?.id == location.id) {
+                          _loadElevationData();
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(LucideIcons.trash2),
+                      onPressed: () {
+                        isar.writeTxnSync(
+                          () => isar.elevationLocations.deleteSync(location.id),
+                        );
+                        Navigator.pop(context);
+                        if (_selectedLocation?.id == location.id) {
+                          _useCurrentLocation();
+                        }
+                      },
+                    ),
+                  ],
                 ),
                 onTap: () {
                   Navigator.pop(context);

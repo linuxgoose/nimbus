@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:isar_community/isar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/tides_api.dart';
 import 'package:nimbus/app/data/db.dart';
@@ -32,10 +33,7 @@ class _TidesPageState extends State<TidesPage> {
     setState(() => _isLoading = true);
 
     // Get primary tide location or use current location
-    final locations = isar.tideLocations
-        .getAllSync([])
-        .whereType<TideLocation>()
-        .toList();
+    final locations = isar.tideLocations.where().findAllSync();
     _selectedLocation =
         locations.where((l) => l.isPrimary).firstOrNull ??
         locations.firstOrNull;
@@ -605,10 +603,7 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   void _showLocationPicker() {
-    final locations = isar.tideLocations
-        .getAllSync([])
-        .whereType<TideLocation>()
-        .toList();
+    final locations = isar.tideLocations.where().findAllSync();
 
     showModalBottomSheet(
       context: context,
@@ -653,15 +648,51 @@ class _TidesPageState extends State<TidesPage> {
                     _fetchTideData();
                     Navigator.pop(context);
                   },
-                  trailing: IconButton(
-                    icon: const Icon(LucideIcons.trash2),
-                    onPressed: () async {
-                      await isar.writeTxn(
-                        () => isar.tideLocations.delete(location.id),
-                      );
-                      Navigator.pop(context);
-                      _loadPrimaryLocation();
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          location.isPrimary
+                              ? LucideIcons.starOff
+                              : LucideIcons.star,
+                        ),
+                        tooltip: location.isPrimary
+                            ? 'Remove as default'
+                            : 'Set as default',
+                        onPressed: () {
+                          isar.writeTxnSync(() {
+                            // Clear all primary flags
+                            final allLocations = isar.tideLocations
+                                .where()
+                                .findAllSync();
+                            for (var loc in allLocations) {
+                              if (loc.isPrimary) {
+                                loc.isPrimary = false;
+                                isar.tideLocations.putSync(loc);
+                              }
+                            }
+                            // Set this location as primary
+                            if (!location.isPrimary) {
+                              location.isPrimary = true;
+                              isar.tideLocations.putSync(location);
+                            }
+                          });
+                          Navigator.pop(context);
+                          _loadPrimaryLocation();
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(LucideIcons.trash2),
+                        onPressed: () {
+                          isar.writeTxnSync(
+                            () => isar.tideLocations.deleteSync(location.id),
+                          );
+                          Navigator.pop(context);
+                          _loadPrimaryLocation();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -781,22 +812,36 @@ class _TidesPageState extends State<TidesPage> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () async {
+              onPressed: () {
                 final name = nameController.text.trim();
                 final lat = double.tryParse(latController.text.trim());
                 final lon = double.tryParse(lonController.text.trim());
 
-                if (name.isNotEmpty && lat != null && lon != null) {
-                  final location = TideLocation(
-                    name: name,
-                    lat: lat,
-                    lon: lon,
-                    isPrimary: false,
-                    lastUpdated: DateTime.now(),
+                if (name.isEmpty || lat == null || lon == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Please fill in all fields with valid values',
+                      ),
+                    ),
                   );
+                  return;
+                }
 
-                  await isar.writeTxn(() => isar.tideLocations.put(location));
+                final location = TideLocation()
+                  ..name = name
+                  ..lat = lat
+                  ..lon = lon
+                  ..isPrimary = false
+                  ..lastUpdated = DateTime.now();
+
+                isar.writeTxnSync(() => isar.tideLocations.putSync(location));
+
+                if (context.mounted) {
                   Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Added location: $name')),
+                  );
                   _loadPrimaryLocation();
                 }
               },
