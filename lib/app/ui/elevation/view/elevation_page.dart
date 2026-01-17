@@ -5,6 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/api/elevation_api.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/main.dart';
+import 'package:geocoding/geocoding.dart';
 
 class ElevationPage extends StatefulWidget {
   const ElevationPage({super.key});
@@ -18,6 +19,8 @@ class _ElevationPageState extends State<ElevationPage> {
   Map<String, dynamic>? _elevationData;
   bool _isLoading = true;
   String? _locationName;
+  double? _currentLat;
+  double? _currentLon;
 
   @override
   void initState() {
@@ -29,13 +32,18 @@ class _ElevationPageState extends State<ElevationPage> {
     setState(() => _isLoading = true);
 
     try {
-      // Use current location
-      final lat = settings.location ? locationCache.lat : 51.5074;
-      final lon = settings.location ? locationCache.lon : -0.1278;
-      _locationName = settings.location ? 'Current Location' : 'London';
+      // Use current location if not set
+      if (_currentLat == null || _currentLon == null) {
+        _currentLat = settings.location ? locationCache.lat : 51.5074;
+        _currentLon = settings.location ? locationCache.lon : -0.1278;
+        _locationName = 'Current Location';
+      }
+
+      final lat = _currentLat ?? 51.5074;
+      final lon = _currentLon ?? -0.1278;
 
       // Check for cached data first
-      final cached = _getCachedElevationData(lat ?? 51.5074, lon ?? -0.1278);
+      final cached = _getCachedElevationData(lat, lon);
 
       if (cached != null) {
         debugPrint('✓ Elevation: Using cached data');
@@ -49,14 +57,14 @@ class _ElevationPageState extends State<ElevationPage> {
       // Fetch new data if no valid cache
       debugPrint('↓ Elevation: Fetching new data');
       final data = await _elevationAPI.getElevationData(
-        lat ?? 51.5074,
-        lon ?? -0.1278,
+        lat,
+        lon,
         apiKey: settings.elevationApiKey,
         useDummyData: settings.useDummyElevation,
       );
 
       // Cache the fetched data
-      _cacheElevationData(lat ?? 51.5074, lon ?? -0.1278, data);
+      _cacheElevationData(lat, lon, data);
 
       setState(() {
         _elevationData = data;
@@ -135,6 +143,16 @@ class _ElevationPageState extends State<ElevationPage> {
       appBar: AppBar(
         title: const Text('Elevation'),
         actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.navigation),
+            onPressed: _useCurrentLocation,
+            tooltip: 'Use Current Location',
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.search),
+            onPressed: _showLocationSearchDialog,
+            tooltip: 'Search Location',
+          ),
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
             onPressed: _loadElevationData,
@@ -402,6 +420,140 @@ class _ElevationPageState extends State<ElevationPage> {
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _useCurrentLocation() {
+    setState(() {
+      _currentLat = settings.location ? locationCache.lat : 51.5074;
+      _currentLon = settings.location ? locationCache.lon : -0.1278;
+      _locationName = 'Current Location';
+    });
+    _loadElevationData();
+  }
+
+  void _showLocationSearchDialog() {
+    final nameController = TextEditingController();
+    final latController = TextEditingController();
+    final lonController = TextEditingController();
+    bool isSearching = false;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Search Location'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Location Name',
+                    prefixIcon: const Icon(LucideIcons.mapPin),
+                    suffixIcon: isSearching
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Padding(
+                              padding: EdgeInsets.all(12),
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(LucideIcons.search),
+                            onPressed: () async {
+                              final query = nameController.text.trim();
+                              if (query.isEmpty) return;
+
+                              setDialogState(() => isSearching = true);
+                              try {
+                                final locations = await locationFromAddress(
+                                  query,
+                                );
+                                if (locations.isNotEmpty) {
+                                  final loc = locations.first;
+                                  latController.text = loc.latitude.toString();
+                                  lonController.text = loc.longitude.toString();
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Error searching: ${e.toString()}',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } finally {
+                                setDialogState(() => isSearching = false);
+                              }
+                            },
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: latController,
+                  decoration: const InputDecoration(
+                    labelText: 'Latitude',
+                    prefixIcon: Icon(LucideIcons.navigation),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: lonController,
+                  decoration: const InputDecoration(
+                    labelText: 'Longitude',
+                    prefixIcon: Icon(LucideIcons.navigation),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Tip: Enter a location name (e.g., "Mount Everest") and tap search',
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final name = nameController.text.trim();
+                final lat = double.tryParse(latController.text.trim());
+                final lon = double.tryParse(lonController.text.trim());
+
+                if (lat != null && lon != null) {
+                  setState(() {
+                    _currentLat = lat;
+                    _currentLon = lon;
+                    _locationName = name.isNotEmpty
+                        ? name
+                        : 'Selected Location';
+                  });
+                  Navigator.pop(context);
+                  _loadElevationData();
+                }
+              },
+              child: const Text('Show Elevation'),
             ),
           ],
         ),
