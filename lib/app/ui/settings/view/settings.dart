@@ -269,6 +269,7 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildHideTidesSettingCard(context, setState),
               _buildUseDummyTidesSettingCard(context, setState),
               _buildTidesApiKeySettingCard(context, setState),
+              _buildTideDatumSettingCard(context, setState),
               _buildCheckTidesCacheSettingCard(context, setState),
               _buildClearTidesCacheSettingCard(context, setState),
               const Gap(10),
@@ -786,6 +787,28 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
+  Widget _buildTideDatumSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.ruler),
+    text: 'Tide Datum',
+    dropdown: true,
+    dropdownName: settings.tideDatum.toUpperCase(),
+    dropdownList: const <String>['MLLW', 'MLW', 'MSL', 'MHW', 'MHHW'],
+    dropdownChange: (String? newValue) async {
+      if (newValue == null) return;
+
+      isar.writeTxnSync(() {
+        settings.tideDatum = newValue.toLowerCase();
+        isar.settings.putSync(settings);
+      });
+
+      setState(() {});
+    },
+  );
 
   Widget _buildCheckTidesCacheSettingCard(
     BuildContext context,

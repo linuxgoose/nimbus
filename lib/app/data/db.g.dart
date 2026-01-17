@@ -178,53 +178,58 @@ const SettingsSchema = CollectionSchema(
       type: IsarType.bool,
     ),
     r'theme': PropertySchema(id: 36, name: r'theme', type: IsarType.string),
-    r'tidesApiKey': PropertySchema(
+    r'tideDatum': PropertySchema(
       id: 37,
+      name: r'tideDatum',
+      type: IsarType.string,
+    ),
+    r'tidesApiKey': PropertySchema(
+      id: 38,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 38, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 39, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 39,
+      id: 40,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 40,
+      id: 41,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 41,
+      id: 42,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyElevation': PropertySchema(
-      id: 42,
+      id: 43,
       name: r'useDummyElevation',
       type: IsarType.bool,
     ),
     r'useDummyTides': PropertySchema(
-      id: 43,
+      id: 44,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 44,
+      id: 45,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 45,
+      id: 46,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 46,
+      id: 47,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 47, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 48, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -273,6 +278,7 @@ int _settingsEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.tideDatum.length * 3;
   {
     final value = object.tidesApiKey;
     if (value != null) {
@@ -352,17 +358,18 @@ void _settingsSerialize(
   writer.writeBool(offsets[34], object.showAlertsOnMap);
   writer.writeBool(offsets[35], object.showDummyAlerts);
   writer.writeString(offsets[36], object.theme);
-  writer.writeString(offsets[37], object.tidesApiKey);
-  writer.writeString(offsets[38], object.timeEnd);
-  writer.writeLong(offsets[39], object.timeRange);
-  writer.writeString(offsets[40], object.timeStart);
-  writer.writeString(offsets[41], object.timeformat);
-  writer.writeBool(offsets[42], object.useDummyElevation);
-  writer.writeBool(offsets[43], object.useDummyTides);
-  writer.writeString(offsets[44], object.weatherDataSource);
-  writer.writeString(offsets[45], object.widgetBackgroundColor);
-  writer.writeString(offsets[46], object.widgetTextColor);
-  writer.writeString(offsets[47], object.wind);
+  writer.writeString(offsets[37], object.tideDatum);
+  writer.writeString(offsets[38], object.tidesApiKey);
+  writer.writeString(offsets[39], object.timeEnd);
+  writer.writeLong(offsets[40], object.timeRange);
+  writer.writeString(offsets[41], object.timeStart);
+  writer.writeString(offsets[42], object.timeformat);
+  writer.writeBool(offsets[43], object.useDummyElevation);
+  writer.writeBool(offsets[44], object.useDummyTides);
+  writer.writeString(offsets[45], object.weatherDataSource);
+  writer.writeString(offsets[46], object.widgetBackgroundColor);
+  writer.writeString(offsets[47], object.widgetTextColor);
+  writer.writeString(offsets[48], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -410,17 +417,18 @@ Settings _settingsDeserialize(
   object.showAlertsOnMap = reader.readBool(offsets[34]);
   object.showDummyAlerts = reader.readBool(offsets[35]);
   object.theme = reader.readStringOrNull(offsets[36]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[37]);
-  object.timeEnd = reader.readStringOrNull(offsets[38]);
-  object.timeRange = reader.readLongOrNull(offsets[39]);
-  object.timeStart = reader.readStringOrNull(offsets[40]);
-  object.timeformat = reader.readString(offsets[41]);
-  object.useDummyElevation = reader.readBool(offsets[42]);
-  object.useDummyTides = reader.readBool(offsets[43]);
-  object.weatherDataSource = reader.readString(offsets[44]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[45]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[46]);
-  object.wind = reader.readString(offsets[47]);
+  object.tideDatum = reader.readString(offsets[37]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[38]);
+  object.timeEnd = reader.readStringOrNull(offsets[39]);
+  object.timeRange = reader.readLongOrNull(offsets[40]);
+  object.timeStart = reader.readStringOrNull(offsets[41]);
+  object.timeformat = reader.readString(offsets[42]);
+  object.useDummyElevation = reader.readBool(offsets[43]);
+  object.useDummyTides = reader.readBool(offsets[44]);
+  object.weatherDataSource = reader.readString(offsets[45]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[46]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[47]);
+  object.wind = reader.readString(offsets[48]);
   return object;
 }
 
@@ -506,26 +514,28 @@ P _settingsDeserializeProp<P>(
     case 36:
       return (reader.readStringOrNull(offset)) as P;
     case 37:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 38:
       return (reader.readStringOrNull(offset)) as P;
     case 39:
-      return (reader.readLongOrNull(offset)) as P;
-    case 40:
       return (reader.readStringOrNull(offset)) as P;
+    case 40:
+      return (reader.readLongOrNull(offset)) as P;
     case 41:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 42:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 43:
       return (reader.readBool(offset)) as P;
     case 44:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 45:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 46:
       return (reader.readStringOrNull(offset)) as P;
     case 47:
+      return (reader.readStringOrNull(offset)) as P;
+    case 48:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2643,6 +2653,153 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'tideDatum',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'tideDatum',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'tideDatum',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'tideDatum',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'tideDatum',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'tideDatum',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'tideDatum',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'tideDatum',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> tideDatumIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'tideDatum', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  tideDatumIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'tideDatum', value: ''),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> tidesApiKeyIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -4442,6 +4599,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByTideDatum() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tideDatum', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByTideDatumDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tideDatum', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByTidesApiKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'tidesApiKey', Sort.asc);
@@ -5042,6 +5211,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByTideDatum() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tideDatum', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByTideDatumDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tideDatum', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByTidesApiKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'tidesApiKey', Sort.asc);
@@ -5434,6 +5615,14 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByTideDatum({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tideDatum', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByTidesApiKey({
     bool caseSensitive = true,
   }) {
@@ -5756,6 +5945,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, String?, QQueryOperations> themeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'theme');
+    });
+  }
+
+  QueryBuilder<Settings, String, QQueryOperations> tideDatumProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tideDatum');
     });
   }
 

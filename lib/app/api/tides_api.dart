@@ -1,4 +1,6 @@
+import 'dart:math' as math;
 import 'package:dio/dio.dart';
+import 'package:nimbus/main.dart';
 
 // Using Stormglass.io API (Free tier: 50 requests/day)
 // Get your free API key at: https://stormglass.io/
@@ -28,6 +30,7 @@ class TidesAPI {
           'lng': lon.toString(),
           'start': now.toUtc().toIso8601String(),
           'end': end.toUtc().toIso8601String(),
+          'datum': settings.tideDatum, // Request data in user's chosen datum
         },
         options: Options(headers: {'Authorization': apiKey}),
       );
@@ -56,7 +59,7 @@ class TidesAPI {
         extremes.add({
           'dt': time.millisecondsSinceEpoch ~/ 1000,
           'date': time.toIso8601String(),
-          'height': height,
+          'height': (height as num).toDouble(),
           'type': type,
         });
       }
@@ -64,8 +67,18 @@ class TidesAPI {
 
     // Generate hourly heights from extremes
     if (extremes.isNotEmpty) {
-      final start = DateTime.parse(extremes.first['date']);
-      final end = DateTime.parse(extremes.last['date']);
+      final now = DateTime.now();
+      final firstExtreme = DateTime.parse(extremes.first['date']);
+      final lastExtreme = DateTime.parse(extremes.last['date']);
+
+      // Start from 12 hours before now OR first extreme (whichever is earlier)
+      // This ensures we have data for the current moment
+      final start =
+          now.subtract(const Duration(hours: 12)).isBefore(firstExtreme)
+          ? now.subtract(const Duration(hours: 12))
+          : firstExtreme;
+
+      final end = lastExtreme;
       final duration = end.difference(start);
 
       for (int hour = 0; hour <= duration.inHours; hour++) {
@@ -94,22 +107,48 @@ class TidesAPI {
     List<Map<String, dynamic>> extremes,
     DateTime time,
   ) {
+    if (extremes.isEmpty) return 0.0;
+
     // Find surrounding extremes and interpolate
     for (int i = 0; i < extremes.length - 1; i++) {
       final current = DateTime.parse(extremes[i]['date']);
       final next = DateTime.parse(extremes[i + 1]['date']);
 
-      if (time.isAfter(current) && time.isBefore(next)) {
-        final currentHeight = extremes[i]['height'] as num;
-        final nextHeight = extremes[i + 1]['height'] as num;
-        final ratio =
-            time.difference(current).inMinutes /
-            next.difference(current).inMinutes;
-        return currentHeight + (nextHeight - currentHeight) * ratio;
+      if ((time.isAfter(current) || time.isAtSameMomentAs(current)) &&
+          (time.isBefore(next) || time.isAtSameMomentAs(next))) {
+        final currentHeight = (extremes[i]['height'] as num).toDouble();
+        final nextHeight = (extremes[i + 1]['height'] as num).toDouble();
+        final totalMinutes = next.difference(current).inMinutes;
+
+        if (totalMinutes == 0) return currentHeight;
+
+        final ratio = time.difference(current).inMinutes / totalMinutes;
+
+        // Use sinusoidal interpolation for more realistic tide curve
+        final smoothRatio = (1 - math.cos(ratio * math.pi)) / 2;
+        return currentHeight + (nextHeight - currentHeight) * smoothRatio;
       }
     }
 
-    return extremes.isNotEmpty ? extremes.first['height'] : 0.0;
+    // If before first extreme, extrapolate backward using sinusoidal pattern
+    final firstTime = DateTime.parse(extremes.first['date']);
+    if (time.isBefore(firstTime) && extremes.length >= 2) {
+      final firstHeight = (extremes[0]['height'] as num).toDouble();
+      final secondTime = DateTime.parse(extremes[1]['date']);
+      final secondHeight = (extremes[1]['height'] as num).toDouble();
+
+      // Assume symmetric tidal pattern
+      final cycleDuration = secondTime.difference(firstTime).inMinutes;
+      final timeBeforeFirst = firstTime.difference(time).inMinutes;
+      final ratio = timeBeforeFirst / cycleDuration;
+
+      // Extrapolate with sinusoidal curve
+      final smoothRatio = (1 - math.cos(ratio * math.pi)) / 2;
+      return firstHeight + (secondHeight - firstHeight) * smoothRatio;
+    }
+
+    // If after last extreme, return last height
+    return (extremes.last['height'] as num).toDouble();
   }
 
   Map<String, dynamic> _getMockTideData(double lat, double lon) {
@@ -156,17 +195,34 @@ class TidesAPI {
           'type': 'Low',
         },
       ]);
+    }
 
-      // Hourly heights
-      for (int hour = 0; hour < 24; hour++) {
-        final time = baseTime.add(Duration(hours: hour));
-        final height = 2.0 + 1.5 * (1 + (hour % 12 < 6 ? 1 : -1) * 0.8);
-        heights.add({
-          'dt': time.millisecondsSinceEpoch ~/ 1000,
-          'date': time.toIso8601String(),
-          'height': height,
-        });
-      }
+    // Generate hourly heights starting from 12 hours ago to 3 days ahead
+    // This ensures we have data before and after current time for proper interpolation
+    final startTime = now.subtract(const Duration(hours: 12));
+    final endTime = now.add(const Duration(days: 3));
+    var currentTime = startTime;
+
+    while (currentTime.isBefore(endTime)) {
+      // Calculate sine wave pattern for tide height
+      final hoursSinceStart =
+          currentTime.difference(startTime).inMinutes / 60.0;
+      // Two tides per day = 12 hour cycle
+      final cyclePosition = (hoursSinceStart % 12) / 12 * 2 * 3.14159;
+      final height =
+          2.0 +
+          1.5 *
+              (1 +
+                  (cyclePosition < 3.14159 ? 1 : -1) *
+                      (1 - (cyclePosition % 3.14159) / 3.14159).abs());
+
+      heights.add({
+        'dt': currentTime.millisecondsSinceEpoch ~/ 1000,
+        'date': currentTime.toIso8601String(),
+        'height': height,
+      });
+
+      currentTime = currentTime.add(const Duration(hours: 1));
     }
 
     return {
@@ -208,19 +264,34 @@ class TidesAPI {
     if (heights.isEmpty) return 0.0;
 
     final now = DateTime.now();
+
+    // Find the closest data points around current time
     for (int i = 0; i < heights.length - 1; i++) {
       final current = DateTime.parse(heights[i]['date'] as String);
       final next = DateTime.parse(heights[i + 1]['date'] as String);
-      if (now.isAfter(current) && now.isBefore(next)) {
+
+      // Check if current time is between these two points
+      if ((now.isAfter(current) || now.isAtSameMomentAs(current)) &&
+          (now.isBefore(next) || now.isAtSameMomentAs(next))) {
         // Interpolate between current and next
-        final currentHeight = heights[i]['height'] as num;
-        final nextHeight = heights[i + 1]['height'] as num;
-        final ratio =
-            now.difference(current).inMinutes /
-            next.difference(current).inMinutes;
+        final currentHeight = (heights[i]['height'] as num).toDouble();
+        final nextHeight = (heights[i + 1]['height'] as num).toDouble();
+        final totalMinutes = next.difference(current).inMinutes;
+
+        if (totalMinutes == 0) return currentHeight;
+
+        final ratio = now.difference(current).inMinutes / totalMinutes;
         return currentHeight + (nextHeight - currentHeight) * ratio;
       }
     }
-    return (heights.first['height'] as num).toDouble();
+
+    // If we're before all data points, return first height
+    final firstTime = DateTime.parse(heights.first['date'] as String);
+    if (now.isBefore(firstTime)) {
+      return (heights.first['height'] as num).toDouble();
+    }
+
+    // If we're after all data points, return last height
+    return (heights.last['height'] as num).toDouble();
   }
 }

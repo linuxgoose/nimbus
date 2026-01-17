@@ -181,6 +181,23 @@ class _TidesPageState extends State<TidesPage> {
     }
   }
 
+  String _getDatumDisplayText() {
+    switch (settings.tideDatum) {
+      case 'mllw':
+        return 'relative to MLLW';
+      case 'mlw':
+        return 'relative to MLW';
+      case 'msl':
+        return 'relative to MSL';
+      case 'mhw':
+        return 'relative to MHW';
+      case 'mhhw':
+        return 'relative to MHHW';
+      default:
+        return 'relative to MLLW';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -395,6 +412,14 @@ class _TidesPageState extends State<TidesPage> {
                       style: context.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: context.theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _getDatumDisplayText(),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                        fontSize: 11,
                       ),
                     ),
                   ],
