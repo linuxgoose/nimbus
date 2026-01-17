@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:nimbus/app/utils/icon_to_image.dart';
 
 class StatusWeather {
   /// Get icon for current weather conditions
@@ -42,37 +43,49 @@ class StatusWeather {
     _getNotificationIcons,
   );
 
-  /// Get image path for notifications (still needed for notification system)
-  String getImageNotification(
+  /// Get icon for widgets - generates colored bitmap from Lucide icon
+  Future<String> getImageNotification(
     int? weather,
     String time,
     String timeDay,
-    String timeNight,
-  ) {
+    String timeNight, {
+    Color? iconColor,
+  }) async {
     final icons = _getNotificationIcons;
     final isDayTime =
         time.isNotEmpty && timeDay.isNotEmpty && timeNight.isNotEmpty
         ? time.compareTo(timeDay) >= 0 && time.compareTo(timeNight) < 0
         : true;
 
-    // Map Lucide icons back to image asset paths for Android widgets
+    // Get the appropriate Lucide icon
     final iconData = icons[weather]?[isDayTime] ?? LucideIcons.cloud;
 
-    // Map IconData to image paths
-    if (iconData == LucideIcons.sun) return 'assets/images/sun.png';
-    if (iconData == LucideIcons.moon) return 'assets/images/moon.png';
-    if (iconData == LucideIcons.cloudSun) return 'assets/images/cloudy_day.png';
-    if (iconData == LucideIcons.cloudMoon)
-      return 'assets/images/cloudy_night.png';
-    if (iconData == LucideIcons.cloud) return 'assets/images/cloud.png';
-    if (iconData == LucideIcons.cloudFog) return 'assets/images/fog.png';
-    if (iconData == LucideIcons.cloudDrizzle) return 'assets/images/rain.png';
-    if (iconData == LucideIcons.cloudRain) return 'assets/images/rain.png';
-    if (iconData == LucideIcons.cloudSnow) return 'assets/images/snow.png';
-    if (iconData == LucideIcons.cloudLightning)
-      return 'assets/images/thunder.png';
+    // Use widget text color or default to white
+    final color = iconColor ?? Colors.white;
 
-    return 'assets/images/cloud.png'; // Default fallback
+    // Generate a unique filename based on weather code, time of day, and color
+    final colorHex = color.value.toRadixString(16).padLeft(8, '0');
+    final filename =
+        'weather_${weather}_${isDayTime ? 'day' : 'night'}_$colorHex.png';
+
+    // Generate and save the icon as PNG
+    try {
+      return await IconToImage.saveIconAsPng(
+        icon: iconData,
+        color: color,
+        filename: filename,
+        size: 96.0,
+      );
+    } catch (e) {
+      debugPrint('Error generating widget icon: $e');
+      // Fallback to generating a default cloud icon
+      return await IconToImage.saveIconAsPng(
+        icon: LucideIcons.cloud,
+        color: color,
+        filename: 'weather_fallback_$colorHex.png',
+        size: 96.0,
+      );
+    }
   }
 
   IconData _getIconBasedOnTime(
