@@ -1,15 +1,98 @@
 import 'dart:math' as math;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/main.dart';
 
-// Supports multiple tide data sources:
-// 1. Stormglass.io API (Free tier: 50 requests/day) - https://stormglass.io/
-// 2. UK Environment Agency API (Free, no key required) - https://environment.data.gov.uk/
 class TidesAPI {
-  final Dio _dio = Dio();
+  /// Fetch all available UK Tidal API Discovery stations
+  Future<List<Map<String, dynamic>>> getUkTidalDiscoveryStations(
+    String? apiKey,
+  ) async {
+    if (apiKey == null || apiKey.isEmpty) {
+      debugPrint('[UK Tidal API] No API key provided for station list.');
+      return [];
+    }
+    try {
+      final url =
+          'https://admiraltyapi.azure-api.net/uktidalapi/api/V1/Stations';
+      debugPrint('[UK Tidal API] Fetching all stations: $url');
+      final resp = await _dio.get(
+        url,
+        options: Options(headers: {'Ocp-Apim-Subscription-Key': apiKey}),
+      );
+      debugPrint('[UK Tidal API] Stations response: ${resp.statusCode}');
+      debugPrint('[UK Tidal API] Response data type: ${resp.data.runtimeType}');
+      debugPrint('[UK Tidal API] Response data: ${resp.data}');
 
-  static const String _stormglassBaseUrl =
+      if (resp.data is List) {
+        final list = List<Map<String, dynamic>>.from(resp.data);
+        debugPrint('[UK Tidal API] Found ${list.length} stations');
+        return list;
+      } else if (resp.data is Map) {
+        // Check if it's wrapped in a features array or similar
+        final map = resp.data as Map<String, dynamic>;
+        debugPrint('[UK Tidal API] Response is a map with keys: ${map.keys}');
+
+        // Try common API response patterns
+        if (map.containsKey('features') && map['features'] is List) {
+          final features = map['features'] as List;
+          final stations = <Map<String, dynamic>>[];
+
+          // Transform GeoJSON features to flat structure
+          for (var feature in features) {
+            if (feature is Map<String, dynamic>) {
+              final properties = feature['properties'] as Map<String, dynamic>?;
+              final geometry = feature['geometry'] as Map<String, dynamic>?;
+              final coordinates = geometry?['coordinates'] as List?;
+
+              if (properties != null &&
+                  coordinates != null &&
+                  coordinates.length >= 2) {
+                stations.add({
+                  'id': properties['Id'],
+                  'name': properties['Name'],
+                  'country': properties['Country'],
+                  'longitude': (coordinates[0] as num).toDouble(),
+                  'latitude': (coordinates[1] as num).toDouble(),
+                  'continuousHeightsAvailable':
+                      properties['ContinuousHeightsAvailable'],
+                  'footnote': properties['Footnote'],
+                });
+              }
+            }
+          }
+
+          debugPrint(
+            '[UK Tidal API] Found ${stations.length} stations in features array',
+          );
+          return stations;
+        } else if (map.containsKey('stations') && map['stations'] is List) {
+          final list = List<Map<String, dynamic>>.from(map['stations']);
+          debugPrint(
+            '[UK Tidal API] Found ${list.length} stations in stations array',
+          );
+          return list;
+        } else if (map.containsKey('data') && map['data'] is List) {
+          final list = List<Map<String, dynamic>>.from(map['data']);
+          debugPrint(
+            '[UK Tidal API] Found ${list.length} stations in data array',
+          );
+          return list;
+        }
+      }
+
+      debugPrint('[UK Tidal API] Could not parse stations from response');
+      return [];
+    } catch (e, stackTrace) {
+      debugPrint('[UK Tidal API] Station list error: $e');
+      debugPrint('[UK Tidal API] Stack trace: $stackTrace');
+      return [];
+    }
+  }
+
+  final Dio _dio = Dio();
+  final String _stormglassBaseUrl =
       'https://api.stormglass.io/v2/tide/extremes/point';
 
   Future<Map<String, dynamic>> getTideData(
@@ -17,6 +100,7 @@ class TidesAPI {
     double lon, {
     String? apiKey,
     bool useDummyData = true,
+    String? stationId, // Optional station ID for UK Tidal API
   }) async {
     if (useDummyData) {
       return _getMockTideData(lat, lon);
@@ -27,8 +111,227 @@ class TidesAPI {
       return _getEnvironmentAgencyData(lat, lon);
     }
 
+    // Use UK Tidal API - Discovery if selected (no caching allowed)
+    if (settings.tidesSource == 'uk_tidal_api') {
+      if (stationId != null && stationId.isNotEmpty) {
+        return _getUkTidalDiscoveryDataByStation(
+          stationId,
+          settings.tidesDiscoveryApiKey,
+        );
+      }
+      return _getUkTidalDiscoveryData(lat, lon, settings.tidesDiscoveryApiKey);
+    }
+
     // Default to Stormglass
     return _getStormglassData(lat, lon, apiKey);
+  }
+
+  /// Get tide data for a specific UK Tidal API station ID
+  Future<Map<String, dynamic>> _getUkTidalDiscoveryDataByStation(
+    String stationId,
+    String? apiKey,
+  ) async {
+    if (apiKey == null || apiKey.isEmpty) {
+      debugPrint('[UK Tidal API] No API key provided. Returning mock data.');
+      return _getMockTideData(0, 0);
+    }
+    try {
+      // Get tidal events for this station (current + 6 days)
+      final now = DateTime.now().toUtc();
+      final end = now.add(const Duration(days: 6));
+      final eventsUrl =
+          'https://admiraltyapi.azure-api.net/uktidalapi/api/V1/Stations/$stationId/TidalEvents';
+      final eventsParams = {
+        'startDateTime': now.toIso8601String(),
+        'endDateTime': end.toIso8601String(),
+      };
+      debugPrint(
+        '[UK Tidal API] Requesting tidal events for station $stationId: $eventsUrl',
+      );
+      final eventsResp = await _dio.get(
+        eventsUrl,
+        queryParameters: eventsParams,
+        options: Options(headers: {'Ocp-Apim-Subscription-Key': apiKey}),
+      );
+      debugPrint('[UK Tidal API] Events response: ${eventsResp.statusCode}');
+      debugPrint(
+        '[UK Tidal API] Events data type: ${eventsResp.data.runtimeType}',
+      );
+      debugPrint('[UK Tidal API] Events data: ${eventsResp.data}');
+
+      final List<Map<String, dynamic>> extremes = [];
+      if (eventsResp.data is List) {
+        debugPrint(
+          '[UK Tidal API] Processing ${eventsResp.data.length} tidal events',
+        );
+        for (var event in eventsResp.data) {
+          try {
+            // API uses capitalized field names: DateTime, Height, EventType
+            final time = DateTime.parse(event['DateTime']);
+            final height = (event['Height'] as num?)?.toDouble() ?? 0.0;
+            final eventType = event['EventType'];
+
+            debugPrint(
+              '[UK Tidal API] Parsed - Time: $time, Height: $height, Type: $eventType',
+            );
+
+            extremes.add({
+              'dt': time.millisecondsSinceEpoch ~/ 1000,
+              'date': time.toIso8601String(),
+              'height': height,
+              'type': eventType == 'HighWater' ? 'High' : 'Low',
+            });
+          } catch (e) {
+            debugPrint('[UK Tidal API] Error parsing event: $e');
+          }
+        }
+        debugPrint('[UK Tidal API] Total extremes parsed: ${extremes.length}');
+      }
+      // No heights array from this API, so interpolate for chart
+      final List<Map<String, dynamic>> heights = [];
+      if (extremes.isNotEmpty) {
+        final start = DateTime.parse(extremes.first['date']);
+        final end = DateTime.parse(extremes.last['date']);
+        final duration = end.difference(start);
+        for (int hour = 0; hour <= duration.inHours; hour++) {
+          final time = start.add(Duration(hours: hour));
+          final height = _interpolateHeight(extremes, time);
+          heights.add({
+            'dt': time.millisecondsSinceEpoch ~/ 1000,
+            'date': time.toIso8601String(),
+            'height': height,
+          });
+        }
+      }
+
+      // Get station info from saved stations
+      final savedStation = isar.savedTideStations.getByStationIdSync(stationId);
+
+      return {
+        'status': 200,
+        'callCount': 1,
+        'lat': savedStation?.lat ?? 0.0,
+        'lon': savedStation?.lon ?? 0.0,
+        'extremes': extremes,
+        'heights': heights,
+        'station': {
+          'name': savedStation?.name ?? 'Station $stationId',
+          'distance': 0.0,
+        },
+      };
+    } catch (e, stackTrace) {
+      debugPrint('[UK Tidal API] Exception: $e');
+      debugPrint('[UK Tidal API] Stack trace: $stackTrace');
+      return _getMockTideData(0, 0);
+    }
+  }
+
+  Future<Map<String, dynamic>> _getUkTidalDiscoveryData(
+    double lat,
+    double lon,
+    String? apiKey,
+  ) async {
+    if (apiKey == null || apiKey.isEmpty) {
+      debugPrint('[UK Tidal API] No API key provided. Returning mock data.');
+      return _getMockTideData(lat, lon);
+    }
+    try {
+      final stationUrl =
+          'https://admiraltyapi.azure-api.net/uktidalapi/api/V1/Stations/Closest';
+      final stationParams = {
+        'latitude': lat.toString(),
+        'longitude': lon.toString(),
+      };
+      debugPrint(
+        '[UK Tidal API] Requesting closest station: $stationUrl $stationParams',
+      );
+      final stationResp = await _dio.get(
+        stationUrl,
+        queryParameters: stationParams,
+        options: Options(headers: {'Ocp-Apim-Subscription-Key': apiKey}),
+      );
+      debugPrint(
+        '[UK Tidal API] Station response: ${stationResp.statusCode} ${stationResp.data}',
+      );
+      if (stationResp.data == null || stationResp.data['id'] == null) {
+        debugPrint(
+          '[UK Tidal API] No valid station found. Returning mock data.',
+        );
+        return _getMockTideData(lat, lon);
+      }
+      final stationId = stationResp.data['id'];
+      final stationName = stationResp.data['name'] ?? 'UK Tidal API Station';
+
+      // Get tidal events for this station (current + 6 days)
+      final now = DateTime.now().toUtc();
+      final end = now.add(const Duration(days: 6));
+      final eventsUrl =
+          'https://admiraltyapi.azure-api.net/uktidalapi/api/V1/Stations/$stationId/TidalEvents';
+      final eventsParams = {
+        'startDateTime': now.toIso8601String(),
+        'endDateTime': end.toIso8601String(),
+      };
+      debugPrint(
+        '[UK Tidal API] Requesting tidal events: $eventsUrl $eventsParams',
+      );
+      final eventsResp = await _dio.get(
+        eventsUrl,
+        queryParameters: eventsParams,
+        options: Options(headers: {'Ocp-Apim-Subscription-Key': apiKey}),
+      );
+      debugPrint(
+        '[UK Tidal API] Events response: ${eventsResp.statusCode} ${eventsResp.data}',
+      );
+      if (eventsResp.statusCode == 404) {
+        debugPrint(
+          '[UK Tidal API] 404 from events endpoint. Returning mock data.',
+        );
+        return _getMockTideData(lat, lon);
+      }
+      final List<Map<String, dynamic>> extremes = [];
+      if (eventsResp.data is List) {
+        for (var event in eventsResp.data) {
+          try {
+            final time = DateTime.parse(event['dateTime']);
+            extremes.add({
+              'dt': time.millisecondsSinceEpoch ~/ 1000,
+              'date': time.toIso8601String(),
+              'height': (event['height'] as num?)?.toDouble() ?? 0.0,
+              'type': event['eventType'] == 'HighWater' ? 'High' : 'Low',
+            });
+          } catch (_) {}
+        }
+      }
+      // No heights array from this API, so interpolate for chart
+      final List<Map<String, dynamic>> heights = [];
+      if (extremes.isNotEmpty) {
+        final start = DateTime.parse(extremes.first['date']);
+        final end = DateTime.parse(extremes.last['date']);
+        final duration = end.difference(start);
+        for (int hour = 0; hour <= duration.inHours; hour++) {
+          final time = start.add(Duration(hours: hour));
+          final height = _interpolateHeight(extremes, time);
+          heights.add({
+            'dt': time.millisecondsSinceEpoch ~/ 1000,
+            'date': time.toIso8601String(),
+            'height': height,
+          });
+        }
+      }
+      return {
+        'status': 200,
+        'callCount': 1,
+        'lat': lat,
+        'lon': lon,
+        'extremes': extremes,
+        'heights': heights,
+        'station': {'name': stationName, 'distance': 0.0},
+      };
+    } catch (e, stackTrace) {
+      debugPrint('[UK Tidal API] Exception: $e');
+      debugPrint('[UK Tidal API] Stack trace: $stackTrace');
+      return _getMockTideData(lat, lon);
+    }
   }
 
   Future<Map<String, dynamic>> _getStormglassData(
@@ -475,7 +778,7 @@ class TidesAPI {
     for (var extreme in extremes) {
       final tideTime = DateTime.parse(extreme['date'] as String);
       if (tideTime.isAfter(now)) {
-        final type = extreme['type'] as String;
+        final type = (extreme['type'] as String).toLowerCase();
         final height = (extreme['height'] as num).toStringAsFixed(1);
         final duration = tideTime.difference(now);
         String timeStr;
@@ -484,7 +787,7 @@ class TidesAPI {
         } else {
           timeStr = '${duration.inMinutes}m';
         }
-        return '$type tide in $timeStr ($height m)';
+        return '${type.substring(0, 1).toUpperCase()}${type.substring(1)} tide in $timeStr ($height m)';
       }
     }
     return 'No upcoming tides';

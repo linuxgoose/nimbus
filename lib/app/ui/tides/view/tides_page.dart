@@ -20,6 +20,7 @@ class TidesPage extends StatefulWidget {
 class _TidesPageState extends State<TidesPage> {
   final TidesAPI _tidesAPI = TidesAPI();
   TideLocation? _selectedLocation;
+  SavedTideStation? _selectedStation; // For UK Tidal API
   Map<String, dynamic>? _tideData;
   bool _isLoading = true;
 
@@ -32,7 +33,24 @@ class _TidesPageState extends State<TidesPage> {
   Future<void> _loadPrimaryLocation() async {
     setState(() => _isLoading = true);
 
-    // Get primary tide location or use current location
+    // For UK Tidal API, use saved stations
+    if (settings.tidesSource == 'uk_tidal_api') {
+      final stations = isar.savedTideStations.where().findAllSync();
+      _selectedStation =
+          stations.where((s) => s.isPrimary).firstOrNull ??
+          stations.firstOrNull;
+
+      // If no saved stations, show station browser
+      if (_selectedStation == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      await _fetchTideData();
+      return;
+    }
+
+    // For other sources, use lat/lon locations
     final locations = isar.tideLocations.where().findAllSync();
     _selectedLocation =
         locations.where((l) => l.isPrimary).firstOrNull ??
@@ -55,12 +73,40 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   Future<void> _fetchTideData() async {
-    if (_selectedLocation == null) return;
-
     setState(() => _isLoading = true);
 
     try {
-      // Check for cached data first
+      // For UK Tidal API - Discovery, use station ID if available
+      if (settings.tidesSource == 'uk_tidal_api') {
+        if (_selectedStation == null) {
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        debugPrint(
+          '↓ Tides: Fetching data for station ${_selectedStation!.stationId}',
+        );
+        final data = await _tidesAPI.getTideData(
+          _selectedStation!.lat,
+          _selectedStation!.lon,
+          apiKey: settings.tidesDiscoveryApiKey,
+          useDummyData: settings.useDummyTides,
+          stationId: _selectedStation!.stationId,
+        );
+        setState(() {
+          _tideData = data;
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // For other sources, require a location
+      if (_selectedLocation == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      // Check for cached data first (not for UK Tidal API)
       final cached = _getCachedTideData(
         _selectedLocation!.lat!,
         _selectedLocation!.lon!,
@@ -188,6 +234,11 @@ class _TidesPageState extends State<TidesPage> {
       return 'above chart datum';
     }
 
+    // UK Tidal API uses LAT (Lowest Astronomical Tide)
+    if (!settings.useDummyTides && settings.tidesSource == 'uk_tidal_api') {
+      return 'above LAT (Lowest Astronomical Tide)';
+    }
+
     // Stormglass supports datum selection
     switch (settings.tideDatum) {
       case 'mllw':
@@ -207,21 +258,36 @@ class _TidesPageState extends State<TidesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isUkTidalApi = settings.tidesSource == 'uk_tidal_api';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tides'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.navigation),
-            onPressed: _useCurrentLocation,
-            tooltip: 'Use Current Location',
-          ),
-          IconButton(
-            icon: const Icon(LucideIcons.mapPin),
-            onPressed: _showLocationPicker,
-            tooltip: 'Select Location',
-          ),
+          if (!isUkTidalApi) ...[
+            IconButton(
+              icon: const Icon(LucideIcons.navigation),
+              onPressed: _useCurrentLocation,
+              tooltip: 'Use Current Location',
+            ),
+            IconButton(
+              icon: const Icon(LucideIcons.mapPin),
+              onPressed: _showLocationPicker,
+              tooltip: 'Select Location',
+            ),
+          ] else ...[
+            IconButton(
+              icon: const Icon(LucideIcons.list),
+              onPressed: _showStationBrowser,
+              tooltip: 'Browse Stations',
+            ),
+            IconButton(
+              icon: const Icon(LucideIcons.mapPin),
+              onPressed: _showSavedStationPicker,
+              tooltip: 'Saved Stations',
+            ),
+          ],
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
             onPressed: _fetchTideData,
@@ -232,11 +298,46 @@ class _TidesPageState extends State<TidesPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _tideData == null
-          ? _buildErrorView()
+          ? _buildNoStationView()
           : _buildTideView(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddLocationDialog,
-        child: const Icon(LucideIcons.plus),
+      floatingActionButton: isUkTidalApi
+          ? null
+          : FloatingActionButton(
+              onPressed: _showAddLocationDialog,
+              child: const Icon(LucideIcons.plus),
+            ),
+    );
+  }
+
+  Widget _buildNoStationView() {
+    if (settings.tidesSource != 'uk_tidal_api') {
+      return _buildErrorView();
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            LucideIcons.waves,
+            size: 64,
+            color: context.theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 16),
+          Text('No Station Selected', style: context.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(
+            'Browse and select a tide station to view data',
+            style: context.textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: _showStationBrowser,
+            icon: const Icon(LucideIcons.list),
+            label: const Text('Browse Stations'),
+          ),
+        ],
       ),
     );
   }
@@ -296,6 +397,13 @@ class _TidesPageState extends State<TidesPage> {
       if (settings.tidesSource == 'environment_agency') {
         return const SizedBox.shrink();
       }
+      // UK Tidal API uses Discovery API key
+      if (settings.tidesSource == 'uk_tidal_api') {
+        if (settings.tidesDiscoveryApiKey != null &&
+            settings.tidesDiscoveryApiKey!.isNotEmpty) {
+          return const SizedBox.shrink();
+        }
+      }
       // Stormglass needs an API key
       if (settings.tidesApiKey != null && settings.tidesApiKey!.isNotEmpty) {
         return const SizedBox.shrink();
@@ -346,7 +454,21 @@ class _TidesPageState extends State<TidesPage> {
   Widget _buildLocationCard() {
     final showEnvAgencyNote =
         !settings.useDummyTides && settings.tidesSource == 'environment_agency';
+    final isUkTidalApi = settings.tidesSource == 'uk_tidal_api';
     final stationName = _tideData?['station']?['name'] as String?;
+
+    String displayName;
+    String displayCoords;
+
+    if (isUkTidalApi && _selectedStation != null) {
+      displayName = _selectedStation!.name;
+      displayCoords =
+          '${_selectedStation!.lat.toStringAsFixed(4)}, ${_selectedStation!.lon.toStringAsFixed(4)}';
+    } else {
+      displayName = _selectedLocation?.name ?? 'Unknown Location';
+      displayCoords =
+          '${_selectedLocation?.lat?.toStringAsFixed(4)}, ${_selectedLocation?.lon?.toStringAsFixed(4)}';
+    }
 
     return Card(
       child: Padding(
@@ -372,14 +494,14 @@ class _TidesPageState extends State<TidesPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _selectedLocation?.name ?? 'Unknown Location',
+                        displayName,
                         style: context.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${_selectedLocation?.lat?.toStringAsFixed(4)}, ${_selectedLocation?.lon?.toStringAsFixed(4)}',
+                        displayCoords,
                         style: context.textTheme.bodySmall?.copyWith(
                           color: context.theme.colorScheme.onSurfaceVariant,
                         ),
@@ -481,36 +603,32 @@ class _TidesPageState extends State<TidesPage> {
               ],
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Height',
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${currentHeight.toStringAsFixed(2)} m',
-                      style: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: context.theme.colorScheme.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _getDatumDisplayText(),
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Height',
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  '${currentHeight.toStringAsFixed(2)} m',
+                  style: context.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: context.theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _getDatumDisplayText(),
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                    fontSize: 11,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -521,6 +639,7 @@ class _TidesPageState extends State<TidesPage> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         LucideIcons.clock,
@@ -528,11 +647,14 @@ class _TidesPageState extends State<TidesPage> {
                         color: context.theme.colorScheme.onSecondaryContainer,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        nextTideInfo,
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: context.theme.colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.w600,
+                      Flexible(
+                        child: Text(
+                          nextTideInfo,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color:
+                                context.theme.colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -646,6 +768,21 @@ class _TidesPageState extends State<TidesPage> {
 
   Widget _buildTideChartCard() {
     final heights = _tideData!['heights'] as List<dynamic>;
+
+    if (heights.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(
+            child: Text(
+              'No tide height data available',
+              style: context.textTheme.bodyMedium,
+            ),
+          ),
+        ),
+      );
+    }
+
     final maxHeight = heights
         .map((h) => h['height'] as num)
         .reduce((a, b) => a > b ? a : b)
@@ -959,6 +1096,334 @@ class _TidesPageState extends State<TidesPage> {
               },
               child: const Text('Add'),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showStationBrowser() async {
+    if (settings.tidesDiscoveryApiKey == null ||
+        settings.tidesDiscoveryApiKey!.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please set your UK Tidal API key in Settings > Tides'),
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final stations = await _tidesAPI.getUkTidalDiscoveryStations(
+      settings.tidesDiscoveryApiKey,
+    );
+
+    if (!mounted) return;
+    Navigator.pop(context); // Close loading dialog
+
+    if (stations.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No stations available or invalid API key'),
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        String searchQuery = '';
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final filteredStations = searchQuery.isEmpty
+                ? stations
+                : stations.where((station) {
+                    final name =
+                        (station['name'] as String?)?.toLowerCase() ?? '';
+                    final country =
+                        (station['country'] as String?)?.toLowerCase() ?? '';
+                    final query = searchQuery.toLowerCase();
+                    return name.contains(query) || country.contains(query);
+                  }).toList();
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.9,
+              minChildSize: 0.5,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (context, scrollController) => Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Browse Stations (${filteredStations.length})',
+                                style: context.textTheme.titleLarge,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(LucideIcons.x),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search stations...',
+                            prefixIcon: const Icon(LucideIcons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setModalState(() {
+                              searchQuery = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  Expanded(
+                    child: filteredStations.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  LucideIcons.searchX,
+                                  size: 48,
+                                  color: context
+                                      .theme
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No stations found',
+                                  style: context.textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: scrollController,
+                            itemCount: filteredStations.length,
+                            itemBuilder: (context, index) {
+                              final station = filteredStations[index];
+                              final stationId = station['id'] as String?;
+                              final name = station['name'] as String?;
+                              final country = station['country'] as String?;
+                              final lat = (station['latitude'] as num?)
+                                  ?.toDouble();
+                              final lon = (station['longitude'] as num?)
+                                  ?.toDouble();
+
+                              if (stationId == null ||
+                                  name == null ||
+                                  lat == null ||
+                                  lon == null) {
+                                return const SizedBox.shrink();
+                              }
+
+                              // Check if this station is already saved
+                              final isSaved =
+                                  isar.savedTideStations
+                                      .filter()
+                                      .stationIdEqualTo(stationId)
+                                      .findFirstSync() !=
+                                  null;
+
+                              return ListTile(
+                                leading: Icon(
+                                  isSaved
+                                      ? LucideIcons.star
+                                      : LucideIcons.waves,
+                                  color: isSaved ? Colors.amber : null,
+                                ),
+                                title: Text(name),
+                                subtitle: Text(
+                                  '${country ?? 'Unknown'} • ${lat.toStringAsFixed(4)}, ${lon.toStringAsFixed(4)}',
+                                ),
+                                trailing: isSaved
+                                    ? const Icon(
+                                        LucideIcons.check,
+                                        color: Colors.green,
+                                      )
+                                    : null,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  _saveAndSelectStation(
+                                    stationId,
+                                    name,
+                                    lat,
+                                    lon,
+                                    country,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _saveAndSelectStation(
+    String stationId,
+    String name,
+    double lat,
+    double lon,
+    String? country,
+  ) {
+    // Check if already saved
+    final existing = isar.savedTideStations
+        .filter()
+        .stationIdEqualTo(stationId)
+        .findFirstSync();
+
+    if (existing != null) {
+      // Already saved, just select it
+      setState(() {
+        _selectedStation = existing;
+      });
+      _fetchTideData();
+      return;
+    }
+
+    // Save new station
+    final station = SavedTideStation(
+      stationId: stationId,
+      name: name,
+      lat: lat,
+      lon: lon,
+      country: country,
+      isPrimary: false,
+    );
+
+    isar.writeTxnSync(() => isar.savedTideStations.putSync(station));
+
+    setState(() {
+      _selectedStation = station;
+    });
+    _fetchTideData();
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Saved and selected: $name')));
+  }
+
+  void _showSavedStationPicker() {
+    final stations = isar.savedTideStations.where().findAllSync();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Saved Stations', style: context.textTheme.titleLarge),
+            const SizedBox(height: 16),
+            if (stations.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Text('No saved stations'),
+                ),
+              )
+            else
+              ...stations.map(
+                (station) => ListTile(
+                  leading: Icon(
+                    station.isPrimary ? LucideIcons.star : LucideIcons.waves,
+                    color: station.isPrimary ? Colors.amber : null,
+                  ),
+                  title: Text(station.name),
+                  subtitle: Text(
+                    '${station.country ?? 'Unknown'} • ${station.lat.toStringAsFixed(4)}, ${station.lon.toStringAsFixed(4)}',
+                  ),
+                  selected: station.stationId == _selectedStation?.stationId,
+                  onTap: () {
+                    setState(() => _selectedStation = station);
+                    _fetchTideData();
+                    Navigator.pop(context);
+                  },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          station.isPrimary
+                              ? LucideIcons.starOff
+                              : LucideIcons.star,
+                        ),
+                        tooltip: station.isPrimary
+                            ? 'Remove as default'
+                            : 'Set as default',
+                        onPressed: () {
+                          isar.writeTxnSync(() {
+                            // Clear all primary flags
+                            final allStations = isar.savedTideStations
+                                .where()
+                                .findAllSync();
+                            for (var s in allStations) {
+                              if (s.isPrimary) {
+                                s.isPrimary = false;
+                                isar.savedTideStations.putSync(s);
+                              }
+                            }
+                            // Set this station as primary
+                            if (!station.isPrimary) {
+                              station.isPrimary = true;
+                              isar.savedTideStations.putSync(station);
+                            }
+                          });
+                          Navigator.pop(context);
+                          _loadPrimaryLocation();
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(LucideIcons.trash2),
+                        onPressed: () {
+                          isar.writeTxnSync(
+                            () => isar.savedTideStations.deleteSync(station.id),
+                          );
+                          Navigator.pop(context);
+                          _loadPrimaryLocation();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),

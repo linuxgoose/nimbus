@@ -17,8 +17,10 @@ class Settings {
   bool hideTides = false;
   bool hideAqi = false;
   bool useDummyTides = true;
-  String tidesSource = 'stormglass'; // stormglass, environment_agency
+  String tidesSource =
+      'stormglass'; // stormglass, environment_agency, uk_tidal_api
   String? tidesApiKey;
+  String? tidesDiscoveryApiKey;
   String tideDatum = 'mllw'; // mllw, mlw, msl, mhw, mhhw
   bool hideElevation = false;
   bool useDummyElevation = true;
@@ -56,6 +58,50 @@ class Settings {
   int? timeRange;
   String? timeStart;
   String? timeEnd;
+}
+
+@collection
+class TideStation {
+  Id id = Isar.autoIncrement;
+  String? stationId; // UK Tidal API station ID
+  String? name;
+  double? lat;
+  double? lon;
+  String? country;
+  bool isSaved = false;
+
+  TideStation({
+    this.stationId,
+    this.name,
+    this.lat,
+    this.lon,
+    this.country,
+    this.isSaved = false,
+  });
+}
+
+@collection
+class SavedTideStation {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  String stationId = ''; // UK Tidal API station ID
+
+  String name = '';
+  double lat = 0.0;
+  double lon = 0.0;
+  String? country;
+  bool isPrimary = false;
+  DateTime savedAt = DateTime.now();
+
+  SavedTideStation({
+    required this.stationId,
+    required this.name,
+    required this.lat,
+    required this.lon,
+    this.country,
+    this.isPrimary = false,
+  });
 }
 
 @collection

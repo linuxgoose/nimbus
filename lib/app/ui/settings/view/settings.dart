@@ -28,6 +28,82 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  Widget _buildTidesDiscoveryApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.key),
+      text: 'UK Tidal API - Discovery Key',
+      info: true,
+      infoSettings: true,
+      infoWidget: _TextInfo(
+        info: settings.tidesDiscoveryApiKey?.isNotEmpty == true
+            ? '${settings.tidesDiscoveryApiKey!.substring(0, 8)}...'
+            : 'Not set',
+      ),
+      onPressed: () => _showTidesDiscoveryApiKeyDialog(context, setState),
+    );
+  }
+
+  void _showTidesDiscoveryApiKeyDialog(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    final controller = TextEditingController(
+      text: settings.tidesDiscoveryApiKey ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('UK Tidal API - Discovery Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Get your API key from:', style: context.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://www.admiralty.co.uk/uksouthampton/uk-tidal-api',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              settings.tidesDiscoveryApiKey = controller.text.trim();
+              if (settings.tidesDiscoveryApiKey!.isEmpty) {
+                settings.tidesDiscoveryApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   final themeController = Get.put(ThemeController());
   final weatherController = Get.put(WeatherController());
   String? appVersion;
@@ -269,7 +345,10 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildHideTidesSettingCard(context, setState),
               _buildUseDummyTidesSettingCard(context, setState),
               _buildTidesSourceSettingCard(context, setState),
-              _buildTidesApiKeySettingCard(context, setState),
+              if (settings.tidesSource == 'stormglass')
+                _buildTidesApiKeySettingCard(context, setState),
+              if (settings.tidesSource == 'uk_tidal_api')
+                _buildTidesDiscoveryApiKeySettingCard(context, setState),
               _buildTideDatumSettingCard(context, setState),
               _buildCheckTidesCacheSettingCard(context, setState),
               _buildClearTidesCacheSettingCard(context, setState),
@@ -798,7 +877,11 @@ class _SettingsPageState extends State<SettingsPage> {
     text: 'Tide Data Source',
     dropdown: true,
     dropdownName: _getTidesSourceDisplayName(settings.tidesSource),
-    dropdownList: const <String>['Stormglass', 'UK Environment Agency'],
+    dropdownList: const <String>[
+      'Stormglass',
+      'UK Environment Agency',
+      'UK Tidal API - Discovery',
+    ],
     dropdownChange: (String? newValue) async {
       if (newValue == null) return;
 
@@ -807,6 +890,8 @@ class _SettingsPageState extends State<SettingsPage> {
           settings.tidesSource = 'stormglass';
         } else if (newValue == 'UK Environment Agency') {
           settings.tidesSource = 'environment_agency';
+        } else if (newValue == 'UK Tidal API - Discovery') {
+          settings.tidesSource = 'uk_tidal_api';
         }
         isar.settings.putSync(settings);
       });
@@ -821,6 +906,8 @@ class _SettingsPageState extends State<SettingsPage> {
         return 'Stormglass';
       case 'environment_agency':
         return 'UK Environment Agency';
+      case 'uk_tidal_api':
+        return 'UK Tidal API - Discovery';
       default:
         return 'Stormglass';
     }
