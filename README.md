@@ -82,6 +82,16 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - Color-coded warning indicators
   - Detailed warning information and updates
   - Toggle visibility and notifications in settings
+- **Agriculture Data:** Comprehensive farming and crop management information with:
+  - Soil moisture monitoring at multiple depths (0-1cm, 1-3cm, 3-9cm, 9-27cm, 27-81cm)
+  - Soil temperature at different levels (surface, 6cm, 18cm, 54cm)
+  - ET₀ FAO Reference Evapotranspiration for irrigation planning
+  - Vapour Pressure Deficit (VPD) for plant stress assessment
+  - Growing Degree Days (GDD) calculations for crop development
+  - 48-hour soil condition forecasts with interactive charts
+  - 7-day agricultural weather forecast
+  - Real-time conditions and recommendations
+  - Toggle visibility in settings
 - **Elevation Data:** View elevation above sea level for any location
 - **Multi-Language Support:** Choose from a wide range of language options.
 - **Offline Access:** View cached weather data even without an internet connection.

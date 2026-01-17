@@ -64,6 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildElevationCard(context),
         _buildAuroraCard(context),
         _buildFloodMonitoringCard(context),
+        _buildAgricultureCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
         _buildDataCard(context),
@@ -351,6 +352,12 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showFloodMonitoringBottomSheet(context),
   );
 
+  Widget _buildAgricultureCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.sprout),
+    text: 'Agriculture',
+    onPressed: () => _showAgricultureBottomSheet(context),
+  );
+
   void _showFloodMonitoringBottomSheet(BuildContext context) =>
       showModalBottomSheet(
         context: context,
@@ -367,6 +374,28 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildHideFloodSettingCard(context, setState),
                   _buildFloodNotificationsSettingCard(context, setState),
                   _buildFloodRadiusSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  void _showAgricultureBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => DraggableScrollableSheet(
+          expand: false,
+          builder: (context, scrollController) => StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildAgricultureTitle(context),
+                  _buildHideAgricultureSettingCard(context, setState),
                   const Gap(10),
                 ],
               ),
@@ -947,6 +976,32 @@ class _SettingsPageState extends State<SettingsPage> {
       info: '${settings.floodRadiusKm.toStringAsFixed(0)} km',
     ),
     onPressed: () => _showFloodRadiusDialog(context, setState),
+  );
+
+  Widget _buildAgricultureTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+    child: Text(
+      'Agriculture',
+      style: context.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+
+  Widget _buildHideAgricultureSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Agriculture',
+    switcher: true,
+    value: settings.hideAgriculture,
+    onChange: (value) {
+      settings.hideAgriculture = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
   );
 
   void _showFloodRadiusDialog(BuildContext context, StateSetter setState) {

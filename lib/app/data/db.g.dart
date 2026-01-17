@@ -58,158 +58,163 @@ const SettingsSchema = CollectionSchema(
       name: r'floodRadiusKm',
       type: IsarType.double,
     ),
-    r'hideAqi': PropertySchema(id: 9, name: r'hideAqi', type: IsarType.bool),
+    r'hideAgriculture': PropertySchema(
+      id: 9,
+      name: r'hideAgriculture',
+      type: IsarType.bool,
+    ),
+    r'hideAqi': PropertySchema(id: 10, name: r'hideAqi', type: IsarType.bool),
     r'hideAurora': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'hideAurora',
       type: IsarType.bool,
     ),
     r'hideElevation': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'hideElevation',
       type: IsarType.bool,
     ),
     r'hideFlood': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'hideFlood',
       type: IsarType.bool,
     ),
-    r'hideMap': PropertySchema(id: 13, name: r'hideMap', type: IsarType.bool),
+    r'hideMap': PropertySchema(id: 14, name: r'hideMap', type: IsarType.bool),
     r'hideRainForecast': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'hideRainForecast',
       type: IsarType.bool,
     ),
     r'hideTides': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'hideTides',
       type: IsarType.bool,
     ),
     r'language': PropertySchema(
-      id: 16,
+      id: 17,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 17,
+      id: 18,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 18, name: r'location', type: IsarType.bool),
+    r'location': PropertySchema(id: 19, name: r'location', type: IsarType.bool),
     r'materialColor': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'notifications',
       type: IsarType.bool,
     ),
     r'nowTileMetric1': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'nowTileMetric1',
       type: IsarType.string,
     ),
     r'nowTileMetric2': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'nowTileMetric2',
       type: IsarType.string,
     ),
-    r'onboard': PropertySchema(id: 24, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 25, name: r'onboard', type: IsarType.bool),
     r'preferMetNoInHybrid': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'preferMetNoInHybrid',
       type: IsarType.bool,
     ),
     r'pressure': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'rainNotificationThreshold': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'rainNotificationThreshold',
       type: IsarType.double,
     ),
     r'rainNotifications': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'rainNotifications',
       type: IsarType.bool,
     ),
     r'roundDegree': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 30,
+      id: 31,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 31,
+      id: 32,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 32,
+      id: 33,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 33, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 34, name: r'theme', type: IsarType.string),
     r'tidesApiKey': PropertySchema(
-      id: 34,
+      id: 35,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 35, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 36, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 36,
+      id: 37,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 37,
+      id: 38,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 38,
+      id: 39,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useDummyElevation': PropertySchema(
-      id: 39,
+      id: 40,
       name: r'useDummyElevation',
       type: IsarType.bool,
     ),
     r'useDummyTides': PropertySchema(
-      id: 40,
+      id: 41,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 41,
+      id: 42,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 42,
+      id: 43,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 43,
+      id: 44,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 44, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 45, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -309,42 +314,43 @@ void _settingsSerialize(
   writer.writeString(offsets[6], object.elevationApiKey);
   writer.writeBool(offsets[7], object.floodNotifications);
   writer.writeDouble(offsets[8], object.floodRadiusKm);
-  writer.writeBool(offsets[9], object.hideAqi);
-  writer.writeBool(offsets[10], object.hideAurora);
-  writer.writeBool(offsets[11], object.hideElevation);
-  writer.writeBool(offsets[12], object.hideFlood);
-  writer.writeBool(offsets[13], object.hideMap);
-  writer.writeBool(offsets[14], object.hideRainForecast);
-  writer.writeBool(offsets[15], object.hideTides);
-  writer.writeString(offsets[16], object.language);
-  writer.writeBool(offsets[17], object.largeElement);
-  writer.writeBool(offsets[18], object.location);
-  writer.writeBool(offsets[19], object.materialColor);
-  writer.writeString(offsets[20], object.measurements);
-  writer.writeBool(offsets[21], object.notifications);
-  writer.writeString(offsets[22], object.nowTileMetric1);
-  writer.writeString(offsets[23], object.nowTileMetric2);
-  writer.writeBool(offsets[24], object.onboard);
-  writer.writeBool(offsets[25], object.preferMetNoInHybrid);
-  writer.writeString(offsets[26], object.pressure);
-  writer.writeDouble(offsets[27], object.rainNotificationThreshold);
-  writer.writeBool(offsets[28], object.rainNotifications);
-  writer.writeBool(offsets[29], object.roundDegree);
-  writer.writeBool(offsets[30], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[31], object.showAlertsOnMap);
-  writer.writeBool(offsets[32], object.showDummyAlerts);
-  writer.writeString(offsets[33], object.theme);
-  writer.writeString(offsets[34], object.tidesApiKey);
-  writer.writeString(offsets[35], object.timeEnd);
-  writer.writeLong(offsets[36], object.timeRange);
-  writer.writeString(offsets[37], object.timeStart);
-  writer.writeString(offsets[38], object.timeformat);
-  writer.writeBool(offsets[39], object.useDummyElevation);
-  writer.writeBool(offsets[40], object.useDummyTides);
-  writer.writeString(offsets[41], object.weatherDataSource);
-  writer.writeString(offsets[42], object.widgetBackgroundColor);
-  writer.writeString(offsets[43], object.widgetTextColor);
-  writer.writeString(offsets[44], object.wind);
+  writer.writeBool(offsets[9], object.hideAgriculture);
+  writer.writeBool(offsets[10], object.hideAqi);
+  writer.writeBool(offsets[11], object.hideAurora);
+  writer.writeBool(offsets[12], object.hideElevation);
+  writer.writeBool(offsets[13], object.hideFlood);
+  writer.writeBool(offsets[14], object.hideMap);
+  writer.writeBool(offsets[15], object.hideRainForecast);
+  writer.writeBool(offsets[16], object.hideTides);
+  writer.writeString(offsets[17], object.language);
+  writer.writeBool(offsets[18], object.largeElement);
+  writer.writeBool(offsets[19], object.location);
+  writer.writeBool(offsets[20], object.materialColor);
+  writer.writeString(offsets[21], object.measurements);
+  writer.writeBool(offsets[22], object.notifications);
+  writer.writeString(offsets[23], object.nowTileMetric1);
+  writer.writeString(offsets[24], object.nowTileMetric2);
+  writer.writeBool(offsets[25], object.onboard);
+  writer.writeBool(offsets[26], object.preferMetNoInHybrid);
+  writer.writeString(offsets[27], object.pressure);
+  writer.writeDouble(offsets[28], object.rainNotificationThreshold);
+  writer.writeBool(offsets[29], object.rainNotifications);
+  writer.writeBool(offsets[30], object.roundDegree);
+  writer.writeBool(offsets[31], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[32], object.showAlertsOnMap);
+  writer.writeBool(offsets[33], object.showDummyAlerts);
+  writer.writeString(offsets[34], object.theme);
+  writer.writeString(offsets[35], object.tidesApiKey);
+  writer.writeString(offsets[36], object.timeEnd);
+  writer.writeLong(offsets[37], object.timeRange);
+  writer.writeString(offsets[38], object.timeStart);
+  writer.writeString(offsets[39], object.timeformat);
+  writer.writeBool(offsets[40], object.useDummyElevation);
+  writer.writeBool(offsets[41], object.useDummyTides);
+  writer.writeString(offsets[42], object.weatherDataSource);
+  writer.writeString(offsets[43], object.widgetBackgroundColor);
+  writer.writeString(offsets[44], object.widgetTextColor);
+  writer.writeString(offsets[45], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -363,43 +369,44 @@ Settings _settingsDeserialize(
   object.elevationApiKey = reader.readStringOrNull(offsets[6]);
   object.floodNotifications = reader.readBool(offsets[7]);
   object.floodRadiusKm = reader.readDouble(offsets[8]);
-  object.hideAqi = reader.readBool(offsets[9]);
-  object.hideAurora = reader.readBool(offsets[10]);
-  object.hideElevation = reader.readBool(offsets[11]);
-  object.hideFlood = reader.readBool(offsets[12]);
-  object.hideMap = reader.readBool(offsets[13]);
-  object.hideRainForecast = reader.readBool(offsets[14]);
-  object.hideTides = reader.readBool(offsets[15]);
+  object.hideAgriculture = reader.readBool(offsets[9]);
+  object.hideAqi = reader.readBool(offsets[10]);
+  object.hideAurora = reader.readBool(offsets[11]);
+  object.hideElevation = reader.readBool(offsets[12]);
+  object.hideFlood = reader.readBool(offsets[13]);
+  object.hideMap = reader.readBool(offsets[14]);
+  object.hideRainForecast = reader.readBool(offsets[15]);
+  object.hideTides = reader.readBool(offsets[16]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[16]);
-  object.largeElement = reader.readBool(offsets[17]);
-  object.location = reader.readBool(offsets[18]);
-  object.materialColor = reader.readBool(offsets[19]);
-  object.measurements = reader.readString(offsets[20]);
-  object.notifications = reader.readBool(offsets[21]);
-  object.nowTileMetric1 = reader.readString(offsets[22]);
-  object.nowTileMetric2 = reader.readString(offsets[23]);
-  object.onboard = reader.readBool(offsets[24]);
-  object.preferMetNoInHybrid = reader.readBool(offsets[25]);
-  object.pressure = reader.readString(offsets[26]);
-  object.rainNotificationThreshold = reader.readDouble(offsets[27]);
-  object.rainNotifications = reader.readBool(offsets[28]);
-  object.roundDegree = reader.readBool(offsets[29]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[30]);
-  object.showAlertsOnMap = reader.readBool(offsets[31]);
-  object.showDummyAlerts = reader.readBool(offsets[32]);
-  object.theme = reader.readStringOrNull(offsets[33]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[34]);
-  object.timeEnd = reader.readStringOrNull(offsets[35]);
-  object.timeRange = reader.readLongOrNull(offsets[36]);
-  object.timeStart = reader.readStringOrNull(offsets[37]);
-  object.timeformat = reader.readString(offsets[38]);
-  object.useDummyElevation = reader.readBool(offsets[39]);
-  object.useDummyTides = reader.readBool(offsets[40]);
-  object.weatherDataSource = reader.readString(offsets[41]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[42]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[43]);
-  object.wind = reader.readString(offsets[44]);
+  object.language = reader.readStringOrNull(offsets[17]);
+  object.largeElement = reader.readBool(offsets[18]);
+  object.location = reader.readBool(offsets[19]);
+  object.materialColor = reader.readBool(offsets[20]);
+  object.measurements = reader.readString(offsets[21]);
+  object.notifications = reader.readBool(offsets[22]);
+  object.nowTileMetric1 = reader.readString(offsets[23]);
+  object.nowTileMetric2 = reader.readString(offsets[24]);
+  object.onboard = reader.readBool(offsets[25]);
+  object.preferMetNoInHybrid = reader.readBool(offsets[26]);
+  object.pressure = reader.readString(offsets[27]);
+  object.rainNotificationThreshold = reader.readDouble(offsets[28]);
+  object.rainNotifications = reader.readBool(offsets[29]);
+  object.roundDegree = reader.readBool(offsets[30]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[31]);
+  object.showAlertsOnMap = reader.readBool(offsets[32]);
+  object.showDummyAlerts = reader.readBool(offsets[33]);
+  object.theme = reader.readStringOrNull(offsets[34]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[35]);
+  object.timeEnd = reader.readStringOrNull(offsets[36]);
+  object.timeRange = reader.readLongOrNull(offsets[37]);
+  object.timeStart = reader.readStringOrNull(offsets[38]);
+  object.timeformat = reader.readString(offsets[39]);
+  object.useDummyElevation = reader.readBool(offsets[40]);
+  object.useDummyTides = reader.readBool(offsets[41]);
+  object.weatherDataSource = reader.readString(offsets[42]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[43]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[44]);
+  object.wind = reader.readString(offsets[45]);
   return object;
 }
 
@@ -443,31 +450,31 @@ P _settingsDeserializeProp<P>(
     case 15:
       return (reader.readBool(offset)) as P;
     case 16:
-      return (reader.readStringOrNull(offset)) as P;
-    case 17:
       return (reader.readBool(offset)) as P;
+    case 17:
+      return (reader.readStringOrNull(offset)) as P;
     case 18:
       return (reader.readBool(offset)) as P;
     case 19:
       return (reader.readBool(offset)) as P;
     case 20:
-      return (reader.readString(offset)) as P;
-    case 21:
       return (reader.readBool(offset)) as P;
-    case 22:
+    case 21:
       return (reader.readString(offset)) as P;
+    case 22:
+      return (reader.readBool(offset)) as P;
     case 23:
       return (reader.readString(offset)) as P;
     case 24:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 25:
       return (reader.readBool(offset)) as P;
     case 26:
-      return (reader.readString(offset)) as P;
-    case 27:
-      return (reader.readDouble(offset)) as P;
-    case 28:
       return (reader.readBool(offset)) as P;
+    case 27:
+      return (reader.readString(offset)) as P;
+    case 28:
+      return (reader.readDouble(offset)) as P;
     case 29:
       return (reader.readBool(offset)) as P;
     case 30:
@@ -477,28 +484,30 @@ P _settingsDeserializeProp<P>(
     case 32:
       return (reader.readBool(offset)) as P;
     case 33:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 34:
       return (reader.readStringOrNull(offset)) as P;
     case 35:
       return (reader.readStringOrNull(offset)) as P;
     case 36:
-      return (reader.readLongOrNull(offset)) as P;
-    case 37:
       return (reader.readStringOrNull(offset)) as P;
+    case 37:
+      return (reader.readLongOrNull(offset)) as P;
     case 38:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 39:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 40:
       return (reader.readBool(offset)) as P;
     case 41:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 42:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 43:
       return (reader.readStringOrNull(offset)) as P;
     case 44:
+      return (reader.readStringOrNull(offset)) as P;
+    case 45:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1366,6 +1375,15 @@ extension SettingsQueryFilter
 
           epsilon: epsilon,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  hideAgricultureEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hideAgriculture', value: value),
       );
     });
   }
@@ -4046,6 +4064,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAgriculture() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAgriculture', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAgricultureDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAgriculture', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideAqi() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideAqi', Sort.asc);
@@ -4598,6 +4628,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAgriculture() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAgriculture', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAgricultureDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideAgriculture', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideAqi() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideAqi', Sort.asc);
@@ -5119,6 +5161,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByHideAgriculture() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideAgriculture');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByHideAqi() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hideAqi');
@@ -5440,6 +5488,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, double, QQueryOperations> floodRadiusKmProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'floodRadiusKm');
+    });
+  }
+
+  QueryBuilder<Settings, bool, QQueryOperations> hideAgricultureProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideAgriculture');
     });
   }
 

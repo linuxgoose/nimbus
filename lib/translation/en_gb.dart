@@ -211,5 +211,35 @@ class EnGb {
     'flood_search_radius': 'Search Radius',
     'flood_radius_desc':
         'Set the radius to search for flood warnings around your location',
+
+    // Agriculture
+    'agriculture': 'Agriculture',
+    'agriculture_subtitle': 'Soil conditions & farming data',
+    'current_conditions': 'Current Conditions',
+    'soil_moisture_chart': 'Soil Moisture (48h Forecast)',
+    'soil_moisture_desc': 'Volumetric water content at different depths',
+    'soil_temperature_chart': 'Soil Temperature (48h Forecast)',
+    'soil_temperature_desc': 'Temperature at different soil depths',
+    'surface_soil_moisture': 'Surface Soil Moisture',
+    'surface_temperature': 'Surface Temperature',
+    'vpd_transpiration': 'VPD (Transpiration)',
+    'et0_reference': 'ET₀ Reference',
+    'water_evaporation_rate': 'Water evaporation rate',
+    'evapotranspiration_et0': 'Evapotranspiration (ET₀)',
+    'vapour_pressure_deficit': 'Vapour Pressure Deficit',
+    'et0_desc':
+        'ET₀ represents the water loss from a well-watered grass field. '
+        'It\'s used to calculate crop irrigation requirements. '
+        'Higher values indicate greater water demand.',
+    'vpd_desc':
+        'VPD measures the difference between moisture in the air and '
+        'what it can hold. Low VPD (<0.4 kPa) slows plant transpiration. '
+        'High VPD (>1.6 kPa) causes plant stress.',
+    'weekly_forecast': '7-Day Forecast',
+    'about_agriculture_data': 'About Agriculture Data',
+    'agriculture_info':
+        'Agricultural weather data from Open-Meteo provides essential '
+        'metrics for farming and crop management.',
+    'hide_agriculture': 'Hide Agriculture',
   };
 }
