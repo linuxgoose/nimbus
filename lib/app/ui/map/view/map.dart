@@ -413,8 +413,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   }
 
   Widget _buildMapTileLayer(CacheStore cacheStore) => TileLayer(
-    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    userAgentPackageName: 'com.darkmoonight.rain',
+        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     tileProvider: CachedTileProvider(
       store: cacheStore,
       maxStale: const Duration(days: 30),

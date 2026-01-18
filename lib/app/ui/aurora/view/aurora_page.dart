@@ -4,6 +4,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/services/aurora_service.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class AuroraPage extends StatefulWidget {
   const AuroraPage({super.key});
@@ -22,6 +24,7 @@ class _AuroraPageState extends State<AuroraPage> {
   String? error;
   bool isFromCache = false;
   DateTime? cacheTime;
+  bool showAuroraOverlay = true;
 
   @override
   void initState() {
@@ -131,6 +134,8 @@ class _AuroraPageState extends State<AuroraPage> {
         _buildCurrentActivityCard(),
         const SizedBox(height: 16),
         _buildVisibilityCard(),
+        const SizedBox(height: 16),
+        _buildAuroraMapCard(),
         const SizedBox(height: 16),
         if (ukData != null) ...[
           _buildUKAlertCard(),
@@ -295,6 +300,112 @@ class _AuroraPageState extends State<AuroraPage> {
               style: context.textTheme.bodySmall?.copyWith(
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAuroraMapCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      LucideIcons.map,
+                      color: context.theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Aurora Forecast Map',
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                height: 400,
+                child: Image.network(
+                  'https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg?${DateTime.now().millisecondsSinceEpoch ~/ 1800000}', // Cache bust every 30 min
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: context.theme.colorScheme.surfaceContainerHighest,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              LucideIcons.cloudOff,
+                              size: 48,
+                              color: context.theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Aurora map unavailable',
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color:
+                                    context.theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'The aurora oval shows the current predicted extent of aurora visibility. Green indicates likely aurora, with intensity increasing through yellow, orange, and red.',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.refreshCw,
+                  size: 12,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Map updates every 30 minutes from NOAA',
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
