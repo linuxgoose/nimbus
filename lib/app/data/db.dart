@@ -5,6 +5,7 @@ part 'db.g.dart';
 @collection
 class Settings {
   Id id = Isar.autoIncrement;
+  int schemaVersion = 1; // Track schema version for migrations
   bool onboard = false;
   String? theme = 'system';
   bool location = false;

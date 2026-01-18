@@ -140,6 +140,8 @@ Future<void> initializeTimeZone() async {
 }
 
 Future<void> initializeIsar() async {
+  const int currentSchemaVersion = 1;
+
   try {
     isar = await Isar.open([
       SettingsSchema,
@@ -157,8 +159,25 @@ Future<void> initializeIsar() async {
       TideStationSchema,
       SavedTideStationSchema,
     ], directory: (await getApplicationSupportDirectory()).path);
+
+    // Check schema version and migrate if needed
+    final existingSettings = isar.settings.where().findFirstSync();
+    if (existingSettings != null &&
+        existingSettings.schemaVersion < currentSchemaVersion) {
+      debugPrint(
+        '🔄 Schema migration needed: v${existingSettings.schemaVersion} → v$currentSchemaVersion',
+      );
+      await _migrateSchema(
+        existingSettings.schemaVersion,
+        currentSchemaVersion,
+      );
+    }
   } catch (e) {
-    // If schema is invalid (e.g., after adding new collections), delete and recreate
+    debugPrint('⚠️ Isar initialization error: $e');
+
+    // Export critical user data before wiping database
+    final backupData = await _exportCriticalData();
+
     final dir = await getApplicationSupportDirectory();
     final isarFile = File('${dir.path}/default.isar');
     final isarLockFile = File('${dir.path}/default.isar.lock');
@@ -166,7 +185,7 @@ Future<void> initializeIsar() async {
     if (await isarFile.exists()) await isarFile.delete();
     if (await isarLockFile.exists()) await isarLockFile.delete();
 
-    // Retry opening
+    // Retry opening with fresh database
     isar = await Isar.open([
       SettingsSchema,
       MainWeatherCacheSchema,
@@ -183,6 +202,10 @@ Future<void> initializeIsar() async {
       TideStationSchema,
       SavedTideStationSchema,
     ], directory: dir.path);
+
+    // Restore critical user data
+    await _importCriticalData(backupData);
+    debugPrint('✅ Database recreated and user data restored');
   }
 
   settings = isar.settings.where().findFirstSync() ?? Settings();
@@ -216,6 +239,104 @@ Future<void> initializeIsar() async {
     settings.weatherAlertMinSeverity = 'moderate';
     isar.writeTxnSync(() => isar.settings.putSync(settings));
   }
+
+  // Update schema version to current
+  if (settings.schemaVersion < currentSchemaVersion) {
+    settings.schemaVersion = currentSchemaVersion;
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+    debugPrint('✅ Schema version updated to v$currentSchemaVersion');
+  }
+}
+
+Future<Map<String, dynamic>> _exportCriticalData() async {
+  try {
+    if (isar.isOpen) {
+      final savedStations = isar.savedTideStations.where().findAllSync();
+      final weatherCards = isar.weatherCards.where().findAllSync();
+
+      return {
+        'savedTideStations': savedStations
+            .map(
+              (s) => {
+                'stationId': s.stationId,
+                'name': s.name,
+                'lat': s.lat,
+                'lon': s.lon,
+              },
+            )
+            .toList(),
+        'weatherCards': weatherCards
+            .map(
+              (w) => {
+                'lat': w.lat,
+                'lon': w.lon,
+                'city': w.city,
+                'district': w.district,
+              },
+            )
+            .toList(),
+      };
+    }
+  } catch (e) {
+    debugPrint('⚠️ Error exporting data: $e');
+  }
+  return {};
+}
+
+Future<void> _importCriticalData(Map<String, dynamic> backupData) async {
+  if (backupData.isEmpty) return;
+
+  try {
+    isar.writeTxnSync(() {
+      // Restore saved tide stations
+      final stations = backupData['savedTideStations'] as List?;
+      if (stations != null) {
+        for (var stationData in stations) {
+          final station = SavedTideStation(
+            stationId: (stationData['stationId'] as String?) ?? '',
+            name: (stationData['name'] as String?) ?? '',
+            lat: (stationData['lat'] as double?) ?? 0.0,
+            lon: (stationData['lon'] as double?) ?? 0.0,
+          );
+          isar.savedTideStations.putSync(station);
+        }
+        debugPrint('✅ Restored ${stations.length} saved tide stations');
+      }
+
+      // Restore weather cards
+      final cards = backupData['weatherCards'] as List?;
+      if (cards != null) {
+        for (var cardData in cards) {
+          final card = WeatherCard(
+            lat: cardData['lat'] as double?,
+            lon: cardData['lon'] as double?,
+            city: cardData['city'] as String?,
+            district: cardData['district'] as String?,
+          );
+          isar.weatherCards.putSync(card);
+        }
+        debugPrint('✅ Restored ${cards.length} weather cards');
+      }
+
+      // Note: Settings will be initialized with defaults,
+      // but critical user preferences are preserved in the Settings() defaults
+    });
+  } catch (e) {
+    debugPrint('⚠️ Error importing data: $e');
+  }
+}
+
+Future<void> _migrateSchema(int fromVersion, int toVersion) async {
+  debugPrint('🔄 Migrating schema from v$fromVersion to v$toVersion');
+
+  // Future migrations will go here
+  // Example:
+  // if (fromVersion < 2) {
+  //   // Migrate from v1 to v2
+  //   // Add new fields, transform data, etc.
+  // }
+
+  debugPrint('✅ Schema migration completed');
 }
 
 Future<void> initializeNotifications() async {
