@@ -24,6 +24,7 @@ class Settings {
   String tideDatum = 'mllw'; // mllw, mlw, msl, mhw, mhhw
   bool hideElevation = false;
   bool useDummyElevation = true;
+  String elevationSource = 'open_meteo'; // open_meteo, open_elevation
   String? elevationApiKey;
   bool hideAurora = false;
   bool auroraNotifications = false;
@@ -52,6 +53,11 @@ class Settings {
   bool preferMetNoInHybrid =
       false; // Override Nordic region detection in hybrid mode
   bool hideRainForecast = false; // Hide 6-hour rain forecast chart
+  bool useCustomOpenMeteoEndpoint = false; // Use custom Open-Meteo server
+  String? customOpenMeteoUrl; // Custom Open-Meteo API base URL (e.g., https://nimbusmeteo.linuxgoose.com)
+  String? customAirQualityUrl; // Custom Air Quality API URL
+  String? customMarineUrl; // Custom Marine API URL
+  String? customGeocodingUrl; // Custom Geocoding API URL
   String nowTileMetric1 = 'humidity'; // First metric to show in now tile
   String nowTileMetric2 = 'wind'; // Second metric to show in now tile
   String? language;

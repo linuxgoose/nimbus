@@ -111,9 +111,23 @@ class NotificationWorker {
       final lon = locationCache.lon!;
 
       // Fetch 6-hour rain forecast from Open-Meteo
+      final settingsData = await isar.settings.where().findFirst();
+      String baseUrl = 'https://api.open-meteo.com';
+      
+      if (settingsData != null) {
+        // Use Nimbus Meteo if selected
+        if (settingsData.weatherDataSource == 'nimbusmeteo') {
+          baseUrl = 'https://nimbusmeteo.linuxgoose.com';
+        } else if (settingsData.useCustomOpenMeteoEndpoint &&
+            settingsData.customOpenMeteoUrl != null &&
+            settingsData.customOpenMeteoUrl!.isNotEmpty) {
+          baseUrl = settingsData.customOpenMeteoUrl!;
+        }
+      }
+      
       final response = await http.get(
         Uri.parse(
-          'https://api.open-meteo.com/v1/forecast?'
+          '$baseUrl/v1/forecast?'
           'latitude=$lat&longitude=$lon'
           '&hourly=precipitation'
           '&forecast_hours=6'

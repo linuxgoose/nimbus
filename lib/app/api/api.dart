@@ -9,9 +9,30 @@ import 'package:nimbus/main.dart';
 
 class WeatherAPI {
   // Base URL updated to exclude the '?' to handle queryParameters cleanly via Dio
-  final Dio dio = Dio()
-    ..options.baseUrl = 'https://api.open-meteo.com/v1/forecast';
+  late final Dio dio;
   final Dio dioLocation = Dio();
+
+  WeatherAPI() {
+    dio = Dio()
+      ..options.baseUrl = _getBaseUrl();
+  }
+
+  String _getBaseUrl() {
+    // Use Nimbus Meteo if selected as data source
+    if (settings.weatherDataSource == 'nimbusmeteo') {
+      return 'https://nimbusmeteo.linuxgoose.com/v1/forecast';
+    }
+    // Use custom endpoint if configured
+    if (settings.useCustomOpenMeteoEndpoint && 
+        settings.customOpenMeteoUrl != null && 
+        settings.customOpenMeteoUrl!.isNotEmpty) {
+      final customUrl = settings.customOpenMeteoUrl!;
+      // Remove trailing slash if present
+      final cleanUrl = customUrl.endsWith('/') ? customUrl.substring(0, customUrl.length - 1) : customUrl;
+      return '$cleanUrl/v1/forecast';
+    }
+    return 'https://api.open-meteo.com/v1/forecast';
+  }
 
   // Added alerts=true and models=gem_global for boundary/polygon data
   static const String _weatherParams =
@@ -210,8 +231,19 @@ class WeatherAPI {
   }
 
   Future<Iterable<Result>> getCity(String query, Locale? locale) async {
+    String baseGeocodingUrl = 'https://geocoding-api.open-meteo.com';
+    
+    // Use Nimbus Meteo if selected
+    if (settings.weatherDataSource == 'nimbusmeteo') {
+      baseGeocodingUrl = 'https://nimbusmeteo.linuxgoose.com';
+    } else if (settings.useCustomOpenMeteoEndpoint && 
+        settings.customGeocodingUrl != null && 
+        settings.customGeocodingUrl!.isNotEmpty) {
+      baseGeocodingUrl = settings.customGeocodingUrl!;
+    }
+    
     final String url =
-        'https://geocoding-api.open-meteo.com/v1/search?name=$query&count=5&language=${locale?.languageCode}&format=json';
+        '$baseGeocodingUrl/v1/search?name=$query&count=5&language=${locale?.languageCode}&format=json';
     try {
       Response response = await dioLocation.get(url);
       if (response.statusCode == 200) {

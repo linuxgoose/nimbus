@@ -45,3 +45,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Nimbus Open-Meteo Docker Setup
+.env.nimbus-sync.local
+docker-compose.override.yml
+caddy_data/
+caddy_config/

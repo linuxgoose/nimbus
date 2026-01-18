@@ -63,6 +63,7 @@ class _ElevationPageState extends State<ElevationPage> {
         lon,
         apiKey: settings.elevationApiKey,
         useDummyData: settings.useDummyElevation,
+        source: settings.elevationSource,
       );
 
       // Cache the fetched data

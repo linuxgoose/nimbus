@@ -202,17 +202,33 @@ class AuroraService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as List;
         final forecast = <Map<String, dynamic>>[];
+        final now = DateTime.now().toUtc();
 
         // Skip header row
         for (var i = 1; i < data.length; i++) {
           final entry = data[i];
-          forecast.add({
-            'timestamp': entry[0],
-            'kp_predicted': double.tryParse(entry[1].toString()) ?? 0.0,
-            'kp_observed': entry[2] != null
-                ? double.tryParse(entry[2].toString())
-                : null,
-          });
+          final timestamp = entry[0] as String;
+          final dataType =
+              entry[2] as String?; // observed, estimated, or predicted
+
+          // Parse the timestamp
+          try {
+            final entryTime = DateTime.parse(timestamp);
+
+            // Only include current and future data (estimated or predicted)
+            // Skip past "observed" data
+            if (dataType != 'observed' &&
+                !entryTime.isBefore(now.subtract(const Duration(hours: 3)))) {
+              forecast.add({
+                'timestamp': timestamp,
+                'kp_predicted': double.tryParse(entry[1].toString()) ?? 0.0,
+                'data_type': dataType,
+              });
+            }
+          } catch (e) {
+            // Skip entries with invalid timestamps
+            continue;
+          }
         }
         return forecast;
       }

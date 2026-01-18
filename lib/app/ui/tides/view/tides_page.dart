@@ -57,7 +57,7 @@ class _TidesPageState extends State<TidesPage> {
         locations.firstOrNull;
 
     if (_selectedLocation == null) {
-      // Use current weather location as default
+      // Use current weather location as default and save it
       final lat = settings.location ? locationCache.lat : 51.5074;
       final lon = settings.location ? locationCache.lon : -0.1278;
 
@@ -66,7 +66,11 @@ class _TidesPageState extends State<TidesPage> {
         lat: lat,
         lon: lon,
         isPrimary: true,
+        lastUpdated: DateTime.now(),
       );
+
+      // Save to database so it persists
+      isar.writeTxnSync(() => isar.tideLocations.putSync(_selectedLocation!));
     }
 
     await _fetchTideData();
@@ -837,16 +841,22 @@ class _TidesPageState extends State<TidesPage> {
   }
 
   void _useCurrentLocation() {
-    setState(() {
-      final lat = settings.location ? locationCache.lat : 51.5074;
-      final lon = settings.location ? locationCache.lon : -0.1278;
+    final lat = settings.location ? locationCache.lat : 51.5074;
+    final lon = settings.location ? locationCache.lon : -0.1278;
 
-      _selectedLocation = TideLocation(
-        name: 'Current Location',
-        lat: lat,
-        lon: lon,
-        isPrimary: false,
-      );
+    final location = TideLocation(
+      name: 'Current Location',
+      lat: lat,
+      lon: lon,
+      isPrimary: false,
+      lastUpdated: DateTime.now(),
+    );
+
+    // Save to database so it persists
+    isar.writeTxnSync(() => isar.tideLocations.putSync(location));
+
+    setState(() {
+      _selectedLocation = location;
     });
     _fetchTideData();
   }

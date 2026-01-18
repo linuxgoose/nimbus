@@ -390,7 +390,9 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildElevationTitle(context),
               _buildHideElevationSettingCard(context, setState),
               _buildUseDummyElevationSettingCard(context, setState),
-              _buildElevationApiKeySettingCard(context, setState),
+              _buildElevationSourceSettingCard(context, setState),
+              if (settings.elevationSource == 'open_elevation')
+                _buildElevationApiKeySettingCard(context, setState),
               _buildCheckElevationCacheSettingCard(context, setState),
               const Gap(10),
               _buildClearElevationCacheSettingCard(context, setState),
@@ -1057,6 +1059,73 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {});
     },
   );
+
+  Widget _buildElevationSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Elevation Data Source',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.elevationSource == 'open_meteo'
+          ? 'Open-Meteo'
+          : 'Open-Elevation',
+    ),
+    onPressed: () => _showElevationSourceDialog(context, setState),
+  );
+
+  void _showElevationSourceDialog(BuildContext context, StateSetter setState) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Elevation Data Source'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('Open-Meteo'),
+              subtitle: const Text(
+                'Free, no API key required. Fast and reliable.',
+              ),
+              value: 'open_meteo',
+              groupValue: settings.elevationSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.elevationSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Open-Elevation'),
+              subtitle: const Text('Free public API or self-hosted option.'),
+              value: 'open_elevation',
+              groupValue: settings.elevationSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.elevationSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildAuroraTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
@@ -1872,7 +1941,7 @@ class _SettingsPageState extends State<SettingsPage> {
     text: 'Weather Data Source',
     dropdown: true,
     dropdownName: _getDataSourceDisplayName(settings.weatherDataSource),
-    dropdownList: <String>['Open-Meteo', 'MET Norway', 'Hybrid (Best of Both)'],
+    dropdownList: <String>['Open-Meteo', 'MET Norway', 'Hybrid (Best of Both)', 'Nimbus Meteo'],
     dropdownChange: (String? newValue) async {
       if (newValue == null) return;
       String sourceValue;
@@ -1882,6 +1951,9 @@ class _SettingsPageState extends State<SettingsPage> {
           break;
         case 'Hybrid (Best of Both)':
           sourceValue = 'hybrid';
+          break;
+        case 'Nimbus Meteo':
+          sourceValue = 'nimbusmeteo';
           break;
         default:
           sourceValue = 'openmeteo';
@@ -1905,6 +1977,8 @@ class _SettingsPageState extends State<SettingsPage> {
         return 'MET Norway';
       case 'hybrid':
         return 'Hybrid (Best of Both)';
+      case 'nimbusmeteo':
+        return 'Nimbus Meteo';
       default:
         return 'Open-Meteo';
     }

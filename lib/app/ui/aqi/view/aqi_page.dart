@@ -58,8 +58,19 @@ class _AqiPageState extends State<AqiPage> {
 
       // Fetch new data if no valid cache
       final dio = Dio();
+      String baseAqiUrl = 'https://air-quality-api.open-meteo.com';
+      
+      // Use Nimbus Meteo if selected
+      if (settings.weatherDataSource == 'nimbusmeteo') {
+        baseAqiUrl = 'https://nimbusmeteo.linuxgoose.com';
+      } else if (settings.useCustomOpenMeteoEndpoint && 
+          settings.customAirQualityUrl != null && 
+          settings.customAirQualityUrl!.isNotEmpty) {
+        baseAqiUrl = settings.customAirQualityUrl!;
+      }
+      
       final response = await dio.get(
-        'https://air-quality-api.open-meteo.com/v1/air-quality',
+        '$baseAqiUrl/v1/air-quality',
         queryParameters: {
           'latitude': lat,
           'longitude': lon,
