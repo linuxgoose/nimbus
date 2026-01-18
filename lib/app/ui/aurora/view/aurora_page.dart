@@ -4,8 +4,6 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/services/aurora_service.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class AuroraPage extends StatefulWidget {
   const AuroraPage({super.key});
@@ -25,6 +23,10 @@ class _AuroraPageState extends State<AuroraPage> {
   bool isFromCache = false;
   DateTime? cacheTime;
   bool showAuroraOverlay = true;
+  Map<String, dynamic>? solarWindData;
+  List<Map<String, dynamic>>? solarFlares;
+  List<Map<String, dynamic>>? earthquakes;
+  List<Map<String, dynamic>>? nwsAlerts;
 
   @override
   void initState() {
@@ -67,9 +69,28 @@ class _AuroraPageState extends State<AuroraPage> {
       // Also fetch UK data separately (not cached)
       final ukDataResult = await AuroraService.getAuroraWatchUK();
 
+      // Fetch solar wind speed
+      final solarWindResult = await AuroraService.getSolarWindSpeed();
+
+      // Fetch recent solar flares
+      final solarFlaresResult = await AuroraService.getSolarFlares(daysBack: 7);
+
+      // Fetch recent earthquakes (global significant ones)
+      final earthquakesResult = await AuroraService.getRecentEarthquakes();
+
+      // Fetch NWS alerts (US only)
+      final nwsAlertsResult = await AuroraService.getNWSAlerts(
+        latitude: lat,
+        longitude: lon,
+      );
+
       setState(() {
         auroraData = data;
         ukData = ukDataResult;
+        solarWindData = solarWindResult;
+        solarFlares = solarFlaresResult;
+        earthquakes = earthquakesResult;
+        nwsAlerts = nwsAlertsResult;
         forecast = data['forecast'] != null
             ? (data['forecast'] as List).cast<Map<String, dynamic>>()
             : null;
@@ -133,12 +154,28 @@ class _AuroraPageState extends State<AuroraPage> {
       children: [
         _buildCurrentActivityCard(),
         const SizedBox(height: 16),
+        if (solarWindData != null) ...[
+          _buildSolarWindCard(),
+          const SizedBox(height: 16),
+        ],
         _buildVisibilityCard(),
         const SizedBox(height: 16),
         _buildAuroraMapCard(),
         const SizedBox(height: 16),
         if (ukData != null) ...[
           _buildUKAlertCard(),
+          const SizedBox(height: 16),
+        ],
+        if (solarFlares != null && solarFlares!.isNotEmpty) ...[
+          _buildSolarFlaresCard(),
+          const SizedBox(height: 16),
+        ],
+        if (earthquakes != null && earthquakes!.isNotEmpty) ...[
+          _buildEarthquakesCard(),
+          const SizedBox(height: 16),
+        ],
+        if (nwsAlerts != null && nwsAlerts!.isNotEmpty) ...[
+          _buildNWSAlertsCard(),
           const SizedBox(height: 16),
         ],
         _buildForecastCard(),
@@ -407,6 +444,403 @@ class _AuroraPageState extends State<AuroraPage> {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSolarWindCard() {
+    final speed = solarWindData?['speed'] ?? 0.0;
+    final status = solarWindData?['status'] ?? 'Unknown';
+    final colorHex = solarWindData?['color'] ?? '#666666';
+    final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.wind,
+                  color: context.theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Solar Wind Speed',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${speed.toStringAsFixed(0)} km/s',
+                      style: context.textTheme.displaySmall?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      status,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(_getSolarWindIcon(status), size: 64, color: color),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _getSolarWindDescription(status),
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSolarFlaresCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(LucideIcons.zap, color: context.theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Recent Solar Flares',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...solarFlares!.take(5).map((flare) => _buildFlareItem(flare)),
+            if (solarFlares!.isEmpty)
+              Text(
+                'No significant solar flares in the past 7 days',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlareItem(Map<String, dynamic> flare) {
+    final classType = flare['classType'] ?? 'Unknown';
+    final severity = flare['severity'] ?? 'Unknown';
+    final colorHex = flare['color'] ?? '#666666';
+    final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+    final peakTime = flare['peakTime'] as String?;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: color, width: 2),
+            ),
+            child: Center(
+              child: Text(
+                classType,
+                style: context.textTheme.titleMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  severity,
+                  style: context.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (peakTime != null)
+                  Text(
+                    _formatFlareTime(peakTime),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Icon(LucideIcons.zap, color: color, size: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEarthquakesCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.waves,
+                  color: context.theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Recent Earthquakes',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Significant earthquakes (4.5+ magnitude) in the past week',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...earthquakes!.take(5).map((quake) => _buildEarthquakeItem(quake)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEarthquakeItem(Map<String, dynamic> quake) {
+    final magnitude = quake['magnitude'] ?? 0.0;
+    final place = quake['place'] ?? 'Unknown location';
+    final time = quake['time'] as int?;
+    final colorHex = quake['color'] ?? '#666666';
+    final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+    final severity = quake['severity'] ?? 'Unknown';
+    final tsunami = quake['tsunami'] == true;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: color, width: 2),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    magnitude.toStringAsFixed(1),
+                    style: context.textTheme.titleLarge?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    severity,
+                    style: context.textTheme.labelSmall?.copyWith(
+                      color: color,
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        place,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (tsunami)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'TSUNAMI',
+                          style: context.textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                if (time != null)
+                  Text(
+                    _formatEarthquakeTime(time),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNWSAlertsCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.triangleAlert,
+                  color: context.theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'NWS Weather Alerts',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...nwsAlerts!.take(3).map((alert) => _buildNWSAlertItem(alert)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNWSAlertItem(Map<String, dynamic> alert) {
+    final event = alert['event'] ?? 'Weather Alert';
+    final severity = alert['severity'] ?? 'Unknown';
+    final areaDesc = alert['areaDesc'] ?? '';
+    final colorHex = alert['color'] ?? '#666666';
+    final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+    final urgency = alert['urgency'] ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color, width: 2),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(LucideIcons.circleAlert, color: color, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    event,
+                    style: context.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (areaDesc.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                areaDesc,
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            if (urgency.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      '$severity · $urgency',
+                      style: context.textTheme.labelSmall?.copyWith(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -725,5 +1159,71 @@ class _AuroraPageState extends State<AuroraPage> {
     if (age.inMinutes < 1) return 'just now';
     if (age.inMinutes < 60) return '${age.inMinutes}m ago';
     return '${age.inHours}h ago';
+  }
+
+  IconData _getSolarWindIcon(String status) {
+    switch (status) {
+      case 'Storm':
+        return LucideIcons.cloudLightning;
+      case 'Elevated':
+        return LucideIcons.wind;
+      case 'Normal':
+        return LucideIcons.cloudSun;
+      default:
+        return LucideIcons.cloud;
+    }
+  }
+
+  String _getSolarWindDescription(String status) {
+    switch (status) {
+      case 'Storm':
+        return 'High-speed solar wind detected! Strong geomagnetic storm conditions possible. Aurora may be visible at lower latitudes.';
+      case 'Elevated':
+        return 'Solar wind speed is elevated. Minor to moderate geomagnetic activity possible.';
+      case 'Normal':
+        return 'Solar wind speed is within normal range. Typical geomagnetic conditions.';
+      default:
+        return 'Solar wind data unavailable.';
+    }
+  }
+
+  String _formatFlareTime(String timestamp) {
+    try {
+      final dt = DateTime.parse(timestamp);
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+
+      if (diff.inHours < 1) {
+        return '${diff.inMinutes}m ago';
+      } else if (diff.inHours < 24) {
+        return '${diff.inHours}h ago';
+      } else if (diff.inDays < 7) {
+        return '${diff.inDays}d ago';
+      } else {
+        return DateFormat('MMM d').format(dt.toLocal());
+      }
+    } catch (e) {
+      return timestamp;
+    }
+  }
+
+  String _formatEarthquakeTime(int timestamp) {
+    try {
+      final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+
+      if (diff.inMinutes < 60) {
+        return '${diff.inMinutes}m ago';
+      } else if (diff.inHours < 24) {
+        return '${diff.inHours}h ago';
+      } else if (diff.inDays < 7) {
+        return '${diff.inDays}d ago';
+      } else {
+        return DateFormat('MMM d').format(dt.toLocal());
+      }
+    } catch (e) {
+      return 'Unknown';
+    }
   }
 }

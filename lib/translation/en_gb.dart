@@ -77,7 +77,7 @@ class EnGb {
     'validateNumber': 'Please enter a valid numeric value',
     'validate90': 'Value must be within -90 to 90 degrees',
     'validate180': 'Value must be within -180 to 180 degrees',
-    'notifications': 'Push Notifications',
+    'notifications': 'Forecast Notifications',
     'sunrise': 'Sunrise',
     'sunset': 'Sunset',
     'timeformat': 'Time Format',

@@ -900,8 +900,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
       await flutterLocalNotificationsPlugin.show(
         999, // Test notification ID
-        '✅ Notifications Enabled',
-        'Weather forecast notifications are now active and will appear based on your schedule.',
+        '✅ Forecast Notifications Enabled',
+        'Scheduled weather forecast notifications are now active and will appear according to your update frequency and quiet hours settings.',
         notificationDetails,
       );
     } catch (e) {

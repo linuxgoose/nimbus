@@ -12,7 +12,6 @@ import 'package:nimbus/app/api/api.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/utils/notification.dart';
 import 'package:nimbus/app/utils/show_snack_bar.dart';
-import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/weather_summary.dart';
 import 'package:nimbus/main.dart';
@@ -550,6 +549,32 @@ class WeatherController extends GetxController {
     }
   }
 
+  /// Check if current time is within quiet hours
+  bool _isQuietHours() {
+    final timeStartStr = settings.timeStart ?? '22:00';
+    final timeEndStr = settings.timeEnd ?? '08:00';
+
+    final now = DateTime.now();
+    final currentMinutes = now.hour * 60 + now.minute;
+
+    // Parse start and end times
+    final startParts = timeStartStr.split(':');
+    final endParts = timeEndStr.split(':');
+
+    final startMinutes =
+        int.parse(startParts[0]) * 60 + int.parse(startParts[1]);
+    final endMinutes = int.parse(endParts[0]) * 60 + int.parse(endParts[1]);
+
+    // Handle cases where quiet hours span midnight
+    if (startMinutes > endMinutes) {
+      // Quiet hours span midnight (e.g., 22:00 to 08:00)
+      return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+    } else {
+      // Quiet hours within same day (e.g., 13:00 to 14:00)
+      return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+    }
+  }
+
   Future<String> getLocalImagePath(String icon) async {
     final directory = await getApplicationSupportDirectory();
     final imagePath = '${directory.path}/$icon';
@@ -567,6 +592,14 @@ class WeatherController extends GetxController {
     final now = DateTime.now();
     final startHour = parseTime(timeStart).hour;
     final endHour = parseTime(timeEnd).hour;
+
+    // Skip scheduling forecast notifications if we're in quiet hours
+    if (_isQuietHours()) {
+      debugPrint(
+        '🔕 Forecast notifications: Currently in quiet hours, skipping',
+      );
+      return;
+    }
 
     final timeList = mainWeatherCache.time ?? [];
     for (var i = 0; i < timeList.length; i += timeRange) {
@@ -980,15 +1013,22 @@ class WeatherController extends GetxController {
 
   static void scheduleNotificationChecks() {
     if (Platform.isAndroid) {
+      // Get update frequency from settings (in hours)
+      final settings = isar.settings.getSync(1);
+      final timeRangeHours = settings?.timeRange ?? 1;
+
+      // Convert hours to minutes, with minimum of 15 minutes
+      final frequencyMinutes = (timeRangeHours * 60).clamp(15, 1440);
+
       Workmanager().registerPeriodicTask(
         'notificationCheck',
         'notificationCheck',
-        frequency: const Duration(minutes: 30),
+        frequency: Duration(minutes: frequencyMinutes),
         existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
         constraints: Constraints(networkType: NetworkType.connected),
       );
       debugPrint(
-        '📅 Scheduled periodic notification checks (every 30 minutes)',
+        '📅 Scheduled periodic notification checks (every ${timeRangeHours}h / ${frequencyMinutes}min)',
       );
     }
   }
