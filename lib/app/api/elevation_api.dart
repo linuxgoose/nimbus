@@ -15,8 +15,8 @@ class ElevationAPI {
       return 'https://nimbusmeteo.linuxgoose.com/v1/elevation';
     }
     // Use custom endpoint if configured
-    if (settings.useCustomOpenMeteoEndpoint && 
-        settings.customOpenMeteoUrl != null && 
+    if (settings.useCustomOpenMeteoEndpoint &&
+        settings.customOpenMeteoUrl != null &&
         settings.customOpenMeteoUrl!.isNotEmpty) {
       final baseUrl = settings.customOpenMeteoUrl!;
       return '$baseUrl/v1/elevation';
@@ -36,7 +36,7 @@ class ElevationAPI {
     }
 
     try {
-      if (source == 'open_meteo') {
+      if (source == 'open_meteo' || source == 'nimbusmeteo') {
         return await _getOpenMeteoData(lat, lon);
       } else {
         return await _getOpenElevationData(lat, lon, apiKey);
@@ -87,13 +87,17 @@ class ElevationAPI {
               .toDouble();
     }
 
+    final sourceLabel = settings.weatherDataSource == 'nimbusmeteo'
+        ? 'Nimbus Meteo'
+        : 'Open-Meteo API';
+
     return {
       'status': 200,
       'lat': lat,
       'lon': lon,
       'elevation': elevation, // meters above sea level
       'elevationFt': elevation * 3.28084, // feet above sea level
-      'source': 'Open-Meteo API',
+      'source': sourceLabel,
     };
   }
 

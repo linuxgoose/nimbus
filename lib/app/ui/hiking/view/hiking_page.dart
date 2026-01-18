@@ -1046,7 +1046,9 @@ class _HikingPageState extends State<HikingPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'This page provides comprehensive hiking weather data including UV index, visibility, wind conditions, and snow depth. Data is updated hourly from Open-Meteo. Plan your outdoor adventures safely with detailed forecasts and safety recommendations.',
+              settings.weatherDataSource == 'nimbusmeteo'
+                  ? 'This page provides comprehensive hiking weather data including UV index, visibility, wind conditions, and snow depth. Data is updated hourly from Nimbus Meteo. Plan your outdoor adventures safely with detailed forecasts and safety recommendations.'
+                  : 'This page provides comprehensive hiking weather data including UV index, visibility, wind conditions, and snow depth. Data is updated hourly from Open-Meteo. Plan your outdoor adventures safely with detailed forecasts and safety recommendations.',
               style: context.textTheme.bodyMedium,
             ),
           ],

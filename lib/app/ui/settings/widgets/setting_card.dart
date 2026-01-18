@@ -37,21 +37,60 @@ class SettingCard extends StatelessWidget {
   final double? elevation;
 
   @override
-  Widget build(BuildContext context) => Card(
-    elevation: elevation ?? 1,
-    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    child: ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      onTap: onPressed,
-      leading: icon,
-      title: Text(
-        text,
-        style: context.textTheme.titleMedium,
-        overflow: TextOverflow.visible,
+  Widget build(BuildContext context) {
+    final hasTrailing = switcher || dropdown || info || onPressed != null;
+
+    // Use column layout for dropdowns to avoid cramping on narrow screens
+    if (dropdown) {
+      return Card(
+        elevation: elevation ?? 1,
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    icon,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        text,
+                        style: context.textTheme.titleMedium,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildDropdownWidget(),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: elevation ?? 1,
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        onTap: onPressed,
+        leading: icon,
+        title: Text(
+          text,
+          style: context.textTheme.titleMedium,
+          overflow: TextOverflow.visible,
+        ),
+        trailing: hasTrailing ? _buildTrailingWidget(context) : null,
       ),
-      trailing: _buildTrailingWidget(context),
-    ),
-  );
+    );
+  }
 
   Widget _buildTrailingWidget(BuildContext context) {
     if (switcher) {
@@ -77,23 +116,27 @@ class SettingCard extends StatelessWidget {
         ? dropdownName!
         : dropdownList!.first;
 
-    return DropdownButton<String>(
-      icon: const Padding(
-        padding: EdgeInsets.only(left: 7),
-        child: Icon(LucideIcons.chevronDown),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(10),
       ),
-      iconSize: 15,
-      alignment: AlignmentDirectional.centerEnd,
-      borderRadius: const BorderRadius.all(Radius.circular(15)),
-      underline: Container(),
-      value: effectiveValue, // Use the sanitized value here
-      items: dropdownList!
-          .map<DropdownMenuItem<String>>(
-            (String value) =>
-                DropdownMenuItem<String>(value: value, child: Text(value)),
-          )
-          .toList(),
-      onChanged: dropdownChange,
+      child: DropdownButton<String>(
+        icon: const Icon(LucideIcons.chevronDown),
+        iconSize: 20,
+        isExpanded: true,
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        underline: Container(),
+        value: effectiveValue,
+        items: dropdownList!
+            .map<DropdownMenuItem<String>>(
+              (String value) =>
+                  DropdownMenuItem<String>(value: value, child: Text(value)),
+            )
+            .toList(),
+        onChanged: dropdownChange,
+      ),
     );
   }
 

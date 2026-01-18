@@ -11,6 +11,10 @@ class NotificationWorker {
   static const String _auroraChannelName = 'Aurora Alerts';
   static const String _rainChannelId = 'rain_alerts';
   static const String _rainChannelName = 'Rain Alerts';
+  static const String _weatherAlertChannelId = 'weather_alerts';
+  static const String _weatherAlertChannelName = 'Weather Alerts';
+  static const String _floodChannelId = 'flood_alerts';
+  static const String _floodChannelName = 'Flood Alerts';
 
   static Future<void> checkAndNotify() async {
     print('🔔 Notification Worker: Starting background check');
@@ -30,6 +34,16 @@ class NotificationWorker {
       // Check rain notifications
       if (settings.rainNotifications) {
         await _checkRainForecast(settings);
+      }
+
+      // Check weather alert notifications
+      if (settings.weatherAlertNotifications) {
+        await _checkWeatherAlerts(settings);
+      }
+
+      // Check flood notifications
+      if (settings.floodNotifications) {
+        await _checkFloodWarnings(settings);
       }
 
       print('🔔 Notification Worker: Completed background check');
@@ -113,7 +127,7 @@ class NotificationWorker {
       // Fetch 6-hour rain forecast from Open-Meteo
       final settingsData = await isar.settings.where().findFirst();
       String baseUrl = 'https://api.open-meteo.com';
-      
+
       if (settingsData != null) {
         // Use Nimbus Meteo if selected
         if (settingsData.weatherDataSource == 'nimbusmeteo') {
@@ -124,7 +138,7 @@ class NotificationWorker {
           baseUrl = settingsData.customOpenMeteoUrl!;
         }
       }
-      
+
       final response = await http.get(
         Uri.parse(
           '$baseUrl/v1/forecast?'
@@ -230,6 +244,264 @@ class NotificationWorker {
       print('🔔 Rain: Notification sent');
     } catch (e) {
       print('🔔 Rain: Error showing notification - $e');
+    }
+  }
+
+  static Future<void> _checkWeatherAlerts(Settings settings) async {
+    try {
+      print('🔔 Weather Alerts: Checking for active alerts');
+
+      // Get location from cache
+      final allLocations = isar.locationCaches.where().findAllSync();
+      if (allLocations.isEmpty) {
+        print('🔔 Weather Alerts: No location available');
+        return;
+      }
+
+      final locationCache = allLocations.first;
+      if (locationCache.lat == null || locationCache.lon == null) {
+        print('🔔 Weather Alerts: No location available');
+        return;
+      }
+
+      final lat = locationCache.lat!;
+      final lon = locationCache.lon!;
+
+      // Fetch weather data with alerts from API
+      String baseUrl = 'https://api.open-meteo.com';
+
+      if (settings.weatherDataSource == 'nimbusmeteo') {
+        baseUrl = 'https://nimbusmeteo.linuxgoose.com';
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customOpenMeteoUrl != null &&
+          settings.customOpenMeteoUrl!.isNotEmpty) {
+        baseUrl = settings.customOpenMeteoUrl!;
+      }
+
+      final response = await http.get(
+        Uri.parse(
+          '$baseUrl/v1/forecast?'
+          'latitude=$lat&longitude=$lon'
+          '&alerts=true'
+          '&timezone=auto',
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        print('🔔 Weather Alerts: API request failed');
+        return;
+      }
+
+      final data = json.decode(response.body);
+      final alerts = data['alerts'] as List?;
+
+      if (alerts == null || alerts.isEmpty) {
+        print('🔔 Weather Alerts: No active alerts');
+        return;
+      }
+
+      // Filter alerts by minimum severity
+      final filteredAlerts = alerts.where((alert) {
+        final severity =
+            (alert['severity'] as String?)?.toLowerCase() ?? 'unknown';
+
+        switch (settings.weatherAlertMinSeverity) {
+          case 'extreme':
+            return severity == 'extreme';
+          case 'severe':
+            return severity == 'extreme' || severity == 'severe';
+          case 'moderate':
+            return severity == 'extreme' ||
+                severity == 'severe' ||
+                severity == 'moderate';
+          default:
+            return true;
+        }
+      }).toList();
+
+      if (filteredAlerts.isEmpty) {
+        print('🔔 Weather Alerts: No alerts matching severity threshold');
+        return;
+      }
+
+      print('🔔 Weather Alerts: Found ${filteredAlerts.length} alert(s)');
+
+      // Send notification for the most severe alert
+      final firstAlert = filteredAlerts.first;
+      final event = firstAlert['event'] as String? ?? 'Weather Alert';
+      final severity = firstAlert['severity'] as String? ?? 'Unknown';
+      final description = firstAlert['description'] as String? ?? '';
+
+      await _showWeatherAlertNotification(event, severity, description);
+    } catch (e) {
+      print('🔔 Weather Alerts: Error checking alerts - $e');
+    }
+  }
+
+  static Future<void> _checkFloodWarnings(Settings settings) async {
+    try {
+      print('🔔 Flood: Checking for flood warnings');
+
+      // Get location from cache
+      final allLocations = isar.locationCaches.where().findAllSync();
+      if (allLocations.isEmpty) {
+        print('🔔 Flood: No location available');
+        return;
+      }
+
+      final locationCache = allLocations.first;
+      if (locationCache.lat == null || locationCache.lon == null) {
+        print('🔔 Flood: No location available');
+        return;
+      }
+
+      final lat = locationCache.lat!;
+      final lon = locationCache.lon!;
+
+      // Fetch flood warnings from UK Environment Agency API
+      final response = await http.get(
+        Uri.parse(
+          'https://environment.data.gov.uk/flood-monitoring/id/floods?'
+          'lat=$lat&long=$lon&dist=${settings.floodRadiusKm}',
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        print('🔔 Flood: API request failed');
+        return;
+      }
+
+      final data = json.decode(response.body);
+      final items = data['items'] as List?;
+
+      if (items == null || items.isEmpty) {
+        print('🔔 Flood: No flood warnings in area');
+        return;
+      }
+
+      print('🔔 Flood: Found ${items.length} flood warning(s)');
+
+      // Send notification for the first/most relevant warning
+      final firstWarning = items.first;
+      final severity = firstWarning['severity'] as String? ?? 'Unknown';
+      final severityLevel = firstWarning['severityLevel'] as int? ?? 1;
+      final description =
+          firstWarning['description'] as String? ??
+          'Flood warning in your area';
+      final areaName =
+          firstWarning['floodArea']?['riverOrSea'] as String? ?? 'your area';
+
+      await _showFloodNotification(
+        severity,
+        severityLevel,
+        areaName,
+        description,
+      );
+    } catch (e) {
+      print('🔔 Flood: Error checking warnings - $e');
+    }
+  }
+
+  static Future<void> _showWeatherAlertNotification(
+    String event,
+    String severity,
+    String description,
+  ) async {
+    try {
+      // Determine emoji based on severity
+      String emoji = '⚠️';
+      Importance importance = Importance.high;
+      Priority priority = Priority.high;
+
+      switch (severity.toLowerCase()) {
+        case 'extreme':
+          emoji = '🚨';
+          importance = Importance.max;
+          priority = Priority.max;
+          break;
+        case 'severe':
+          emoji = '⛔';
+          importance = Importance.high;
+          priority = Priority.high;
+          break;
+        case 'moderate':
+          emoji = '⚠️';
+          importance = Importance.defaultImportance;
+          priority = Priority.defaultPriority;
+          break;
+      }
+
+      final androidDetails = AndroidNotificationDetails(
+        _weatherAlertChannelId,
+        _weatherAlertChannelName,
+        channelDescription: 'Notifications for severe weather alerts',
+        importance: importance,
+        priority: priority,
+        playSound: true,
+        enableVibration: true,
+        icon: '@mipmap/ic_launcher',
+      );
+
+      final notificationDetails = NotificationDetails(android: androidDetails);
+
+      // Truncate description if too long
+      String notificationBody = event;
+      if (description.isNotEmpty && description.length < 100) {
+        notificationBody += '\n$description';
+      }
+
+      await flutterLocalNotificationsPlugin.show(
+        3, // Weather alert notification ID
+        '$emoji $severity Weather Alert',
+        notificationBody,
+        notificationDetails,
+      );
+
+      print('🔔 Weather Alerts: Notification sent');
+    } catch (e) {
+      print('🔔 Weather Alerts: Error showing notification - $e');
+    }
+  }
+
+  static Future<void> _showFloodNotification(
+    String severity,
+    int severityLevel,
+    String areaName,
+    String description,
+  ) async {
+    try {
+      // Determine importance based on severity level
+      Importance importance = Importance.high;
+      Priority priority = Priority.high;
+
+      if (severityLevel >= 3) {
+        importance = Importance.max;
+        priority = Priority.max;
+      }
+
+      final androidDetails = AndroidNotificationDetails(
+        _floodChannelId,
+        _floodChannelName,
+        channelDescription: 'Notifications for flood warnings',
+        importance: importance,
+        priority: priority,
+        playSound: true,
+        enableVibration: true,
+        icon: '@mipmap/ic_launcher',
+      );
+
+      final notificationDetails = NotificationDetails(android: androidDetails);
+
+      await flutterLocalNotificationsPlugin.show(
+        4, // Flood notification ID
+        '🌊 Flood Warning',
+        '$severity alert for $areaName',
+        notificationDetails,
+      );
+
+      print('🔔 Flood: Notification sent');
+    } catch (e) {
+      print('🔔 Flood: Error showing notification - $e');
     }
   }
 }

@@ -59,16 +59,16 @@ class _AqiPageState extends State<AqiPage> {
       // Fetch new data if no valid cache
       final dio = Dio();
       String baseAqiUrl = 'https://air-quality-api.open-meteo.com';
-      
+
       // Use Nimbus Meteo if selected
       if (settings.weatherDataSource == 'nimbusmeteo') {
         baseAqiUrl = 'https://nimbusmeteo.linuxgoose.com';
-      } else if (settings.useCustomOpenMeteoEndpoint && 
-          settings.customAirQualityUrl != null && 
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customAirQualityUrl != null &&
           settings.customAirQualityUrl!.isNotEmpty) {
         baseAqiUrl = settings.customAirQualityUrl!;
       }
-      
+
       final response = await dio.get(
         '$baseAqiUrl/v1/air-quality',
         queryParameters: {
@@ -513,9 +513,6 @@ class _AqiPageState extends State<AqiPage> {
       'Olive': current['olive_pollen'],
     };
 
-    // Check if any pollen data is available
-    final hasData = pollens.values.any((value) => value != null && value > 0);
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -538,20 +535,11 @@ class _AqiPageState extends State<AqiPage> {
               ],
             ),
             const Gap(16),
-            if (!hasData)
-              Text(
-                'No significant pollen activity detected',
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: context.theme.colorScheme.onSurfaceVariant,
-                ),
-              )
-            else
-              ...pollens.entries.map((entry) {
-                if (entry.value == null || entry.value <= 0) {
-                  return const SizedBox.shrink();
-                }
-                return _buildPollenItem(entry.key, entry.value);
-              }),
+            ...pollens.entries.map((entry) {
+              // Show all pollens with their levels (including None/Low)
+              final value = entry.value ?? 0;
+              return _buildPollenItem(entry.key, value);
+            }),
           ],
         ),
       ),
@@ -617,7 +605,9 @@ class _AqiPageState extends State<AqiPage> {
             ),
             const Gap(12),
             Text(
-              'Data source: Open-Meteo Air Quality API',
+              settings.weatherDataSource == 'nimbusmeteo'
+                  ? 'Data source: Nimbus Meteo Air Quality API'
+                  : 'Data source: Open-Meteo Air Quality API',
               style: context.textTheme.bodySmall?.copyWith(
                 fontStyle: FontStyle.italic,
                 color: context.theme.colorScheme.onSurfaceVariant,
@@ -803,8 +793,10 @@ class _AqiPageState extends State<AqiPage> {
   }
 
   Map<String, dynamic> _getPollenLevel(dynamic value) {
-    final val = value.toDouble();
-    if (val < 20) {
+    final val = value is num ? value.toDouble() : 0.0;
+    if (val == 0) {
+      return {'label': 'None', 'color': Colors.grey};
+    } else if (val < 20) {
       return {'label': 'Low', 'color': const Color(0xFF50CCAA)};
     } else if (val < 50) {
       return {'label': 'Moderate', 'color': const Color(0xFFF0E641)};

@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/services/marine_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:nimbus/main.dart';
 
 class MarinePage extends StatefulWidget {
   final double lat;
@@ -843,7 +844,9 @@ class _MarinePageState extends State<MarinePage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Marine weather data from Open-Meteo provides essential information for maritime activities, surfing, fishing, and coastal planning.',
+              settings.weatherDataSource == 'nimbusmeteo'
+                  ? 'Marine weather data from Nimbus Meteo provides essential information for maritime activities, surfing, fishing, and coastal planning.'
+                  : 'Marine weather data from Open-Meteo provides essential information for maritime activities, surfing, fishing, and coastal planning.',
               style: context.textTheme.bodyMedium?.copyWith(
                 color: context.theme.colorScheme.onPrimaryContainer,
               ),

@@ -264,6 +264,14 @@ class _NowState extends State<Now> {
   }
 
   String _getMetricValueOnly(String metric) {
+    debugPrint('📊 Now widget _getMetricValueOnly - metric: $metric');
+    debugPrint('📊 Now widget - humidity: ${widget.humidity}');
+    debugPrint('📊 Now widget - windSpeed: ${widget.windSpeed}');
+    debugPrint(
+      '📊 Now widget - precipitationProbability: ${widget.precipitationProbability}',
+    );
+    debugPrint('📊 Now widget - uvIndex: ${widget.uvIndex}');
+
     switch (metric) {
       case 'humidity':
         return widget.humidity != null ? '${widget.humidity}%' : '';

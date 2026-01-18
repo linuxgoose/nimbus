@@ -169,22 +169,94 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   ) => Align(
     alignment: Alignment.topLeft,
     child: Material(
-      borderRadius: BorderRadius.circular(20),
-      elevation: 4,
-      child: SizedBox(
-        width: 250,
-        child: ListView.builder(
-          padding: EdgeInsets.zero,
+      borderRadius: BorderRadius.circular(16),
+      elevation: 8,
+      shadowColor: context.theme.shadowColor.withOpacity(0.3),
+      child: Container(
+        width: 280,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.4,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: context.theme.colorScheme.surface,
+          border: Border.all(
+            color: context.theme.colorScheme.outlineVariant,
+            width: 1,
+          ),
+        ),
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(vertical: 8),
           shrinkWrap: true,
           itemCount: options.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+            color: context.theme.colorScheme.outlineVariant.withOpacity(0.5),
+          ),
           itemBuilder: (BuildContext context, int index) {
             final Result option = options.elementAt(index);
             return InkWell(
               onTap: () => onSelected(option),
-              child: ListTile(
-                title: Text(
-                  '${option.name}, ${option.admin1}',
-                  style: labelLarge,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      option.name,
+                      style: labelLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        if (option.admin1.isNotEmpty) ...[
+                          Flexible(
+                            child: Text(
+                              option.admin1,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color:
+                                    context.theme.colorScheme.onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (option.country != null &&
+                              option.country!.isNotEmpty)
+                            Text(
+                              ' • ',
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color:
+                                    context.theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                        if (option.country != null &&
+                            option.country!.isNotEmpty)
+                          Text(
+                            option.country!,
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: context.theme.colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             );

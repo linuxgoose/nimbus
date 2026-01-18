@@ -55,16 +55,16 @@ class RainForecastService {
     try {
       // Use minutely_15 endpoint with forecast_days=1 (gives ~24 hours, we'll filter to 6)
       String baseUrl = 'https://api.open-meteo.com';
-      
+
       // Use Nimbus Meteo if selected
       if (settings.weatherDataSource == 'nimbusmeteo') {
         baseUrl = 'https://nimbusmeteo.linuxgoose.com';
-      } else if (settings.useCustomOpenMeteoEndpoint && 
-          settings.customOpenMeteoUrl != null && 
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customOpenMeteoUrl != null &&
           settings.customOpenMeteoUrl!.isNotEmpty) {
         baseUrl = settings.customOpenMeteoUrl!;
       }
-      
+
       final minutelyUrl =
           '$baseUrl/v1/forecast?latitude=$lat&longitude=$lon&minutely_15=precipitation&forecast_days=1&timezone=auto';
 

@@ -15,16 +15,16 @@ class MarineService {
   }) async {
     try {
       String baseUrl = 'https://marine-api.open-meteo.com';
-      
+
       // Use Nimbus Meteo if selected
       if (settings.weatherDataSource == 'nimbusmeteo') {
         baseUrl = 'https://nimbusmeteo.linuxgoose.com';
-      } else if (settings.useCustomOpenMeteoEndpoint && 
-          settings.customMarineUrl != null && 
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customMarineUrl != null &&
           settings.customMarineUrl!.isNotEmpty) {
         baseUrl = settings.customMarineUrl!;
       }
-      
+
       final url = '$baseUrl/v1/marine';
 
       debugPrint('🌊 Calling Marine API: $url');

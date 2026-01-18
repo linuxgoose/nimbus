@@ -235,6 +235,13 @@ class WeatherController extends GetxController {
     _mainWeather.value = mainWeatherCache;
     _location.value = locationCache;
 
+    debugPrint(
+      '📊 After cache load - precipitationProbability length: ${_mainWeather.value.precipitationProbability?.length}',
+    );
+    debugPrint(
+      '📊 After cache load - precipitationProbability values: ${_mainWeather.value.precipitationProbability?.take(5)}',
+    );
+
     hourOfDay.value = getTime(
       _mainWeather.value.time,
       _mainWeather.value.timezone,
@@ -591,10 +598,33 @@ class WeatherController extends GetxController {
               iconColor: iconColor,
             );
 
+            // Get current weather metrics for a richer notification
+            final temp = mainWeatherCache.temperature2M?[i];
+            final feelsLike = mainWeatherCache.apparentTemperature?[i];
+            final humidity = mainWeatherCache.relativehumidity2M?[i];
+            final windSpeed = mainWeatherCache.windspeed10M?[i];
+            final precipitation = mainWeatherCache.precipitationProbability?[i];
+            final weatherCode = mainWeatherCache.weathercode?[i] ?? 0;
+
+            // Build detailed notification body
+            String body = StatusWeather().getText(weatherCode);
+            if (feelsLike != null) {
+              body += ' · Feels like ${feelsLike.toStringAsFixed(0)}°';
+            }
+            if (humidity != null) {
+              body += ' · ${humidity.toStringAsFixed(0)}% humidity';
+            }
+            if (windSpeed != null) {
+              body += ' · ${windSpeed.toStringAsFixed(0)} mph wind';
+            }
+            if (precipitation != null && precipitation > 0) {
+              body += ' · ${precipitation.toStringAsFixed(0)}% rain';
+            }
+
             NotificationShow().showNotification(
               UniqueKey().hashCode,
-              '$city: ${mainWeatherCache.temperature2M?[i] ?? 0}°',
-              '${StatusWeather().getText(mainWeatherCache.weathercode?[i] ?? 0)} · ${StatusData().getTimeFormat(timeStr)}',
+              '$city: ${temp?.toStringAsFixed(0) ?? 0}°',
+              body,
               notificationTime,
               iconPath,
             );

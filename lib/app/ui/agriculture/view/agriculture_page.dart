@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:nimbus/app/services/agriculture_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'package:nimbus/main.dart';
 
 class AgriculturePage extends StatefulWidget {
   final double lat;
@@ -735,8 +736,11 @@ class _AgriculturePageState extends State<AgriculturePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Agricultural weather data from Open-Meteo provides essential '
-              'metrics for farming and crop management.',
+              settings.weatherDataSource == 'nimbusmeteo'
+                  ? 'Agricultural weather data from Nimbus Meteo provides essential '
+                        'metrics for farming and crop management.'
+                  : 'Agricultural weather data from Open-Meteo provides essential '
+                        'metrics for farming and crop management.',
               style: context.textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),

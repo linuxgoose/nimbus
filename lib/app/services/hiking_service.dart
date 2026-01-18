@@ -15,16 +15,16 @@ class HikingService {
   }) async {
     try {
       String baseUrl = 'https://api.open-meteo.com';
-      
+
       // Use Nimbus Meteo if selected
       if (settings.weatherDataSource == 'nimbusmeteo') {
         baseUrl = 'https://nimbusmeteo.linuxgoose.com';
-      } else if (settings.useCustomOpenMeteoEndpoint && 
-          settings.customOpenMeteoUrl != null && 
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customOpenMeteoUrl != null &&
           settings.customOpenMeteoUrl!.isNotEmpty) {
         baseUrl = settings.customOpenMeteoUrl!;
       }
-      
+
       final url = '$baseUrl/v1/forecast';
 
       debugPrint('🥾 Calling Hiking API: $url');

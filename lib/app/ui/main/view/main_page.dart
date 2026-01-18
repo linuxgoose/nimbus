@@ -76,10 +76,10 @@ class _MainPageState extends State<MainPage> {
           dayOfNow = 0;
         }
 
-        final sunrise = mainWeather.sunrise![dayOfNow];
-        final sunset = mainWeather.sunset![dayOfNow];
-        final tempMax = mainWeather.temperature2MMax![dayOfNow];
-        final tempMin = mainWeather.temperature2MMin![dayOfNow];
+        final sunrise = mainWeather.sunrise?[dayOfNow];
+        final sunset = mainWeather.sunset?[dayOfNow];
+        final tempMax = mainWeather.temperature2MMax?[dayOfNow];
+        final tempMin = mainWeather.temperature2MMin?[dayOfNow];
 
         return _buildMainView(
           context,
@@ -87,10 +87,10 @@ class _MainPageState extends State<MainPage> {
           weatherCard,
           hourOfDay,
           dayOfNow,
-          sunrise,
-          sunset,
-          tempMax!,
-          tempMin!,
+          sunrise ?? '',
+          sunset ?? '',
+          tempMax ?? 0.0,
+          tempMin ?? 0.0,
         );
       }),
     ),
@@ -338,22 +338,41 @@ class _MainPageState extends State<MainPage> {
     String sunset,
     double tempMax,
     double tempMin,
-  ) => Now(
-    time: mainWeather.time![hourOfDay],
-    weather: mainWeather.weathercode?[hourOfDay] ?? 0,
-    degree: mainWeather.temperature2M![hourOfDay],
-    feels:
-        (mainWeather.apparentTemperature?[hourOfDay] ??
-        mainWeather.temperature2M![hourOfDay])!,
-    timeDay: sunrise,
-    timeNight: sunset,
-    tempMax: tempMax,
-    tempMin: tempMin,
-    humidity: mainWeather.relativehumidity2M?[hourOfDay],
-    windSpeed: mainWeather.windspeed10M?[hourOfDay],
-    precipitationProbability: mainWeather.precipitationProbability?[hourOfDay],
-    uvIndex: mainWeather.uvIndex?[hourOfDay]?.round(),
-  );
+  ) {
+    debugPrint('📊 Now widget - hourOfDay: $hourOfDay');
+    debugPrint(
+      '📊 Now widget - humidity: ${mainWeather.relativehumidity2M?[hourOfDay]}',
+    );
+    debugPrint(
+      '📊 Now widget - windSpeed: ${mainWeather.windspeed10M?[hourOfDay]}',
+    );
+    debugPrint(
+      '📊 Now widget - precipProb: ${mainWeather.precipitationProbability?[hourOfDay]}',
+    );
+    debugPrint('📊 Now widget - uvIndex: ${mainWeather.uvIndex?[hourOfDay]}');
+    debugPrint(
+      '📊 Now widget - relativehumidity2M length: ${mainWeather.relativehumidity2M?.length}',
+    );
+
+    return Now(
+      time: mainWeather.time?[hourOfDay] ?? '',
+      weather: mainWeather.weathercode?[hourOfDay] ?? 0,
+      degree: mainWeather.temperature2M?[hourOfDay] ?? 0.0,
+      feels:
+          mainWeather.apparentTemperature?[hourOfDay] ??
+          mainWeather.temperature2M?[hourOfDay] ??
+          0.0,
+      timeDay: sunrise,
+      timeNight: sunset,
+      tempMax: tempMax,
+      tempMin: tempMin,
+      humidity: mainWeather.relativehumidity2M?[hourOfDay],
+      windSpeed: mainWeather.windspeed10M?[hourOfDay],
+      precipitationProbability:
+          mainWeather.precipitationProbability?[hourOfDay],
+      uvIndex: mainWeather.uvIndex?[hourOfDay]?.round(),
+    );
+  }
 
   Widget _buildRainForecastChart(MainWeatherCache mainWeather) {
     // Get current location from the weather controller

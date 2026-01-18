@@ -44,16 +44,18 @@ class _ElevationPageState extends State<ElevationPage> {
       final lat = _currentLat ?? 51.5074;
       final lon = _currentLon ?? -0.1278;
 
-      // Check for cached data first
-      final cached = _getCachedElevationData(lat, lon);
+      // Check for cached data first (skip if using dummy data)
+      if (!settings.useDummyElevation) {
+        final cached = _getCachedElevationData(lat, lon);
 
-      if (cached != null) {
-        debugPrint('✓ Elevation: Using cached data');
-        setState(() {
-          _elevationData = cached;
-          _isLoading = false;
-        });
-        return;
+        if (cached != null) {
+          debugPrint('✓ Elevation: Using cached data');
+          setState(() {
+            _elevationData = cached;
+            _isLoading = false;
+          });
+          return;
+        }
       }
 
       // Fetch new data if no valid cache
@@ -66,8 +68,10 @@ class _ElevationPageState extends State<ElevationPage> {
         source: settings.elevationSource,
       );
 
-      // Cache the fetched data
-      _cacheElevationData(lat, lon, data);
+      // Cache the fetched data (skip if using dummy data)
+      if (!settings.useDummyElevation) {
+        _cacheElevationData(lat, lon, data);
+      }
 
       setState(() {
         _elevationData = data;

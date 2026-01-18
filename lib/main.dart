@@ -115,6 +115,14 @@ Future<void> initializeApp() async {
     await setOptimalDisplayMode();
     Workmanager().initialize(callbackDispatcher);
     HomeWidget.setAppGroupId(appGroupId);
+
+    // Initialize notification checks if any notification type is enabled
+    if (settings.auroraNotifications ||
+        settings.rainNotifications ||
+        settings.weatherAlertNotifications ||
+        settings.floodNotifications) {
+      WeatherController.scheduleNotificationChecks();
+    }
   }
   DeviceFeature().init();
 }
@@ -202,6 +210,12 @@ Future<void> initializeIsar() async {
     settings.weatherDataSource = 'openmeteo';
     isar.writeTxnSync(() => isar.settings.putSync(settings));
   }
+
+  // Initialize weather alert notification settings if not set
+  if (settings.weatherAlertMinSeverity.isEmpty) {
+    settings.weatherAlertMinSeverity = 'moderate';
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+  }
 }
 
 Future<void> initializeNotifications() async {
@@ -211,6 +225,56 @@ Future<void> initializeNotifications() async {
     linux: LinuxInitializationSettings(defaultActionName: 'Rain'),
   );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // Create notification channels for Android
+  if (Platform.isAndroid) {
+    final androidImplementation = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    if (androidImplementation != null) {
+      // Aurora channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'aurora_alerts',
+          'Aurora Alerts',
+          description: 'Notifications for aurora activity',
+          importance: Importance.high,
+        ),
+      );
+
+      // Rain channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'rain_alerts',
+          'Rain Alerts',
+          description: 'Notifications for upcoming rain',
+          importance: Importance.high,
+        ),
+      );
+
+      // Weather alerts channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'weather_alerts',
+          'Weather Alerts',
+          description: 'Notifications for severe weather alerts',
+          importance: Importance.high,
+        ),
+      );
+
+      // Flood alerts channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'flood_alerts',
+          'Flood Alerts',
+          description: 'Notifications for flood warnings',
+          importance: Importance.high,
+        ),
+      );
+    }
+  }
 }
 
 Future<void> setOptimalDisplayMode() async {
