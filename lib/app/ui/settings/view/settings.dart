@@ -762,6 +762,8 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildFunctionsTitle(context),
               _buildLocationSettingCard(context, setState),
               _buildNotificationsSettingCard(context, setState),
+              if (Platform.isAndroid)
+                _buildBatteryOptimizationCard(context, setState),
               _buildTimeRangeSettingCard(context, setState),
               _buildTimeStartSettingCard(context, setState),
               _buildTimeEndSettingCard(context, setState),
@@ -840,6 +842,114 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       );
 
+  Widget _buildBatteryOptimizationCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => Card(
+    elevation: 4,
+    margin: const EdgeInsets.only(bottom: 15),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                LucideIcons.batteryWarning,
+                color: context.theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Battery Optimization',
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Disable battery optimization to ensure reliable notifications',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<bool>(
+            future: WeatherController.isBatteryOptimizationDisabled(),
+            builder: (context, snapshot) {
+              final isDisabled = snapshot.data ?? false;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isDisabled
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isDisabled ? Colors.green : Colors.orange,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isDisabled ? LucideIcons.check : LucideIcons.info,
+                          color: isDisabled ? Colors.green : Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isDisabled
+                                ? 'Battery optimization disabled ✓'
+                                : 'Battery optimization is enabled (may affect notifications)',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: isDisabled ? Colors.green : Colors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!isDisabled) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await WeatherController.requestBatteryOptimizationExemption();
+                          setState(() {});
+                        },
+                        icon: const Icon(LucideIcons.settings, size: 18),
+                        label: const Text('Open Battery Settings'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+
   Widget _buildNotificationsSettingCard(
     BuildContext context,
     StateSetter setState,
@@ -874,7 +984,7 @@ class _SettingsPageState extends State<SettingsPage> {
         if (value) {
           // Show test notification immediately to confirm it's working
           await _showTestNotification();
-          // Schedule regular forecast notifications
+          // Schedule regular forecast notifications from current weather data
           weatherController.notification(weatherController.mainWeather);
           // Start background worker to reschedule when notifications expire
           WeatherController.scheduleNotificationChecks();

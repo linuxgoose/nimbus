@@ -68,8 +68,8 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
     // Add earthquake markers
     if (_showEarthquakes && widget.earthquakes != null) {
       for (var quake in widget.earthquakes!) {
-        final lat = quake['latitude'] as double?;
-        final lon = quake['longitude'] as double?;
+        final lat = (quake['latitude'] as num?)?.toDouble();
+        final lon = (quake['longitude'] as num?)?.toDouble();
         print('Earthquake at: $lat, $lon');
         final magnitude = quake['magnitude'] ?? 0.0;
         final place = quake['place'] ?? 'Unknown';
@@ -116,8 +116,8 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
     // Add wildfire markers
     if (_showWildfires && widget.wildfires != null) {
       for (var fire in widget.wildfires!) {
-        final lat = fire['latitude'] as double?;
-        final lon = fire['longitude'] as double?;
+        final lat = (fire['latitude'] as num?)?.toDouble();
+        final lon = (fire['longitude'] as num?)?.toDouble();
         final brightness = fire['brightness'] ?? 0.0;
         final frp = fire['frp'] ?? 0.0;
         final colorHex = fire['color'] ?? '#FF6600';
@@ -152,8 +152,8 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
     // Add GDACS markers
     if (_showGDACS && widget.gdacsAlerts != null) {
       for (var alert in widget.gdacsAlerts!) {
-        final lat = alert['latitude'] as double?;
-        final lon = alert['longitude'] as double?;
+        final lat = (alert['latitude'] as num?)?.toDouble();
+        final lon = (alert['longitude'] as num?)?.toDouble();
         final eventType = alert['eventtype'] ?? 'Unknown';
         final name = alert['eventname'] ?? 'Unknown';
         final severity = alert['severity'] ?? 'Unknown';
@@ -190,8 +190,8 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
     // Add EONET markers
     if (_showEONET && widget.eonetEvents != null) {
       for (var event in widget.eonetEvents!) {
-        final lat = event['latitude'] as double?;
-        final lon = event['longitude'] as double?;
+        final lat = (event['latitude'] as num?)?.toDouble();
+        final lon = (event['longitude'] as num?)?.toDouble();
         final title = event['title'] ?? 'Unknown';
         final category = event['category'] ?? 'Unknown';
         final iconName = event['icon'] ?? 'alert-circle';
@@ -314,93 +314,150 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final lat = weatherController.location.lat ?? 0.0;
-    final lon = weatherController.location.lon ?? 0.0;
+    try {
+      final location = weatherController.location;
+      final lat = location.lat ?? 0.0;
+      final lon = location.lon ?? 0.0;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Earth Events Map'),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(LucideIcons.listFilter),
-            onSelected: (value) {
-              setState(() {
-                switch (value) {
-                  case 'earthquakes':
-                    _showEarthquakes = !_showEarthquakes;
-                    break;
-                  case 'wildfires':
-                    _showWildfires = !_showWildfires;
-                    break;
-                  case 'gdacs':
-                    _showGDACS = !_showGDACS;
-                    break;
-                  case 'eonet':
-                    _showEONET = !_showEONET;
-                    break;
-                }
-              });
-            },
-            itemBuilder: (context) => [
-              CheckedPopupMenuItem(
-                value: 'earthquakes',
-                checked: _showEarthquakes,
-                child: const Text('Earthquakes'),
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Earth Events Map'),
+          actions: [
+            PopupMenuButton<String>(
+              icon: const Icon(LucideIcons.listFilter),
+              onSelected: (value) {
+                setState(() {
+                  switch (value) {
+                    case 'earthquakes':
+                      _showEarthquakes = !_showEarthquakes;
+                      break;
+                    case 'wildfires':
+                      _showWildfires = !_showWildfires;
+                      break;
+                    case 'gdacs':
+                      _showGDACS = !_showGDACS;
+                      break;
+                    case 'eonet':
+                      _showEONET = !_showEONET;
+                      break;
+                  }
+                });
+              },
+              itemBuilder: (context) => [
+                CheckedPopupMenuItem(
+                  value: 'earthquakes',
+                  checked: _showEarthquakes,
+                  child: const Text('Earthquakes'),
+                ),
+                CheckedPopupMenuItem(
+                  value: 'wildfires',
+                  checked: _showWildfires,
+                  child: const Text('Wildfires'),
+                ),
+                CheckedPopupMenuItem(
+                  value: 'gdacs',
+                  checked: _showGDACS,
+                  child: const Text('GDACS Alerts'),
+                ),
+                CheckedPopupMenuItem(
+                  value: 'eonet',
+                  checked: _showEONET,
+                  child: const Text('NASA EONET'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: FutureBuilder<CacheStore>(
+          future: _cacheStoreFuture,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      LucideIcons.triangleAlert,
+                      size: 48,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error loading map',
+                      style: context.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      snapshot.error.toString(),
+                      style: context.textTheme.bodySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: LatLng(lat, lon),
+                initialZoom: 4,
+                minZoom: 2,
+                maxZoom: 18,
               ),
-              CheckedPopupMenuItem(
-                value: 'wildfires',
-                checked: _showWildfires,
-                child: const Text('Wildfires'),
-              ),
-              CheckedPopupMenuItem(
-                value: 'gdacs',
-                checked: _showGDACS,
-                child: const Text('GDACS Alerts'),
-              ),
-              CheckedPopupMenuItem(
-                value: 'eonet',
-                checked: _showEONET,
-                child: const Text('NASA EONET'),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.cirrusweather.nimbus',
+                  tileProvider: CachedTileProvider(
+                    store: snapshot.data!,
+                    maxStale: const Duration(days: 30),
+                  ),
+                ),
+                MarkerLayer(markers: _buildMarkers()),
+              ],
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            final location = weatherController.location;
+            final lat = location.lat ?? 0.0;
+            final lon = location.lon ?? 0.0;
+            _mapController.move(LatLng(lat, lon), 4);
+          },
+          child: const Icon(LucideIcons.focus),
+        ),
+      );
+    } catch (e, stackTrace) {
+      print('Error building Earth Events Map: $e');
+      print('Stack trace: $stackTrace');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Earth Events Map')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(LucideIcons.triangleAlert, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error loading map', style: context.textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  e.toString(),
+                  style: context.textTheme.bodySmall,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),
-        ],
-      ),
-      body: FutureBuilder<CacheStore>(
-        future: _cacheStoreFuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              initialCenter: LatLng(lat, lon),
-              initialZoom: 4,
-              minZoom: 2,
-              maxZoom: 18,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.cirrusweather.nimbus',
-                tileProvider: CachedTileProvider(
-                  store: snapshot.data!,
-                  maxStale: const Duration(days: 30),
-                ),
-              ),
-              MarkerLayer(markers: _buildMarkers()),
-            ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _mapController.move(LatLng(lat, lon), 4);
-        },
-        child: const Icon(LucideIcons.focus),
-      ),
-    );
+        ),
+      );
+    }
   }
 }

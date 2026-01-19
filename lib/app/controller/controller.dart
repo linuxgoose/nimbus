@@ -1039,4 +1039,30 @@ class WeatherController extends GetxController {
       debugPrint('🚫 Cancelled periodic notification checks');
     }
   }
+
+  static Future<bool> isBatteryOptimizationDisabled() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/battery');
+      final bool isIgnoring = await platform.invokeMethod(
+        'isIgnoringBatteryOptimizations',
+      );
+      return isIgnoring;
+    } catch (e) {
+      debugPrint('Error checking battery optimization: $e');
+      return false;
+    }
+  }
+
+  static Future<void> requestBatteryOptimizationExemption() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/battery');
+      await platform.invokeMethod('requestIgnoreBatteryOptimizations');
+    } catch (e) {
+      debugPrint('Error requesting battery optimization exemption: $e');
+    }
+  }
 }
