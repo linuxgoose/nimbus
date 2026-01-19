@@ -93,11 +93,19 @@ const List<Map<String, dynamic>> appLanguages = [
 
 @pragma('vm:entry-point')
 void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
+  print('⚙️ Workmanager task started: $task at ${DateTime.now()}');
+
   if (task == 'notificationCheck') {
+    print('⚙️ Running notificationCheck task');
     await NotificationWorker.checkAndNotify();
+    print('⚙️ notificationCheck task completed');
     return Future.value(true);
   }
-  return WeatherController().updateWidget();
+
+  print('⚙️ Running widget update task');
+  final result = await WeatherController().updateWidget();
+  print('⚙️ Widget update task completed: $result');
+  return result;
 });
 
 void main() async {

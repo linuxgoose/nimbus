@@ -589,9 +589,15 @@ class WeatherController extends GetxController {
   }
 
   void notification(MainWeatherCache mainWeatherCache) async {
+    debugPrint('📬 notification() called');
     final now = DateTime.now();
     final startHour = parseTime(timeStart).hour;
     final endHour = parseTime(timeEnd).hour;
+
+    debugPrint(
+      '📬 Quiet hours: $timeStart to $timeEnd (${startHour}h - ${endHour}h)',
+    );
+    debugPrint('📬 Current hour: ${now.hour}');
 
     // Skip scheduling forecast notifications if we're in quiet hours
     if (_isQuietHours()) {
@@ -601,7 +607,11 @@ class WeatherController extends GetxController {
       return;
     }
 
+    debugPrint('📬 Notification settings: timeRange=$timeRange');
     final timeList = mainWeatherCache.time ?? [];
+    debugPrint('📬 Time list length: ${timeList.length}');
+    int scheduledCount = 0;
+
     for (var i = 0; i < timeList.length; i += timeRange) {
       final timeStr = timeList[i];
       final notificationTime = DateTime.parse(timeStr);
@@ -661,10 +671,13 @@ class WeatherController extends GetxController {
               notificationTime,
               iconPath,
             );
+            scheduledCount++;
+            debugPrint('📬 Scheduled notification for $notificationTime');
           }
         }
       }
     }
+    debugPrint('📬 Total notifications scheduled: $scheduledCount');
   }
 
   void notificationCheck() async {
@@ -1020,16 +1033,18 @@ class WeatherController extends GetxController {
       // Convert hours to minutes, with minimum of 15 minutes
       final frequencyMinutes = (timeRangeHours * 60).clamp(15, 1440);
 
+      debugPrint(
+        '📅 Scheduling notification checks: every ${timeRangeHours}h (${frequencyMinutes}min)',
+      );
+
       Workmanager().registerPeriodicTask(
         'notificationCheck',
         'notificationCheck',
         frequency: Duration(minutes: frequencyMinutes),
         existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
-        constraints: Constraints(networkType: NetworkType.connected),
+        // Removed network constraint - notifications should work offline using cache
       );
-      debugPrint(
-        '📅 Scheduled periodic notification checks (every ${timeRangeHours}h / ${frequencyMinutes}min)',
-      );
+      debugPrint('📅 Successfully registered periodic notification checks');
     }
   }
 

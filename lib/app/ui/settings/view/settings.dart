@@ -144,6 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildTidesCard(context),
         _buildElevationCard(context),
         _buildAuroraCard(context),
+        _buildEarthEventsCard(context),
         _buildFloodMonitoringCard(context),
         _buildAgricultureCard(context),
         _buildMarineCard(context),
@@ -416,6 +417,40 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showAuroraBottomSheet(context),
   );
 
+  Widget _buildEarthEventsCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.globe),
+    text: 'Earth Events',
+    onPressed: () => _showEarthEventsBottomSheet(context),
+  );
+
+  void _showEarthEventsBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildEarthEventsTitle(context),
+                  _buildHideEarthEventsSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildEarthEventsTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Earth Events', style: context.textTheme.headlineSmall),
+  );
+
   void _showElevationBottomSheet(BuildContext context) => showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Padding(
@@ -460,7 +495,6 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               _buildAuroraTitle(context),
               _buildHideAuroraSettingCard(context, setState),
-              _buildHideEarthEventsSettingCard(context, setState),
               _buildAuroraNotificationsSettingCard(context, setState),
               _buildAuroraThresholdSettingCard(context, setState),
               const Gap(10),
