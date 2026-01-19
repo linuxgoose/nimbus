@@ -4,6 +4,7 @@ import 'package:nimbus/app/services/aurora_service.dart';
 import 'package:nimbus/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar_community/isar.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'dart:convert';
 
 class NotificationWorker {
@@ -44,6 +45,11 @@ class NotificationWorker {
       // Check flood notifications
       if (settings.floodNotifications) {
         await _checkFloodWarnings(settings);
+      }
+
+      // Check and reschedule forecast notifications
+      if (settings.notifications) {
+        await _checkForecastNotifications(settings);
       }
 
       print('🔔 Notification Worker: Completed background check');
@@ -338,6 +344,57 @@ class NotificationWorker {
     }
   }
 
+  static Future<void> _checkForecastNotifications(Settings settings) async {
+    try {
+      print('🔔 Forecast: Checking scheduled notifications');
+
+      // Check if there are pending forecast notifications
+      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+          FlutterLocalNotificationsPlugin();
+      final pendingNotificationRequests = await flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
+
+      // If no pending forecast notifications, reschedule them
+      if (pendingNotificationRequests.isEmpty) {
+        print('🔔 Forecast: No pending notifications found, rescheduling...');
+
+        // Get weather data from cache
+        final allLocations = isar.locationCaches.where().findAllSync();
+        if (allLocations.isEmpty) {
+          print('🔔 Forecast: No location available');
+          return;
+        }
+
+        final locationCache = allLocations.first;
+        final lat = locationCache.lat;
+        final lon = locationCache.lon;
+
+        if (lat == null || lon == null) {
+          print('🔔 Forecast: No location coordinates');
+          return;
+        }
+
+        // Get cached weather data (there's only one MainWeatherCache)
+        final weatherCache = isar.mainWeatherCaches.where().findFirstSync();
+
+        if (weatherCache == null) {
+          print('🔔 Forecast: No weather cache available');
+          return;
+        }
+
+        // Schedule forecast notifications using the weather controller logic
+        await _scheduleForecastNotifications(weatherCache, settings);
+        print('🔔 Forecast: Successfully rescheduled notifications');
+      } else {
+        print(
+          '🔔 Forecast: ${pendingNotificationRequests.length} notifications already scheduled',
+        );
+      }
+    } catch (e) {
+      print('🔔 Forecast: Error - $e');
+    }
+  }
+
   static Future<void> _checkFloodWarnings(Settings settings) async {
     try {
       print('🔔 Flood: Checking for flood warnings');
@@ -503,5 +560,127 @@ class NotificationWorker {
     } catch (e) {
       print('🔔 Flood: Error showing notification - $e');
     }
+  }
+
+  static Future<void> _scheduleForecastNotifications(
+    MainWeatherCache mainWeatherCache,
+    Settings settings,
+  ) async {
+    try {
+      final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+      final now = DateTime.now();
+      final timeRange = settings.timeRange;
+      final timeStart = settings.timeStart;
+      final timeEnd = settings.timeEnd;
+
+      // Parse start and end hours
+      final startParts = (timeStart ?? '00:00').split(':');
+      final endParts = (timeEnd ?? '23:59').split(':');
+      final startHour = int.parse(startParts[0]);
+      final endHour = int.parse(endParts[0]);
+
+      // Check if we're in quiet hours
+      final currentHour = now.hour;
+      bool isInQuietHours;
+      if (startHour > endHour) {
+        // Spans midnight
+        isInQuietHours = currentHour >= startHour || currentHour < endHour;
+      } else {
+        isInQuietHours = currentHour >= startHour && currentHour < endHour;
+      }
+
+      if (isInQuietHours) {
+        print('🔕 Forecast: Currently in quiet hours, skipping schedule');
+        return;
+      }
+
+      final timeList = mainWeatherCache.time ?? [];
+      int scheduledCount = 0;
+      final range = timeRange ?? 1;
+
+      for (var i = 0; i < timeList.length; i += range) {
+        final timeStr = timeList[i];
+        final notificationTime = DateTime.parse(timeStr);
+
+        if (notificationTime.isAfter(now) &&
+            notificationTime.hour >= startHour &&
+            notificationTime.hour <= endHour) {
+          final dailyTime = mainWeatherCache.timeDaily ?? [];
+          for (var j = 0; j < dailyTime.length; j++) {
+            if (dailyTime[j].day == notificationTime.day) {
+              final temp = mainWeatherCache.temperature2M?[i];
+              final feelsLike = mainWeatherCache.apparentTemperature?[i];
+              final humidity = mainWeatherCache.relativehumidity2M?[i];
+              final windSpeed = mainWeatherCache.windspeed10M?[i];
+              final precipitation =
+                  mainWeatherCache.precipitationProbability?[i];
+              final weatherCode = mainWeatherCache.weathercode?[i] ?? 0;
+
+              // Get location name
+              final allLocations = isar.locationCaches.where().findAllSync();
+              final city = allLocations.isNotEmpty
+                  ? (allLocations.first.city ?? 'Weather')
+                  : 'Weather';
+
+              // Build notification body
+              String body = _getWeatherDescription(weatherCode);
+              if (feelsLike != null) {
+                body += ' · Feels like ${feelsLike.toStringAsFixed(0)}°';
+              }
+              if (humidity != null) {
+                body += ' · ${humidity.toStringAsFixed(0)}% humidity';
+              }
+              if (windSpeed != null) {
+                body += ' · ${windSpeed.toStringAsFixed(0)} mph wind';
+              }
+              if (precipitation != null && precipitation > 0) {
+                body += ' · ${precipitation.toStringAsFixed(0)}% rain';
+              }
+
+              // Schedule notification
+              await flutterLocalNotificationsPlugin.zonedSchedule(
+                notificationTime.millisecondsSinceEpoch ~/ 1000,
+                '$city: ${temp?.toStringAsFixed(0) ?? 0}°',
+                body,
+                _convertToTZDateTime(notificationTime),
+                const NotificationDetails(
+                  android: AndroidNotificationDetails(
+                    'weather_forecast',
+                    'Weather Forecast',
+                    channelDescription:
+                        'Scheduled weather forecast notifications',
+                    importance: Importance.high,
+                    priority: Priority.high,
+                  ),
+                ),
+                androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+              );
+              scheduledCount++;
+              break;
+            }
+          }
+        }
+      }
+
+      print('🔔 Forecast: Scheduled $scheduledCount notifications');
+    } catch (e) {
+      print('🔔 Forecast: Error scheduling - $e');
+    }
+  }
+
+  static String _getWeatherDescription(int code) {
+    if (code == 0) return 'Clear';
+    if (code <= 3) return 'Partly cloudy';
+    if (code <= 48) return 'Foggy';
+    if (code <= 57) return 'Drizzle';
+    if (code <= 67) return 'Rain';
+    if (code <= 77) return 'Snow';
+    if (code <= 82) return 'Showers';
+    if (code <= 86) return 'Snow showers';
+    return 'Thunderstorm';
+  }
+
+  static tz.TZDateTime _convertToTZDateTime(DateTime dateTime) {
+    return tz.TZDateTime.from(dateTime, tz.local);
   }
 }

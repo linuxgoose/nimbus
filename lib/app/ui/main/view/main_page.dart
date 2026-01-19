@@ -18,6 +18,7 @@ import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:nimbus/app/ui/tides/view/tides_page.dart';
 import 'package:nimbus/app/ui/elevation/view/elevation_page.dart';
 import 'package:nimbus/app/ui/aurora/view/aurora_page.dart';
+import 'package:nimbus/app/ui/earth_events/view/earth_events_page.dart';
 import 'package:nimbus/app/ui/moon/moon_phase_tile.dart';
 import 'package:nimbus/app/ui/flood/flood_tile.dart';
 import 'package:nimbus/app/ui/agriculture/agriculture_tile.dart';
@@ -150,6 +151,7 @@ class _MainPageState extends State<MainPage> {
         if (!settings.hideTides) _buildTidesTile(),
         if (!settings.hideElevation) _buildElevationTile(),
         if (!settings.hideAurora) _buildAuroraTile(),
+        if (!settings.hideEarthEvents) _buildEarthEventsTile(),
         if (!settings.hideFlood) const FloodTile(),
         _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
         _buildSunsetSunriseWidget(sunrise, sunset),
@@ -742,6 +744,61 @@ class _MainPageState extends State<MainPage> {
                   const SizedBox(height: 4),
                   Text(
                     'Northern lights forecast and alerts',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.arrowRight,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildEarthEventsTile() => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => Get.to(
+        () => const EarthEventsPage(),
+        transition: Transition.downToUp,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                LucideIcons.globe,
+                size: 32,
+                color: context.theme.colorScheme.onTertiaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Earth Events',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Earthquakes, wildfires, and disaster alerts',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.onSurfaceVariant,
                     ),

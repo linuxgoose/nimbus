@@ -460,6 +460,7 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               _buildAuroraTitle(context),
               _buildHideAuroraSettingCard(context, setState),
+              _buildHideEarthEventsSettingCard(context, setState),
               _buildAuroraNotificationsSettingCard(context, setState),
               _buildAuroraThresholdSettingCard(context, setState),
               const Gap(10),
@@ -875,8 +876,17 @@ class _SettingsPageState extends State<SettingsPage> {
           await _showTestNotification();
           // Schedule regular forecast notifications
           weatherController.notification(weatherController.mainWeather);
+          // Start background worker to reschedule when notifications expire
+          WeatherController.scheduleNotificationChecks();
         } else {
           flutterLocalNotificationsPlugin.cancelAll();
+          // Cancel background worker if no notification types are enabled
+          if (!settings.auroraNotifications &&
+              !settings.rainNotifications &&
+              !settings.weatherAlertNotifications &&
+              !settings.floodNotifications) {
+            WeatherController.cancelNotificationChecks();
+          }
         }
         setState(() {});
       }
@@ -1314,6 +1324,22 @@ class _SettingsPageState extends State<SettingsPage> {
     value: settings.hideAurora,
     onChange: (value) {
       settings.hideAurora = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
+  Widget _buildHideEarthEventsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Earth Events',
+    switcher: true,
+    value: settings.hideEarthEvents,
+    onChange: (value) {
+      settings.hideEarthEvents = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       setState(() {});
     },
@@ -2144,7 +2170,9 @@ class _SettingsPageState extends State<SettingsPage> {
       await weatherController.deleteAll(false);
       await weatherController.setLocation();
       await weatherController.updateCacheCard(true);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     },
   );
 

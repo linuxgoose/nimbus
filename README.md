@@ -71,13 +71,44 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
   - Color-coded health recommendations
   - 1-hour caching to reduce API calls
   - Manual cache inspection and clearing
-- **Aurora Watch:** Track northern lights activity with:
+- **Aurora Watch:** Track northern lights activity with comprehensive space weather monitoring:
   - Real-time Kp-index from NOAA Space Weather Prediction Center
   - AuroraWatch UK alerts for the United Kingdom
   - 3-day aurora forecast with hourly predictions
+  - Solar wind speed and density monitoring from DSCOVR satellite
+  - Recent solar flare activity (M-class and X-class flares)
   - Activity levels and visibility indicators
   - Color-coded alerts based on geomagnetic activity
+  - Global significant earthquake data (4.5+ magnitude) from USGS
+  - NWS weather alerts for the United States
+  - Configurable notification threshold (Kp 5-9)
   - 30-minute caching for optimal performance
+  - Toggle visibility and notifications in settings
+- **Earth Events:** Monitor natural disasters and terrestrial events worldwide:
+  - **USGS Earthquakes**: Global significant earthquakes (4.5+ magnitude) from past week
+    - Magnitude, location, and tsunami warnings
+    - Color-coded severity indicators
+    - Interactive map view with markers
+  - **NASA FIRMS Wildfires**: Real-time satellite wildfire detection
+    - Fire Radiative Power (FRP) and brightness data
+    - Confidence levels and acquisition times
+    - Severity classification by intensity
+  - **GDACS Global Disasters**: Worldwide disaster alerts
+    - Earthquakes, cyclones, floods, and volcanic activity
+    - Alert level classifications (Green, Orange, Red)
+    - Event descriptions and affected regions
+  - **NASA EONET Natural Events**: Earth Observatory event tracker
+    - Wildfires, severe storms, volcanoes, floods, droughts
+    - 30-day rolling window of active events
+    - Category-based filtering and icons
+  - **NWS Weather Alerts**: US National Weather Service warnings
+    - Location-based alerts with severity levels
+    - Event type and urgency classifications
+  - Interactive map overlay showing all events with color-coded markers
+  - Filter controls to toggle event types on/off
+  - Tap markers for detailed event information
+  - Pull-to-refresh for latest data
+  - Toggle visibility in settings
 - **Moon Phases:** Comprehensive lunar information with:
   - Current moon phase with emoji visualization
   - Phase name and illumination percentage
@@ -171,6 +202,13 @@ Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/
 - **[Stormglass.io](https://stormglass.io/)**: Global tide predictions with optional API key integration (10 free requests per day)
 - **[UK Tidal API - Discovery](https://admiraltyapi.portal.azure-api.net/)**: Official UK tide data from the UK Hydrographic Office with 608+ monitoring stations
 - **[Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference)**: Real-time water levels for England
+
+**Earth Events Data Sources**:
+- **[USGS Earthquake Catalog](https://earthquake.usgs.gov/)**: Real-time earthquake data from the United States Geological Survey
+- **[NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/)**: Fire Information for Resource Management System with VIIRS satellite data
+- **[GDACS](https://www.gdacs.org/)**: Global Disaster Alert and Coordination System
+- **[NASA EONET](https://eonet.gsfc.nasa.gov/)**: Earth Observatory Natural Event Tracker
+- **[NWS API](https://www.weather.gov/documentation/services-web-api)**: National Weather Service alerts for the United States
 
 Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data. UK flood monitoring data is provided by the [Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference) (England - warnings and monitoring stations), [SEPA](https://www2.sepa.org.uk/fwa/) (Scotland - warnings only), and [Natural Resources Wales](https://api.naturalresources.wales/) (Wales - warnings only). Northern Ireland's DfI Rivers does not currently provide a public API for automated flood data access.
 

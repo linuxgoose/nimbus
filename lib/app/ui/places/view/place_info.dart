@@ -35,6 +35,16 @@ class _PlaceInfoState extends State<PlaceInfo> {
   void getTime() {
     final weatherCard = widget.weatherCard;
 
+    // Add null safety checks
+    if (weatherCard.time == null ||
+        weatherCard.time!.isEmpty ||
+        weatherCard.timeDaily == null ||
+        weatherCard.timeDaily!.isEmpty ||
+        weatherCard.timezone == null) {
+      debugPrint('⚠️ PlaceInfo: Missing required weather data');
+      return;
+    }
+
     timeNow = weatherController.getTime(
       weatherCard.time!,
       weatherCard.timezone!,
@@ -54,26 +64,79 @@ class _PlaceInfoState extends State<PlaceInfo> {
   }
 
   @override
-  Widget build(BuildContext context) => RefreshIndicator(
-    onRefresh: _handleRefresh,
-    child: Scaffold(
-      appBar: _buildAppBar(context, widget.weatherCard),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: ListView(
+  Widget build(BuildContext context) {
+    final weatherCard = widget.weatherCard;
+
+    // Check if essential data is available
+    if (weatherCard.time == null ||
+        weatherCard.time!.isEmpty ||
+        weatherCard.weathercode == null ||
+        weatherCard.temperature2M == null ||
+        weatherCard.sunrise == null ||
+        weatherCard.sunset == null ||
+        weatherCard.temperature2MMax == null ||
+        weatherCard.temperature2MMin == null) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(LucideIcons.arrowLeft, size: 20),
+          ),
+          title: Text(
+            weatherCard.district != null && weatherCard.district!.isNotEmpty
+                ? '${weatherCard.city}, ${weatherCard.district}'
+                : '${weatherCard.city}',
+          ),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildNowWidget(widget.weatherCard),
-              _buildHourlyList(widget.weatherCard),
-              _buildSunsetSunriseWidget(widget.weatherCard),
-              _buildHourlyDescContainer(widget.weatherCard),
-              _buildDailyContainer(widget.weatherCard),
+              const Icon(LucideIcons.cloudOff, size: 64),
+              const SizedBox(height: 16),
+              Text(
+                'Weather data unavailable',
+                style: context.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Try refreshing or check your data source',
+                style: context.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _handleRefresh,
+                icon: const Icon(LucideIcons.refreshCw),
+                label: const Text('Refresh'),
+              ),
             ],
           ),
         ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      child: Scaffold(
+        appBar: _buildAppBar(context, weatherCard),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ListView(
+              children: [
+                _buildNowWidget(weatherCard),
+                _buildHourlyList(weatherCard),
+                _buildSunsetSunriseWidget(weatherCard),
+                _buildHourlyDescContainer(weatherCard),
+                _buildDailyContainer(weatherCard),
+              ],
+            ),
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   Future<void> _handleRefresh() async {
     await weatherController.updateCard(widget.weatherCard);
@@ -115,16 +178,29 @@ class _PlaceInfoState extends State<PlaceInfo> {
     ],
   );
 
-  Widget _buildNowWidget(WeatherCard weatherCard) => Now(
-    time: weatherCard.time![timeNow],
-    weather: weatherCard.weathercode![timeNow],
-    degree: weatherCard.temperature2M![timeNow],
-    feels: weatherCard.apparentTemperature![timeNow]!,
-    timeDay: weatherCard.sunrise![dayNow],
-    timeNight: weatherCard.sunset![dayNow],
-    tempMax: weatherCard.temperature2MMax![dayNow]!,
-    tempMin: weatherCard.temperature2MMin![dayNow]!,
-  );
+  Widget _buildNowWidget(WeatherCard weatherCard) {
+    // Safely access nullable fields with defaults
+    final timeNowIndex = timeNow < (weatherCard.time?.length ?? 0)
+        ? timeNow
+        : 0;
+    final dayNowIndex = dayNow < (weatherCard.sunrise?.length ?? 0)
+        ? dayNow
+        : 0;
+
+    return Now(
+      time: weatherCard.time?[timeNowIndex] ?? '',
+      weather: weatherCard.weathercode?[timeNowIndex],
+      degree: weatherCard.temperature2M?[timeNowIndex],
+      feels:
+          weatherCard.apparentTemperature?[timeNowIndex] ??
+          weatherCard.temperature2M?[timeNowIndex] ??
+          0.0,
+      timeDay: weatherCard.sunrise?[dayNowIndex] ?? '',
+      timeNight: weatherCard.sunset?[dayNowIndex] ?? '',
+      tempMax: weatherCard.temperature2MMax?[dayNowIndex] ?? 0.0,
+      tempMin: weatherCard.temperature2MMin?[dayNowIndex] ?? 0.0,
+    );
+  }
 
   Widget _buildHourlyList(WeatherCard weatherCard) => Card(
     margin: const EdgeInsets.only(bottom: 15),
@@ -170,10 +246,16 @@ class _PlaceInfoState extends State<PlaceInfo> {
     ),
   );
 
-  Widget _buildSunsetSunriseWidget(WeatherCard weatherCard) => SunsetSunrise(
-    timeSunrise: weatherCard.sunrise![dayNow],
-    timeSunset: weatherCard.sunset![dayNow],
-  );
+  Widget _buildSunsetSunriseWidget(WeatherCard weatherCard) {
+    final dayNowIndex = dayNow < (weatherCard.sunrise?.length ?? 0)
+        ? dayNow
+        : 0;
+
+    return SunsetSunrise(
+      timeSunrise: weatherCard.sunrise?[dayNowIndex] ?? '',
+      timeSunset: weatherCard.sunset?[dayNowIndex] ?? '',
+    );
+  }
 
   Widget _buildHourlyDescContainer(WeatherCard weatherCard) => DescContainer(
     humidity: weatherCard.relativehumidity2M?[timeNow],

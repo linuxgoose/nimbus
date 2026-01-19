@@ -120,7 +120,8 @@ Future<void> initializeApp() async {
     if (settings.auroraNotifications ||
         settings.rainNotifications ||
         settings.weatherAlertNotifications ||
-        settings.floodNotifications) {
+        settings.floodNotifications ||
+        settings.notifications) {
       WeatherController.scheduleNotificationChecks();
     }
   }
