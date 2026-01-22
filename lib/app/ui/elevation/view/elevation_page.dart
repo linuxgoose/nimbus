@@ -148,7 +148,7 @@ class _ElevationPageState extends State<ElevationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Elevation'),
+        title: Text('elevation'.tr),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.navigation),
@@ -204,7 +204,7 @@ class _ElevationPageState extends State<ElevationPage> {
           TextButton.icon(
             onPressed: _loadElevationData,
             icon: const Icon(LucideIcons.refreshCw),
-            label: const Text('Try Again'),
+            label: Text('try_again'.tr),
           ),
         ],
       ),
@@ -461,9 +461,9 @@ class _ElevationPageState extends State<ElevationPage> {
 
     if (locations.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No saved locations. Use the + button to add one.'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text('no_saved_locations'.tr),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -472,7 +472,7 @@ class _ElevationPageState extends State<ElevationPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Location'),
+        title: Text('select_location'.tr),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -483,7 +483,7 @@ class _ElevationPageState extends State<ElevationPage> {
                 // Current location option
                 return ListTile(
                   leading: const Icon(LucideIcons.navigation),
-                  title: const Text('Current Location'),
+                  title: Text('current_location'.tr),
                   subtitle: Text(
                     settings.location
                         ? 'Lat: ${locationCache.lat?.toStringAsFixed(4)}, '
@@ -575,7 +575,7 @@ class _ElevationPageState extends State<ElevationPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
         ],
       ),
@@ -593,7 +593,7 @@ class _ElevationPageState extends State<ElevationPage> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Save Location'),
+        title: Text('save_location'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -616,11 +616,11 @@ class _ElevationPageState extends State<ElevationPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Save'),
+            child: Text('save'.tr),
           ),
         ],
       ),
@@ -638,7 +638,7 @@ class _ElevationPageState extends State<ElevationPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Location "${nameController.text}" saved!'),
+            content: Text('location_saved'.tr),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -656,7 +656,7 @@ class _ElevationPageState extends State<ElevationPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Search Location'),
+          title: Text('search_location'.tr),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -664,7 +664,7 @@ class _ElevationPageState extends State<ElevationPage> {
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    labelText: 'Location Name',
+                    labelText: 'location_name'.tr,
                     prefixIcon: const Icon(LucideIcons.mapPin),
                     suffixIcon: isSearching
                         ? const SizedBox(
@@ -711,9 +711,9 @@ class _ElevationPageState extends State<ElevationPage> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: latController,
-                  decoration: const InputDecoration(
-                    labelText: 'Latitude',
-                    prefixIcon: Icon(LucideIcons.navigation),
+                  decoration: InputDecoration(
+                    labelText: 'latitude'.tr,
+                    prefixIcon: const Icon(LucideIcons.navigation),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -722,9 +722,9 @@ class _ElevationPageState extends State<ElevationPage> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: lonController,
-                  decoration: const InputDecoration(
-                    labelText: 'Longitude',
-                    prefixIcon: Icon(LucideIcons.navigation),
+                  decoration: InputDecoration(
+                    labelText: 'longitude'.tr,
+                    prefixIcon: const Icon(LucideIcons.navigation),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
@@ -732,7 +732,7 @@ class _ElevationPageState extends State<ElevationPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tip: Enter a location name (e.g., "Mount Everest") and tap search',
+                  'search_tip'.tr,
                   style: context.textTheme.bodySmall?.copyWith(
                     color: context.theme.colorScheme.onSurfaceVariant,
                   ),
@@ -743,7 +743,7 @@ class _ElevationPageState extends State<ElevationPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text('cancel'.tr),
             ),
             TextButton(
               onPressed: () {
@@ -757,13 +757,13 @@ class _ElevationPageState extends State<ElevationPage> {
                     _currentLon = lon;
                     _locationName = name.isNotEmpty
                         ? name
-                        : 'Selected Location';
+                        : 'selected_location'.tr;
                   });
                   Navigator.pop(context);
                   _loadElevationData();
                 }
               },
-              child: const Text('Show Elevation'),
+              child: Text('show_elevation'.tr),
             ),
           ],
         ),

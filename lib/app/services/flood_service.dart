@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 
 /// Service for UK Flood Monitoring APIs
 /// England: https://environment.data.gov.uk/flood-monitoring/doc/reference
@@ -16,22 +16,26 @@ class FloodService {
   static const String _userAgent =
       'Nimbus Weather App github.com/linuxgoose/nimbus';
 
+  static final Dio _dio = Dio(
+    BaseOptions(
+      headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
+
   /// Get all active flood warnings and alerts
   /// Returns list of current flood warnings for England
   static Future<Map<String, dynamic>?> getFloodWarnings() async {
     try {
-      final url = Uri.parse('$_baseUrl/id/floods');
-
+      final url = '$_baseUrl/id/floods';
       debugPrint('🌊 Calling Flood Warnings API: $url');
 
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
         debugPrint('✅ Flood Warnings API Success');
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        return response.data as Map<String, dynamic>;
       } else {
         debugPrint('❌ Flood Warnings API Error: ${response.statusCode}');
         return null;
@@ -52,23 +56,18 @@ class FloodService {
     try {
       // Use the Environment Agency API's built-in location filtering
       // https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
-      final url = Uri.parse(
-        '$_baseUrl/id/floods?lat=$lat&long=$lon&dist=$radiusKm',
-      );
+      final url = '$_baseUrl/id/floods?lat=$lat&long=$lon&dist=$radiusKm';
 
       debugPrint('🌊 Calling Flood Warnings API (Location): $url');
 
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
+      final response = await _dio.get(url);
 
       if (response.statusCode != 200) {
         debugPrint('❌ Flood Warnings API Error: ${response.statusCode}');
         return [];
       }
 
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = response.data as Map<String, dynamic>;
       final items = data['items'] as List<dynamic>?;
 
       if (items == null) return [];
@@ -117,13 +116,10 @@ class FloodService {
 
       debugPrint('📊 Calling Stations API: $url');
 
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = response.data as Map<String, dynamic>;
         final items = data['items'] as List<dynamic>?;
         debugPrint(
           '✅ Stations API Success - Found ${items?.length ?? 0} total stations',
@@ -144,18 +140,15 @@ class FloodService {
     String stationId,
   ) async {
     try {
-      final url = Uri.parse('$_baseUrl/id/stations/$stationId/readings');
+      final url = '$_baseUrl/id/stations/$stationId/readings';
 
       debugPrint('📈 Calling Station Readings API: $url');
 
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
         debugPrint('✅ Station Readings API Success');
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        return response.data as Map<String, dynamic>;
       } else {
         debugPrint('❌ Station Readings API Error: ${response.statusCode}');
         return null;
@@ -169,18 +162,15 @@ class FloodService {
   /// Get flood areas (regions that can flood)
   static Future<Map<String, dynamic>?> getFloodAreas() async {
     try {
-      final url = Uri.parse('$_baseUrl/id/floodAreas');
+      final url = '$_baseUrl/id/floodAreas';
 
       debugPrint('🗺️ Calling Flood Areas API: $url');
 
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
         debugPrint('✅ Flood Areas API Success');
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        return response.data as Map<String, dynamic>;
       } else {
         debugPrint('❌ Flood Areas API Error: ${response.statusCode}');
         return null;
@@ -360,16 +350,16 @@ class FloodService {
   }) async {
     try {
       // SEPA provides an RSS feed that we can parse
-      final url = Uri.parse('$_sepaUrl/feeds/flood_warnings.xml');
+      const url = '$_sepaUrl/feeds/flood_warnings.xml';
 
       debugPrint('🏴󠁧󠁢󠁳󠁣󠁴󠁿 Calling SEPA Flood Warnings: $url');
 
-      final response = await http.get(url, headers: {'User-Agent': _userAgent});
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
         debugPrint('✅ SEPA Flood Warnings Success');
         // Parse RSS/XML and filter by location
-        return _parseSEPAWarnings(response.body, lat, lon, radiusKm);
+        return _parseSEPAWarnings(response.data.toString(), lat, lon, radiusKm);
       } else {
         debugPrint('❌ SEPA API Error: ${response.statusCode}');
         return [];
@@ -389,19 +379,15 @@ class FloodService {
   }) async {
     try {
       // NRW API endpoint for flood warnings
-      final url = Uri.parse('$_nrwUrl/flood-warnings');
+      const url = '$_nrwUrl/flood-warnings';
 
       debugPrint('🏴󠁧󠁢󠁷󠁬󠁳󠁿 Calling NRW Flood Warnings: $url');
 
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
         debugPrint('✅ NRW Flood Warnings Success');
-        final data = jsonDecode(response.body);
-        return _parseNRWWarnings(data, lat, lon, radiusKm);
+        return _parseNRWWarnings(response.data, lat, lon, radiusKm);
       } else {
         debugPrint('❌ NRW API Error: ${response.statusCode}');
         return [];

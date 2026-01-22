@@ -44,7 +44,7 @@ class _AuroraPageState extends State<AuroraPage> {
 
       if (lat == null || lon == null) {
         setState(() {
-          error = 'Location unavailable';
+          error = 'location_unavailable'.tr;
           isLoading = false;
         });
         return;
@@ -58,7 +58,7 @@ class _AuroraPageState extends State<AuroraPage> {
 
       if (data == null) {
         setState(() {
-          error = 'Failed to load aurora data';
+          error = 'failed_to_load_data'.tr;
           isLoading = false;
         });
         return;
@@ -89,7 +89,7 @@ class _AuroraPageState extends State<AuroraPage> {
       });
     } catch (e) {
       setState(() {
-        error = 'Failed to load aurora data';
+        error = 'failed_to_load_data'.tr;
         isLoading = false;
       });
     }
@@ -99,7 +99,7 @@ class _AuroraPageState extends State<AuroraPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aurora Watch'),
+        title: Text('aurora_watch'.tr),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
@@ -129,7 +129,7 @@ class _AuroraPageState extends State<AuroraPage> {
         ElevatedButton.icon(
           onPressed: _loadAuroraData,
           icon: const Icon(LucideIcons.refreshCw),
-          label: const Text('Retry'),
+          label: Text('retry'.tr),
         ),
       ],
     ),
@@ -179,7 +179,7 @@ class _AuroraPageState extends State<AuroraPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Current Activity',
+                  'current_activity'.tr,
                   style: context.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

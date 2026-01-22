@@ -59,18 +59,18 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
   List<Marker> _buildMarkers() {
     final List<Marker> markers = [];
 
-    print('Building markers...');
-    print('Earthquakes: ${widget.earthquakes?.length ?? 0}');
-    print('Wildfires: ${widget.wildfires?.length ?? 0}');
-    print('GDACS: ${widget.gdacsAlerts?.length ?? 0}');
-    print('EONET: ${widget.eonetEvents?.length ?? 0}');
+    debugPrint('Building markers...');
+    debugPrint('Earthquakes: ${widget.earthquakes?.length ?? 0}');
+    debugPrint('Wildfires: ${widget.wildfires?.length ?? 0}');
+    debugPrint('GDACS: ${widget.gdacsAlerts?.length ?? 0}');
+    debugPrint('EONET: ${widget.eonetEvents?.length ?? 0}');
 
     // Add earthquake markers
     if (_showEarthquakes && widget.earthquakes != null) {
       for (var quake in widget.earthquakes!) {
         final lat = (quake['latitude'] as num?)?.toDouble();
         final lon = (quake['longitude'] as num?)?.toDouble();
-        print('Earthquake at: $lat, $lon');
+        debugPrint('Earthquake at: $lat, $lon');
         final magnitude = quake['magnitude'] ?? 0.0;
         final place = quake['place'] ?? 'Unknown';
         final colorHex = quake['color'] ?? '#FF0000';
@@ -198,7 +198,7 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
         final colorHex = event['color'] ?? '#0066CC';
         final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
 
-        print('EONET event: $title at $lat, $lon');
+        debugPrint('EONET event: $title at $lat, $lon');
 
         if (lat != null && lon != null) {
           markers.add(
@@ -221,7 +221,7 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
       }
     }
 
-    print('Total markers created: ${markers.length}');
+    debugPrint('Total markers created: ${markers.length}');
     return markers;
   }
 

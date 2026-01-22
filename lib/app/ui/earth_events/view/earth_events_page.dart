@@ -86,11 +86,11 @@ class _EarthEventsPageState extends State<EarthEventsPage> {
           IconButton(
             icon: const Icon(LucideIcons.map),
             onPressed: () {
-              print('Opening map with data:');
-              print('Earthquakes: ${earthquakes?.length ?? 0}');
-              print('Wildfires: ${wildfires?.length ?? 0}');
-              print('GDACS: ${gdacsAlerts?.length ?? 0}');
-              print('EONET: ${eonetEvents?.length ?? 0}');
+              debugPrint('Opening map with data:');
+              debugPrint('Earthquakes: ${earthquakes?.length ?? 0}');
+              debugPrint('Wildfires: ${wildfires?.length ?? 0}');
+              debugPrint('GDACS: ${gdacsAlerts?.length ?? 0}');
+              debugPrint('EONET: ${eonetEvents?.length ?? 0}');
               Get.to(
                 () => EarthEventsMapPage(
                   earthquakes: earthquakes,
