@@ -115,7 +115,7 @@ void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
     print('⚙️ Timezone initialized: $timeZoneName');
 
     // Initialize Isar database
-    final dir = await getApplicationDocumentsDirectory();
+    final dir = await getApplicationSupportDirectory();
     isar = await Isar.open([
       SettingsSchema,
       MainWeatherCacheSchema,
@@ -133,6 +133,10 @@ void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
       SavedTideStationSchema,
     ], directory: dir.path);
     print('⚙️ Isar initialized for background task');
+
+    // Initialize settings global variable
+    settings = isar.settings.where().findFirstSync() ?? Settings();
+    print('⚙️ Settings initialized for background task');
 
     // Initialize notifications plugin for background task
     await flutterLocalNotificationsPlugin.initialize(

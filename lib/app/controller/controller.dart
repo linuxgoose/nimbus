@@ -777,10 +777,31 @@ class WeatherController extends GetxController {
             WeatherCardSchema,
           ], directory: (await getApplicationSupportDirectory()).path);
 
+      final locationCache = isarWidget.locationCaches.where().findFirstSync();
+
+      // Attempt to fetch fresh data background
+      if (locationCache != null &&
+          locationCache.lat != null &&
+          locationCache.lon != null) {
+        try {
+          final weatherData = await WeatherAPI().getWeatherData(
+            locationCache.lat!,
+            locationCache.lon!,
+          );
+
+          await isarWidget.writeTxn(() async {
+            await isarWidget.mainWeatherCaches.clear();
+            await isarWidget.mainWeatherCaches.put(weatherData);
+          });
+          debugPrint('Background weather data updated successfully');
+        } catch (e) {
+          debugPrint('Background weather update failed: $e');
+        }
+      }
+
       final mainWeatherCache = isarWidget.mainWeatherCaches
           .where()
           .findFirstSync();
-      final locationCache = isarWidget.locationCaches.where().findFirstSync();
       final speedUnit = settings.wind;
 
       if (mainWeatherCache == null) return false;
