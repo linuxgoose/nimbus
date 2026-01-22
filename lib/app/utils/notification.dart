@@ -16,9 +16,37 @@ class NotificationShow {
     String icon,
   ) async {
     try {
-      final imagePath = await _getLocalImagePath(icon);
-      final notificationDetails = await _buildNotificationDetails(imagePath);
+      debugPrint(
+        '🔔 NotificationShow: Scheduling notification ID $id for $date',
+      );
+      debugPrint('🔔   Title: $title');
+      debugPrint('🔔   Body: $body');
+
       final scheduledTime = _getScheduledTime(date);
+      debugPrint('🔔   Scheduled TZ time: $scheduledTime');
+
+      // Try to get image, but don't fail if it doesn't work
+      AndroidBitmap<Object>? largeIcon;
+      try {
+        final imagePath = await _getLocalImagePath(icon);
+        largeIcon = FilePathAndroidBitmap(imagePath);
+        debugPrint('🔔   Using icon: $imagePath');
+      } catch (e) {
+        debugPrint('🔔   Icon load failed (will use default): $e');
+      }
+
+      final notificationDetails = NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channelId,
+          _channelName,
+          priority: Priority.high,
+          importance: Importance.max,
+          playSound: false,
+          enableVibration: false,
+          largeIcon: largeIcon,
+          icon: '@mipmap/ic_launcher',
+        ),
+      );
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id,
@@ -27,32 +55,21 @@ class NotificationShow {
         scheduledTime,
         notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        payload: imagePath,
       );
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error showing notification: $e');
-      }
+
+      debugPrint(
+        '✅ NotificationShow: Successfully scheduled notification ID $id',
+      );
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error scheduling notification: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Re-throw so caller knows it failed
+      rethrow;
     }
   }
 
   Future<String> _getLocalImagePath(String icon) async =>
       await WeatherController().getLocalImagePath(icon);
-
-  Future<NotificationDetails> _buildNotificationDetails(
-    String imagePath,
-  ) async {
-    final androidNotificationDetails = AndroidNotificationDetails(
-      _channelId,
-      _channelName,
-      priority: Priority.high,
-      importance: Importance.max,
-      playSound: false,
-      enableVibration: false,
-      largeIcon: FilePathAndroidBitmap(imagePath),
-    );
-    return NotificationDetails(android: androidNotificationDetails);
-  }
 
   tz.TZDateTime _getScheduledTime(DateTime date) =>
       tz.TZDateTime.from(date, tz.local);

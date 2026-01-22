@@ -71,6 +71,14 @@ class Settings {
   int? timeRange;
   String? timeStart;
   String? timeEnd;
+
+  // Notification tracking to prevent spam
+  DateTime? lastAuroraNotification;
+  DateTime? lastRainNotification;
+  DateTime? lastWeatherAlertNotification;
+  DateTime? lastFloodNotification;
+  double? lastNotifiedAuroraKp; // Track the Kp value we last notified about
+  String? lastNotifiedWeatherAlertId; // Track the alert ID to avoid duplicates
 }
 
 @collection

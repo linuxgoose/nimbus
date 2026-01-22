@@ -99,192 +99,232 @@ const SettingsSchema = CollectionSchema(
       name: r'hideAurora',
       type: IsarType.bool,
     ),
-    r'hideElevation': PropertySchema(
+    r'hideEarthEvents': PropertySchema(
       id: 18,
+      name: r'hideEarthEvents',
+      type: IsarType.bool,
+    ),
+    r'hideElevation': PropertySchema(
+      id: 19,
       name: r'hideElevation',
       type: IsarType.bool,
     ),
     r'hideFlood': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'hideFlood',
       type: IsarType.bool,
     ),
     r'hideHiking': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'hideHiking',
       type: IsarType.bool,
     ),
-    r'hideMap': PropertySchema(id: 21, name: r'hideMap', type: IsarType.bool),
+    r'hideMap': PropertySchema(id: 22, name: r'hideMap', type: IsarType.bool),
     r'hideMarine': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'hideMarine',
       type: IsarType.bool,
     ),
     r'hideRainForecast': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'hideRainForecast',
       type: IsarType.bool,
     ),
     r'hideTides': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'hideTides',
       type: IsarType.bool,
     ),
     r'language': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'language',
       type: IsarType.string,
     ),
     r'largeElement': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'largeElement',
       type: IsarType.bool,
     ),
-    r'location': PropertySchema(id: 27, name: r'location', type: IsarType.bool),
-    r'materialColor': PropertySchema(
+    r'lastAuroraNotification': PropertySchema(
       id: 28,
+      name: r'lastAuroraNotification',
+      type: IsarType.dateTime,
+    ),
+    r'lastFloodNotification': PropertySchema(
+      id: 29,
+      name: r'lastFloodNotification',
+      type: IsarType.dateTime,
+    ),
+    r'lastNotifiedAuroraKp': PropertySchema(
+      id: 30,
+      name: r'lastNotifiedAuroraKp',
+      type: IsarType.double,
+    ),
+    r'lastNotifiedWeatherAlertId': PropertySchema(
+      id: 31,
+      name: r'lastNotifiedWeatherAlertId',
+      type: IsarType.string,
+    ),
+    r'lastRainNotification': PropertySchema(
+      id: 32,
+      name: r'lastRainNotification',
+      type: IsarType.dateTime,
+    ),
+    r'lastWeatherAlertNotification': PropertySchema(
+      id: 33,
+      name: r'lastWeatherAlertNotification',
+      type: IsarType.dateTime,
+    ),
+    r'location': PropertySchema(id: 34, name: r'location', type: IsarType.bool),
+    r'materialColor': PropertySchema(
+      id: 35,
       name: r'materialColor',
       type: IsarType.bool,
     ),
     r'measurements': PropertySchema(
-      id: 29,
+      id: 36,
       name: r'measurements',
       type: IsarType.string,
     ),
     r'notifications': PropertySchema(
-      id: 30,
+      id: 37,
       name: r'notifications',
       type: IsarType.bool,
     ),
     r'nowTileMetric1': PropertySchema(
-      id: 31,
+      id: 38,
       name: r'nowTileMetric1',
       type: IsarType.string,
     ),
     r'nowTileMetric2': PropertySchema(
-      id: 32,
+      id: 39,
       name: r'nowTileMetric2',
       type: IsarType.string,
     ),
-    r'onboard': PropertySchema(id: 33, name: r'onboard', type: IsarType.bool),
+    r'onboard': PropertySchema(id: 40, name: r'onboard', type: IsarType.bool),
     r'preferMetNoInHybrid': PropertySchema(
-      id: 34,
+      id: 41,
       name: r'preferMetNoInHybrid',
       type: IsarType.bool,
     ),
     r'pressure': PropertySchema(
-      id: 35,
+      id: 42,
       name: r'pressure',
       type: IsarType.string,
     ),
     r'rainNotificationThreshold': PropertySchema(
-      id: 36,
+      id: 43,
       name: r'rainNotificationThreshold',
       type: IsarType.double,
     ),
     r'rainNotifications': PropertySchema(
-      id: 37,
+      id: 44,
       name: r'rainNotifications',
       type: IsarType.bool,
     ),
     r'roundDegree': PropertySchema(
-      id: 38,
+      id: 45,
       name: r'roundDegree',
       type: IsarType.bool,
     ),
+    r'schemaVersion': PropertySchema(
+      id: 46,
+      name: r'schemaVersion',
+      type: IsarType.long,
+    ),
     r'showAlertsOnMainPage': PropertySchema(
-      id: 39,
+      id: 47,
       name: r'showAlertsOnMainPage',
       type: IsarType.bool,
     ),
     r'showAlertsOnMap': PropertySchema(
-      id: 40,
+      id: 48,
       name: r'showAlertsOnMap',
       type: IsarType.bool,
     ),
     r'showDummyAlerts': PropertySchema(
-      id: 41,
+      id: 49,
       name: r'showDummyAlerts',
       type: IsarType.bool,
     ),
-    r'theme': PropertySchema(id: 42, name: r'theme', type: IsarType.string),
+    r'theme': PropertySchema(id: 50, name: r'theme', type: IsarType.string),
     r'tideDatum': PropertySchema(
-      id: 43,
+      id: 51,
       name: r'tideDatum',
       type: IsarType.string,
     ),
     r'tidesApiKey': PropertySchema(
-      id: 44,
+      id: 52,
       name: r'tidesApiKey',
       type: IsarType.string,
     ),
     r'tidesDiscoveryApiKey': PropertySchema(
-      id: 45,
+      id: 53,
       name: r'tidesDiscoveryApiKey',
       type: IsarType.string,
     ),
     r'tidesSource': PropertySchema(
-      id: 46,
+      id: 54,
       name: r'tidesSource',
       type: IsarType.string,
     ),
-    r'timeEnd': PropertySchema(id: 47, name: r'timeEnd', type: IsarType.string),
+    r'timeEnd': PropertySchema(id: 55, name: r'timeEnd', type: IsarType.string),
     r'timeRange': PropertySchema(
-      id: 48,
+      id: 56,
       name: r'timeRange',
       type: IsarType.long,
     ),
     r'timeStart': PropertySchema(
-      id: 49,
+      id: 57,
       name: r'timeStart',
       type: IsarType.string,
     ),
     r'timeformat': PropertySchema(
-      id: 50,
+      id: 58,
       name: r'timeformat',
       type: IsarType.string,
     ),
     r'useCustomOpenMeteoEndpoint': PropertySchema(
-      id: 51,
+      id: 59,
       name: r'useCustomOpenMeteoEndpoint',
       type: IsarType.bool,
     ),
     r'useDummyElevation': PropertySchema(
-      id: 52,
+      id: 60,
       name: r'useDummyElevation',
       type: IsarType.bool,
     ),
     r'useDummyTides': PropertySchema(
-      id: 53,
+      id: 61,
       name: r'useDummyTides',
       type: IsarType.bool,
     ),
     r'weatherAlertMinSeverity': PropertySchema(
-      id: 54,
+      id: 62,
       name: r'weatherAlertMinSeverity',
       type: IsarType.string,
     ),
     r'weatherAlertNotifications': PropertySchema(
-      id: 55,
+      id: 63,
       name: r'weatherAlertNotifications',
       type: IsarType.bool,
     ),
     r'weatherDataSource': PropertySchema(
-      id: 56,
+      id: 64,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 57,
+      id: 65,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 58,
+      id: 66,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 59, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 67, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -345,6 +385,12 @@ int _settingsEstimateSize(
   bytesCount += 3 + object.geocodingSource.length * 3;
   {
     final value = object.language;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.lastNotifiedWeatherAlertId;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -428,48 +474,56 @@ void _settingsSerialize(
   writer.writeBool(offsets[15], object.hideAgriculture);
   writer.writeBool(offsets[16], object.hideAqi);
   writer.writeBool(offsets[17], object.hideAurora);
-  writer.writeBool(offsets[18], object.hideElevation);
-  writer.writeBool(offsets[19], object.hideFlood);
-  writer.writeBool(offsets[20], object.hideHiking);
-  writer.writeBool(offsets[21], object.hideMap);
-  writer.writeBool(offsets[22], object.hideMarine);
-  writer.writeBool(offsets[23], object.hideRainForecast);
-  writer.writeBool(offsets[24], object.hideTides);
-  writer.writeString(offsets[25], object.language);
-  writer.writeBool(offsets[26], object.largeElement);
-  writer.writeBool(offsets[27], object.location);
-  writer.writeBool(offsets[28], object.materialColor);
-  writer.writeString(offsets[29], object.measurements);
-  writer.writeBool(offsets[30], object.notifications);
-  writer.writeString(offsets[31], object.nowTileMetric1);
-  writer.writeString(offsets[32], object.nowTileMetric2);
-  writer.writeBool(offsets[33], object.onboard);
-  writer.writeBool(offsets[34], object.preferMetNoInHybrid);
-  writer.writeString(offsets[35], object.pressure);
-  writer.writeDouble(offsets[36], object.rainNotificationThreshold);
-  writer.writeBool(offsets[37], object.rainNotifications);
-  writer.writeBool(offsets[38], object.roundDegree);
-  writer.writeBool(offsets[39], object.showAlertsOnMainPage);
-  writer.writeBool(offsets[40], object.showAlertsOnMap);
-  writer.writeBool(offsets[41], object.showDummyAlerts);
-  writer.writeString(offsets[42], object.theme);
-  writer.writeString(offsets[43], object.tideDatum);
-  writer.writeString(offsets[44], object.tidesApiKey);
-  writer.writeString(offsets[45], object.tidesDiscoveryApiKey);
-  writer.writeString(offsets[46], object.tidesSource);
-  writer.writeString(offsets[47], object.timeEnd);
-  writer.writeLong(offsets[48], object.timeRange);
-  writer.writeString(offsets[49], object.timeStart);
-  writer.writeString(offsets[50], object.timeformat);
-  writer.writeBool(offsets[51], object.useCustomOpenMeteoEndpoint);
-  writer.writeBool(offsets[52], object.useDummyElevation);
-  writer.writeBool(offsets[53], object.useDummyTides);
-  writer.writeString(offsets[54], object.weatherAlertMinSeverity);
-  writer.writeBool(offsets[55], object.weatherAlertNotifications);
-  writer.writeString(offsets[56], object.weatherDataSource);
-  writer.writeString(offsets[57], object.widgetBackgroundColor);
-  writer.writeString(offsets[58], object.widgetTextColor);
-  writer.writeString(offsets[59], object.wind);
+  writer.writeBool(offsets[18], object.hideEarthEvents);
+  writer.writeBool(offsets[19], object.hideElevation);
+  writer.writeBool(offsets[20], object.hideFlood);
+  writer.writeBool(offsets[21], object.hideHiking);
+  writer.writeBool(offsets[22], object.hideMap);
+  writer.writeBool(offsets[23], object.hideMarine);
+  writer.writeBool(offsets[24], object.hideRainForecast);
+  writer.writeBool(offsets[25], object.hideTides);
+  writer.writeString(offsets[26], object.language);
+  writer.writeBool(offsets[27], object.largeElement);
+  writer.writeDateTime(offsets[28], object.lastAuroraNotification);
+  writer.writeDateTime(offsets[29], object.lastFloodNotification);
+  writer.writeDouble(offsets[30], object.lastNotifiedAuroraKp);
+  writer.writeString(offsets[31], object.lastNotifiedWeatherAlertId);
+  writer.writeDateTime(offsets[32], object.lastRainNotification);
+  writer.writeDateTime(offsets[33], object.lastWeatherAlertNotification);
+  writer.writeBool(offsets[34], object.location);
+  writer.writeBool(offsets[35], object.materialColor);
+  writer.writeString(offsets[36], object.measurements);
+  writer.writeBool(offsets[37], object.notifications);
+  writer.writeString(offsets[38], object.nowTileMetric1);
+  writer.writeString(offsets[39], object.nowTileMetric2);
+  writer.writeBool(offsets[40], object.onboard);
+  writer.writeBool(offsets[41], object.preferMetNoInHybrid);
+  writer.writeString(offsets[42], object.pressure);
+  writer.writeDouble(offsets[43], object.rainNotificationThreshold);
+  writer.writeBool(offsets[44], object.rainNotifications);
+  writer.writeBool(offsets[45], object.roundDegree);
+  writer.writeLong(offsets[46], object.schemaVersion);
+  writer.writeBool(offsets[47], object.showAlertsOnMainPage);
+  writer.writeBool(offsets[48], object.showAlertsOnMap);
+  writer.writeBool(offsets[49], object.showDummyAlerts);
+  writer.writeString(offsets[50], object.theme);
+  writer.writeString(offsets[51], object.tideDatum);
+  writer.writeString(offsets[52], object.tidesApiKey);
+  writer.writeString(offsets[53], object.tidesDiscoveryApiKey);
+  writer.writeString(offsets[54], object.tidesSource);
+  writer.writeString(offsets[55], object.timeEnd);
+  writer.writeLong(offsets[56], object.timeRange);
+  writer.writeString(offsets[57], object.timeStart);
+  writer.writeString(offsets[58], object.timeformat);
+  writer.writeBool(offsets[59], object.useCustomOpenMeteoEndpoint);
+  writer.writeBool(offsets[60], object.useDummyElevation);
+  writer.writeBool(offsets[61], object.useDummyTides);
+  writer.writeString(offsets[62], object.weatherAlertMinSeverity);
+  writer.writeBool(offsets[63], object.weatherAlertNotifications);
+  writer.writeString(offsets[64], object.weatherDataSource);
+  writer.writeString(offsets[65], object.widgetBackgroundColor);
+  writer.writeString(offsets[66], object.widgetTextColor);
+  writer.writeString(offsets[67], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -497,49 +551,57 @@ Settings _settingsDeserialize(
   object.hideAgriculture = reader.readBool(offsets[15]);
   object.hideAqi = reader.readBool(offsets[16]);
   object.hideAurora = reader.readBool(offsets[17]);
-  object.hideElevation = reader.readBool(offsets[18]);
-  object.hideFlood = reader.readBool(offsets[19]);
-  object.hideHiking = reader.readBool(offsets[20]);
-  object.hideMap = reader.readBool(offsets[21]);
-  object.hideMarine = reader.readBool(offsets[22]);
-  object.hideRainForecast = reader.readBool(offsets[23]);
-  object.hideTides = reader.readBool(offsets[24]);
+  object.hideEarthEvents = reader.readBool(offsets[18]);
+  object.hideElevation = reader.readBool(offsets[19]);
+  object.hideFlood = reader.readBool(offsets[20]);
+  object.hideHiking = reader.readBool(offsets[21]);
+  object.hideMap = reader.readBool(offsets[22]);
+  object.hideMarine = reader.readBool(offsets[23]);
+  object.hideRainForecast = reader.readBool(offsets[24]);
+  object.hideTides = reader.readBool(offsets[25]);
   object.id = id;
-  object.language = reader.readStringOrNull(offsets[25]);
-  object.largeElement = reader.readBool(offsets[26]);
-  object.location = reader.readBool(offsets[27]);
-  object.materialColor = reader.readBool(offsets[28]);
-  object.measurements = reader.readString(offsets[29]);
-  object.notifications = reader.readBool(offsets[30]);
-  object.nowTileMetric1 = reader.readString(offsets[31]);
-  object.nowTileMetric2 = reader.readString(offsets[32]);
-  object.onboard = reader.readBool(offsets[33]);
-  object.preferMetNoInHybrid = reader.readBool(offsets[34]);
-  object.pressure = reader.readString(offsets[35]);
-  object.rainNotificationThreshold = reader.readDouble(offsets[36]);
-  object.rainNotifications = reader.readBool(offsets[37]);
-  object.roundDegree = reader.readBool(offsets[38]);
-  object.showAlertsOnMainPage = reader.readBool(offsets[39]);
-  object.showAlertsOnMap = reader.readBool(offsets[40]);
-  object.showDummyAlerts = reader.readBool(offsets[41]);
-  object.theme = reader.readStringOrNull(offsets[42]);
-  object.tideDatum = reader.readString(offsets[43]);
-  object.tidesApiKey = reader.readStringOrNull(offsets[44]);
-  object.tidesDiscoveryApiKey = reader.readStringOrNull(offsets[45]);
-  object.tidesSource = reader.readString(offsets[46]);
-  object.timeEnd = reader.readStringOrNull(offsets[47]);
-  object.timeRange = reader.readLongOrNull(offsets[48]);
-  object.timeStart = reader.readStringOrNull(offsets[49]);
-  object.timeformat = reader.readString(offsets[50]);
-  object.useCustomOpenMeteoEndpoint = reader.readBool(offsets[51]);
-  object.useDummyElevation = reader.readBool(offsets[52]);
-  object.useDummyTides = reader.readBool(offsets[53]);
-  object.weatherAlertMinSeverity = reader.readString(offsets[54]);
-  object.weatherAlertNotifications = reader.readBool(offsets[55]);
-  object.weatherDataSource = reader.readString(offsets[56]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[57]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[58]);
-  object.wind = reader.readString(offsets[59]);
+  object.language = reader.readStringOrNull(offsets[26]);
+  object.largeElement = reader.readBool(offsets[27]);
+  object.lastAuroraNotification = reader.readDateTimeOrNull(offsets[28]);
+  object.lastFloodNotification = reader.readDateTimeOrNull(offsets[29]);
+  object.lastNotifiedAuroraKp = reader.readDoubleOrNull(offsets[30]);
+  object.lastNotifiedWeatherAlertId = reader.readStringOrNull(offsets[31]);
+  object.lastRainNotification = reader.readDateTimeOrNull(offsets[32]);
+  object.lastWeatherAlertNotification = reader.readDateTimeOrNull(offsets[33]);
+  object.location = reader.readBool(offsets[34]);
+  object.materialColor = reader.readBool(offsets[35]);
+  object.measurements = reader.readString(offsets[36]);
+  object.notifications = reader.readBool(offsets[37]);
+  object.nowTileMetric1 = reader.readString(offsets[38]);
+  object.nowTileMetric2 = reader.readString(offsets[39]);
+  object.onboard = reader.readBool(offsets[40]);
+  object.preferMetNoInHybrid = reader.readBool(offsets[41]);
+  object.pressure = reader.readString(offsets[42]);
+  object.rainNotificationThreshold = reader.readDouble(offsets[43]);
+  object.rainNotifications = reader.readBool(offsets[44]);
+  object.roundDegree = reader.readBool(offsets[45]);
+  object.schemaVersion = reader.readLong(offsets[46]);
+  object.showAlertsOnMainPage = reader.readBool(offsets[47]);
+  object.showAlertsOnMap = reader.readBool(offsets[48]);
+  object.showDummyAlerts = reader.readBool(offsets[49]);
+  object.theme = reader.readStringOrNull(offsets[50]);
+  object.tideDatum = reader.readString(offsets[51]);
+  object.tidesApiKey = reader.readStringOrNull(offsets[52]);
+  object.tidesDiscoveryApiKey = reader.readStringOrNull(offsets[53]);
+  object.tidesSource = reader.readString(offsets[54]);
+  object.timeEnd = reader.readStringOrNull(offsets[55]);
+  object.timeRange = reader.readLongOrNull(offsets[56]);
+  object.timeStart = reader.readStringOrNull(offsets[57]);
+  object.timeformat = reader.readString(offsets[58]);
+  object.useCustomOpenMeteoEndpoint = reader.readBool(offsets[59]);
+  object.useDummyElevation = reader.readBool(offsets[60]);
+  object.useDummyTides = reader.readBool(offsets[61]);
+  object.weatherAlertMinSeverity = reader.readString(offsets[62]);
+  object.weatherAlertNotifications = reader.readBool(offsets[63]);
+  object.weatherDataSource = reader.readString(offsets[64]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[65]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[66]);
+  object.wind = reader.readString(offsets[67]);
   return object;
 }
 
@@ -601,74 +663,90 @@ P _settingsDeserializeProp<P>(
     case 24:
       return (reader.readBool(offset)) as P;
     case 25:
-      return (reader.readStringOrNull(offset)) as P;
-    case 26:
       return (reader.readBool(offset)) as P;
+    case 26:
+      return (reader.readStringOrNull(offset)) as P;
     case 27:
       return (reader.readBool(offset)) as P;
     case 28:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 29:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 30:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDoubleOrNull(offset)) as P;
     case 31:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 32:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 33:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 34:
       return (reader.readBool(offset)) as P;
     case 35:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 36:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 37:
       return (reader.readBool(offset)) as P;
     case 38:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 39:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 40:
       return (reader.readBool(offset)) as P;
     case 41:
       return (reader.readBool(offset)) as P;
     case 42:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 43:
-      return (reader.readString(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 44:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 45:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 46:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 47:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 48:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 49:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 50:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 51:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 52:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 53:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 54:
       return (reader.readString(offset)) as P;
     case 55:
-      return (reader.readBool(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 56:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 57:
       return (reader.readStringOrNull(offset)) as P;
     case 58:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 59:
+      return (reader.readBool(offset)) as P;
+    case 60:
+      return (reader.readBool(offset)) as P;
+    case 61:
+      return (reader.readBool(offset)) as P;
+    case 62:
+      return (reader.readString(offset)) as P;
+    case 63:
+      return (reader.readBool(offset)) as P;
+    case 64:
+      return (reader.readString(offset)) as P;
+    case 65:
+      return (reader.readStringOrNull(offset)) as P;
+    case 66:
+      return (reader.readStringOrNull(offset)) as P;
+    case 67:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2490,6 +2568,15 @@ extension SettingsQueryFilter
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  hideEarthEventsEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hideEarthEvents', value: value),
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterFilterCondition> hideElevationEqualTo(
     bool value,
   ) {
@@ -2784,6 +2871,593 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'largeElement', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastAuroraNotificationIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastAuroraNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastAuroraNotificationIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastAuroraNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastAuroraNotificationEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastAuroraNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastAuroraNotificationGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastAuroraNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastAuroraNotificationLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastAuroraNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastAuroraNotificationBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastAuroraNotification',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastFloodNotificationIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastFloodNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastFloodNotificationIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastFloodNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastFloodNotificationEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastFloodNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastFloodNotificationGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastFloodNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastFloodNotificationLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastFloodNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastFloodNotificationBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastFloodNotification',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedAuroraKpIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastNotifiedAuroraKp'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedAuroraKpIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastNotifiedAuroraKp'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedAuroraKpEqualTo(double? value, {double epsilon = Query.epsilon}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastNotifiedAuroraKp',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedAuroraKpGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastNotifiedAuroraKp',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedAuroraKpLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastNotifiedAuroraKp',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedAuroraKpBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastNotifiedAuroraKp',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastNotifiedWeatherAlertId'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(
+          property: r'lastNotifiedWeatherAlertId',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastNotifiedWeatherAlertId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastNotifiedWeatherAlertId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastNotifiedWeatherAlertId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastNotifiedWeatherAlertId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'lastNotifiedWeatherAlertId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'lastNotifiedWeatherAlertId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'lastNotifiedWeatherAlertId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'lastNotifiedWeatherAlertId',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastNotifiedWeatherAlertId',
+          value: '',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastNotifiedWeatherAlertIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          property: r'lastNotifiedWeatherAlertId',
+          value: '',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastRainNotificationIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastRainNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastRainNotificationIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'lastRainNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastRainNotificationEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastRainNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastRainNotificationGreaterThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastRainNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastRainNotificationLessThan(DateTime? value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastRainNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastRainNotificationBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastRainNotification',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastWeatherAlertNotificationIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'lastWeatherAlertNotification'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastWeatherAlertNotificationIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(
+          property: r'lastWeatherAlertNotification',
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastWeatherAlertNotificationEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'lastWeatherAlertNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastWeatherAlertNotificationGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastWeatherAlertNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastWeatherAlertNotificationLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastWeatherAlertNotification',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  lastWeatherAlertNotificationBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastWeatherAlertNotification',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
@@ -3511,6 +4185,63 @@ extension SettingsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'roundDegree', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> schemaVersionEqualTo(
+    int value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'schemaVersion', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  schemaVersionGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'schemaVersion',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> schemaVersionLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'schemaVersion',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> schemaVersionBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'schemaVersion',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
@@ -5905,6 +6636,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideEarthEvents() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideEarthEvents', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideEarthEventsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideEarthEvents', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByHideElevation() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideElevation', Sort.asc);
@@ -6010,6 +6753,87 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByLargeElementDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'largeElement', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastAuroraNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastAuroraNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastAuroraNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastAuroraNotification', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByLastFloodNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastFloodNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastFloodNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastFloodNotification', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByLastNotifiedAuroraKp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedAuroraKp', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastNotifiedAuroraKpDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedAuroraKp', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastNotifiedWeatherAlertId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedWeatherAlertId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastNotifiedWeatherAlertIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedWeatherAlertId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByLastRainNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastRainNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastRainNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastRainNotification', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastWeatherAlertNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherAlertNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  sortByLastWeatherAlertNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherAlertNotification', Sort.desc);
     });
   }
 
@@ -6157,6 +6981,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByRoundDegreeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'roundDegree', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortBySchemaVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'schemaVersion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortBySchemaVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'schemaVersion', Sort.desc);
     });
   }
 
@@ -6647,6 +7483,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideEarthEvents() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideEarthEvents', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideEarthEventsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hideEarthEvents', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByHideElevation() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hideElevation', Sort.asc);
@@ -6764,6 +7612,87 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByLargeElementDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'largeElement', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastAuroraNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastAuroraNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastAuroraNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastAuroraNotification', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByLastFloodNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastFloodNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastFloodNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastFloodNotification', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByLastNotifiedAuroraKp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedAuroraKp', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastNotifiedAuroraKpDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedAuroraKp', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastNotifiedWeatherAlertId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedWeatherAlertId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastNotifiedWeatherAlertIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastNotifiedWeatherAlertId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByLastRainNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastRainNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastRainNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastRainNotification', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastWeatherAlertNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherAlertNotification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy>
+  thenByLastWeatherAlertNotificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'lastWeatherAlertNotification', Sort.desc);
     });
   }
 
@@ -6911,6 +7840,18 @@ extension SettingsQuerySortThenBy
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByRoundDegreeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'roundDegree', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenBySchemaVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'schemaVersion', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenBySchemaVersionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'schemaVersion', Sort.desc);
     });
   }
 
@@ -7331,6 +8272,12 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByHideEarthEvents() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hideEarthEvents');
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByHideElevation() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hideElevation');
@@ -7384,6 +8331,49 @@ extension SettingsQueryWhereDistinct
   QueryBuilder<Settings, Settings, QDistinct> distinctByLargeElement() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'largeElement');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct>
+  distinctByLastAuroraNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastAuroraNotification');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct>
+  distinctByLastFloodNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastFloodNotification');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByLastNotifiedAuroraKp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastNotifiedAuroraKp');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct>
+  distinctByLastNotifiedWeatherAlertId({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'lastNotifiedWeatherAlertId',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctByLastRainNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastRainNotification');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct>
+  distinctByLastWeatherAlertNotification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'lastWeatherAlertNotification');
     });
   }
 
@@ -7471,6 +8461,12 @@ extension SettingsQueryWhereDistinct
   QueryBuilder<Settings, Settings, QDistinct> distinctByRoundDegree() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'roundDegree');
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QDistinct> distinctBySchemaVersion() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'schemaVersion');
     });
   }
 
@@ -7763,6 +8759,12 @@ extension SettingsQueryProperty
     });
   }
 
+  QueryBuilder<Settings, bool, QQueryOperations> hideEarthEventsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hideEarthEvents');
+    });
+  }
+
   QueryBuilder<Settings, bool, QQueryOperations> hideElevationProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hideElevation');
@@ -7814,6 +8816,48 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> largeElementProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'largeElement');
+    });
+  }
+
+  QueryBuilder<Settings, DateTime?, QQueryOperations>
+  lastAuroraNotificationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastAuroraNotification');
+    });
+  }
+
+  QueryBuilder<Settings, DateTime?, QQueryOperations>
+  lastFloodNotificationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastFloodNotification');
+    });
+  }
+
+  QueryBuilder<Settings, double?, QQueryOperations>
+  lastNotifiedAuroraKpProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastNotifiedAuroraKp');
+    });
+  }
+
+  QueryBuilder<Settings, String?, QQueryOperations>
+  lastNotifiedWeatherAlertIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastNotifiedWeatherAlertId');
+    });
+  }
+
+  QueryBuilder<Settings, DateTime?, QQueryOperations>
+  lastRainNotificationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastRainNotification');
+    });
+  }
+
+  QueryBuilder<Settings, DateTime?, QQueryOperations>
+  lastWeatherAlertNotificationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'lastWeatherAlertNotification');
     });
   }
 
@@ -7887,6 +8931,12 @@ extension SettingsQueryProperty
   QueryBuilder<Settings, bool, QQueryOperations> roundDegreeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'roundDegree');
+    });
+  }
+
+  QueryBuilder<Settings, int, QQueryOperations> schemaVersionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'schemaVersion');
     });
   }
 

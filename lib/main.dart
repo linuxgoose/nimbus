@@ -92,20 +92,84 @@ const List<Map<String, dynamic>> appLanguages = [
 ];
 
 @pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse response) {
+  debugPrint('Background notification tapped: ${response.payload}');
+}
+
+@pragma('vm:entry-point')
 void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
-  print('⚙️ Workmanager task started: $task at ${DateTime.now()}');
+  print('⚙️ =================================');
+  print('⚙️ Workmanager task started: $task');
+  print('⚙️ Time: ${DateTime.now()}');
+  print('⚙️ =================================');
+
+  // CRITICAL: Initialize required services for background task
+  try {
+    // Initialize timezone first
+    tz.initializeTimeZones();
+    final dynamic timeZoneInfo = await FlutterTimezone.getLocalTimezone();
+    final String timeZoneName = timeZoneInfo is String
+        ? timeZoneInfo
+        : timeZoneInfo.toString();
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    print('⚙️ Timezone initialized: $timeZoneName');
+
+    // Initialize Isar database
+    final dir = await getApplicationDocumentsDirectory();
+    isar = await Isar.open([
+      SettingsSchema,
+      MainWeatherCacheSchema,
+      LocationCacheSchema,
+      WeatherCardSchema,
+      TideLocationSchema,
+      ElevationLocationSchema,
+      TideCacheSchema,
+      AqiCacheSchema,
+      AlertHistorySchema,
+      RainForecastCacheSchema,
+      ElevationCacheSchema,
+      AuroraCacheSchema,
+      TideStationSchema,
+      SavedTideStationSchema,
+    ], directory: dir.path);
+    print('⚙️ Isar initialized for background task');
+
+    // Initialize notifications plugin for background task
+    await flutterLocalNotificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+    );
+    print('⚙️ Notifications initialized for background task');
+  } catch (e, stackTrace) {
+    print('⚠️ Background task initialization error: $e');
+    print('⚠️ Stack trace: $stackTrace');
+    return Future.value(false);
+  }
 
   if (task == 'notificationCheck') {
-    print('⚙️ Running notificationCheck task');
-    await NotificationWorker.checkAndNotify();
-    print('⚙️ notificationCheck task completed');
-    return Future.value(true);
+    try {
+      print('⚙️ Running notificationCheck task');
+      await NotificationWorker.checkAndNotify();
+      print('✅ notificationCheck task completed successfully');
+      return Future.value(true);
+    } catch (e, stackTrace) {
+      print('⚠️ notificationCheck task error: $e');
+      print('⚠️ Stack trace: $stackTrace');
+      return Future.value(false);
+    }
   }
 
   print('⚙️ Running widget update task');
-  final result = await WeatherController().updateWidget();
-  print('⚙️ Widget update task completed: $result');
-  return result;
+  try {
+    final result = await WeatherController().updateWidget();
+    print('⚙️ Widget update task completed: $result');
+    return result;
+  } catch (e, stackTrace) {
+    print('⚠️ Widget update error: $e');
+    print('⚠️ Stack trace: $stackTrace');
+    return Future.value(false);
+  }
 });
 
 void main() async {
@@ -351,10 +415,21 @@ Future<void> _migrateSchema(int fromVersion, int toVersion) async {
 Future<void> initializeNotifications() async {
   const initializationSettings = InitializationSettings(
     android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    iOS: DarwinInitializationSettings(),
+    iOS: DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    ),
     linux: LinuxInitializationSettings(defaultActionName: 'Rain'),
   );
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      debugPrint('Notification clicked: ${response.payload}');
+    },
+    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+  );
 
   // Create notification channels for Android
   if (Platform.isAndroid) {
@@ -364,6 +439,18 @@ Future<void> initializeNotifications() async {
         >();
 
     if (androidImplementation != null) {
+      // Forecast/Rain channel - used by daily forecast notifications
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'Rain',
+          'DARK NIGHT',
+          description: 'Weather forecast notifications',
+          importance: Importance.max,
+          playSound: false,
+          enableVibration: false,
+        ),
+      );
+
       // Aurora channel
       await androidImplementation.createNotificationChannel(
         const AndroidNotificationChannel(
@@ -371,16 +458,20 @@ Future<void> initializeNotifications() async {
           'Aurora Alerts',
           description: 'Notifications for aurora activity',
           importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
         ),
       );
 
-      // Rain channel
+      // Rain alerts channel
       await androidImplementation.createNotificationChannel(
         const AndroidNotificationChannel(
           'rain_alerts',
           'Rain Alerts',
           description: 'Notifications for upcoming rain',
           importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
         ),
       );
 
@@ -391,6 +482,8 @@ Future<void> initializeNotifications() async {
           'Weather Alerts',
           description: 'Notifications for severe weather alerts',
           importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
         ),
       );
 
@@ -401,8 +494,12 @@ Future<void> initializeNotifications() async {
           'Flood Alerts',
           description: 'Notifications for flood warnings',
           importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
         ),
       );
+
+      debugPrint('✅ All notification channels created');
     }
   }
 }

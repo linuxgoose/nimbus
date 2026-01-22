@@ -12,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/services/notification_worker.dart';
 import 'package:nimbus/app/ui/alert_history/view/alert_history_page.dart';
 import 'package:nimbus/app/ui/settings/widgets/setting_card.dart';
 import 'package:nimbus/main.dart';
@@ -828,12 +829,48 @@ class _SettingsPageState extends State<SettingsPage> {
     value: settings.location,
     onChange: (value) async {
       if (value) {
+        // Check if location service is enabled
         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (!serviceEnabled) {
           if (!context.mounted) return;
           await _showLocationDialog(context);
           return;
         }
+
+        // Request location permissions
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location permissions are denied'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Location permissions are permanently denied. Please enable in settings.',
+              ),
+              duration: const Duration(seconds: 4),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () => Geolocator.openAppSettings(),
+              ),
+            ),
+          );
+          return;
+        }
+
+        // Permission granted, get location
         weatherController.getCurrentLocation();
       }
       isar.writeTxnSync(() {
@@ -979,6 +1016,100 @@ class _SettingsPageState extends State<SettingsPage> {
               );
             },
           ),
+          const SizedBox(height: 20),
+          // Exact Alarms Permission Card
+          Row(
+            children: [
+              Icon(
+                LucideIcons.alarmClock,
+                color: context.theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Exact Alarms',
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Required for scheduled notifications to work when app is closed',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<bool>(
+            future: WeatherController.canScheduleExactAlarms(),
+            builder: (context, snapshot) {
+              final canSchedule = snapshot.data ?? false;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: canSchedule
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: canSchedule ? Colors.green : Colors.orange,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          canSchedule ? LucideIcons.check : LucideIcons.info,
+                          color: canSchedule ? Colors.green : Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            canSchedule
+                                ? 'Exact alarms permission granted ✓'
+                                : 'Exact alarms permission needed for background notifications',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: canSchedule ? Colors.green : Colors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!canSchedule) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await WeatherController.openExactAlarmSettings();
+                          setState(() {});
+                        },
+                        icon: const Icon(LucideIcons.settings, size: 18),
+                        label: const Text('Open Alarms & Reminders Settings'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
         ],
       ),
     ),
@@ -994,74 +1125,91 @@ class _SettingsPageState extends State<SettingsPage> {
     switcher: true,
     value: settings.notifications,
     onChange: (value) async {
-      final resultExact = await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.requestExactAlarmsPermission();
-      final result = Platform.isIOS
-          ? await flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<
-                  IOSFlutterLocalNotificationsPlugin
-                >()
-                ?.requestPermissions()
-          : await flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin
-                >()
-                ?.requestNotificationsPermission();
-      if (result != null && resultExact != null) {
-        isar.writeTxnSync(() {
-          settings.notifications = value;
-          isar.settings.putSync(settings);
-        });
-        if (value) {
-          // Show test notification immediately to confirm it's working
-          await _showTestNotification();
-          // Schedule regular forecast notifications from current weather data
-          weatherController.notification(weatherController.mainWeather);
-          // Start background worker to reschedule when notifications expire
-          WeatherController.scheduleNotificationChecks();
-        } else {
-          flutterLocalNotificationsPlugin.cancelAll();
-          // Cancel background worker if no notification types are enabled
-          if (!settings.auroraNotifications &&
-              !settings.rainNotifications &&
-              !settings.weatherAlertNotifications &&
-              !settings.floodNotifications) {
-            WeatherController.cancelNotificationChecks();
+      if (value) {
+        // Request permissions when enabling notifications
+        bool permissionGranted = false;
+
+        if (Platform.isAndroid) {
+          final resultExact = await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.requestExactAlarmsPermission();
+          final resultNotif = await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.requestNotificationsPermission();
+
+          debugPrint('📬 Exact alarms permission: $resultExact');
+          debugPrint('📬 Notifications permission: $resultNotif');
+
+          if (resultExact == false) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    '⚠️ Exact alarms permission denied. Notifications may not work reliably. Please enable in system settings.',
+                  ),
+                  duration: Duration(seconds: 5),
+                ),
+              );
+            }
           }
+
+          permissionGranted = (resultExact ?? false) && (resultNotif ?? false);
+        } else if (Platform.isIOS) {
+          final result = await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin
+              >()
+              ?.requestPermissions(alert: true, badge: true, sound: true);
+          permissionGranted = result ?? false;
+        } else {
+          permissionGranted = true; // Other platforms
         }
-        setState(() {});
+
+        if (!permissionGranted) {
+          // Show error message if permission denied
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Notification permissions are required. Please enable them in system settings.',
+                ),
+                duration: Duration(seconds: 4),
+              ),
+            );
+          }
+          return; // Don't enable if permission denied
+        }
       }
+
+      isar.writeTxnSync(() {
+        settings.notifications = value;
+        isar.settings.putSync(settings);
+      });
+
+      if (value) {
+        // Schedule forecast notifications directly using current weather data
+        debugPrint('📬 Scheduling forecast notifications directly');
+        weatherController.notification(weatherController.mainWeather);
+
+        // Start background worker for aurora/rain/flood alerts
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        flutterLocalNotificationsPlugin.cancelAll();
+        // Cancel background worker if no notification types are enabled
+        if (!settings.auroraNotifications &&
+            !settings.rainNotifications &&
+            !settings.weatherAlertNotifications &&
+            !settings.floodNotifications) {
+          WeatherController.cancelNotificationChecks();
+        }
+      }
+      setState(() {});
     },
   );
-
-  Future<void> _showTestNotification() async {
-    try {
-      final androidDetails = const AndroidNotificationDetails(
-        'Rain',
-        'DARK NIGHT',
-        channelDescription: 'Weather forecast notifications',
-        importance: Importance.high,
-        priority: Priority.high,
-        playSound: true,
-        enableVibration: true,
-        icon: '@mipmap/ic_launcher',
-      );
-
-      final notificationDetails = NotificationDetails(android: androidDetails);
-
-      await flutterLocalNotificationsPlugin.show(
-        999, // Test notification ID
-        '✅ Forecast Notifications Enabled',
-        'Scheduled weather forecast notifications are now active and will appear according to your update frequency and quiet hours settings.',
-        notificationDetails,
-      );
-    } catch (e) {
-      debugPrint('Error showing test notification: $e');
-    }
-  }
 
   Widget _buildHideTidesSettingCard(
     BuildContext context,
@@ -1498,7 +1646,7 @@ class _SettingsPageState extends State<SettingsPage> {
     text: 'Aurora Notifications',
     switcher: true,
     value: settings.auroraNotifications,
-    onChange: (value) {
+    onChange: (value) async {
       settings.auroraNotifications = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
       if (value ||
@@ -1506,6 +1654,22 @@ class _SettingsPageState extends State<SettingsPage> {
           settings.floodNotifications ||
           settings.weatherAlertNotifications) {
         WeatherController.scheduleNotificationChecks();
+
+        // Show immediate test by triggering aurora check
+        if (value) {
+          debugPrint('🧪 Testing aurora notification immediately');
+          await NotificationWorker.checkAndNotify();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Aurora check triggered. Check notification if Kp index exceeds threshold.',
+                ),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
       } else {
         WeatherController.cancelNotificationChecks();
       }

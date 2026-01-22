@@ -1,4 +1,4 @@
-package com.yoshi.rain
+package com.linuxgoose.nimbus
 
 import android.appwidget.AppWidgetManager
 import android.content.Context

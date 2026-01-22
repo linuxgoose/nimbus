@@ -10,6 +10,7 @@ import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/api/api.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/services/notification_worker.dart';
 import 'package:nimbus/app/utils/notification.dart';
 import 'package:nimbus/app/utils/show_snack_bar.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
@@ -664,20 +665,49 @@ class WeatherController extends GetxController {
               body += ' · ${precipitation.toStringAsFixed(0)}% rain';
             }
 
-            NotificationShow().showNotification(
-              UniqueKey().hashCode,
-              '$city: ${temp?.toStringAsFixed(0) ?? 0}°',
-              body,
-              notificationTime,
-              iconPath,
-            );
-            scheduledCount++;
-            debugPrint('📬 Scheduled notification for $notificationTime');
+            // Use deterministic ID based on time (seconds since epoch)
+            // This ensures consistent IDs and avoids conflicts
+            final notificationId =
+                notificationTime.millisecondsSinceEpoch ~/ 1000;
+
+            try {
+              await NotificationShow().showNotification(
+                notificationId,
+                '$city: ${temp?.toStringAsFixed(0) ?? 0}°',
+                body,
+                notificationTime,
+                iconPath,
+              );
+              scheduledCount++;
+              debugPrint(
+                '📬 Scheduled notification ID $notificationId for $notificationTime',
+              );
+              debugPrint(
+                '📬   Title: $city: ${temp?.toStringAsFixed(0) ?? 0}°',
+              );
+              debugPrint('📬   Body: $body');
+            } catch (e) {
+              debugPrint('❌ Failed to schedule notification: $e');
+            }
           }
         }
       }
     }
     debugPrint('📬 Total notifications scheduled: $scheduledCount');
+
+    // Verify what's actually scheduled
+    Future.delayed(const Duration(seconds: 1), () async {
+      final pending = await flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
+      debugPrint(
+        '📬 Verified ${pending.length} pending notifications in system',
+      );
+      for (var notification in pending.take(5)) {
+        debugPrint(
+          '   - ID: ${notification.id}, Title: ${notification.title}, Body: ${notification.body}',
+        );
+      }
+    });
   }
 
   void notificationCheck() async {
@@ -1030,21 +1060,39 @@ class WeatherController extends GetxController {
       final settings = isar.settings.getSync(1);
       final timeRangeHours = settings?.timeRange ?? 1;
 
-      // Convert hours to minutes, with minimum of 15 minutes
+      // Convert hours to minutes, Android WorkManager minimum is 15 minutes
+      // For 1 hour (60 min), we use 60 min directly
       final frequencyMinutes = (timeRangeHours * 60).clamp(15, 1440);
 
       debugPrint(
         '📅 Scheduling notification checks: every ${timeRangeHours}h (${frequencyMinutes}min)',
       );
 
+      // Register a one-time task to run immediately
+      Workmanager().registerOneOffTask(
+        'notificationCheck-immediate',
+        'notificationCheck',
+        initialDelay: const Duration(seconds: 5),
+        constraints: Constraints(networkType: NetworkType.notRequired),
+      );
+      debugPrint('📅 Registered immediate one-time notification check');
+
+      // Register periodic task for ongoing checks
       Workmanager().registerPeriodicTask(
         'notificationCheck',
         'notificationCheck',
         frequency: Duration(minutes: frequencyMinutes),
-        existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
-        // Removed network constraint - notifications should work offline using cache
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
+        constraints: Constraints(networkType: NetworkType.notRequired),
       );
+
       debugPrint('📅 Successfully registered periodic notification checks');
+
+      // Also trigger an in-app check
+      Future.delayed(const Duration(seconds: 2), () async {
+        debugPrint('📅 Triggering in-app notification check');
+        await NotificationWorker.checkAndNotify();
+      });
     }
   }
 
@@ -1078,6 +1126,32 @@ class WeatherController extends GetxController {
       await platform.invokeMethod('requestIgnoreBatteryOptimizations');
     } catch (e) {
       debugPrint('Error requesting battery optimization exemption: $e');
+    }
+  }
+
+  static Future<bool> canScheduleExactAlarms() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/alarms');
+      final bool canSchedule = await platform.invokeMethod(
+        'canScheduleExactAlarms',
+      );
+      return canSchedule;
+    } catch (e) {
+      debugPrint('Error checking exact alarms permission: $e');
+      return false;
+    }
+  }
+
+  static Future<void> openExactAlarmSettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/alarms');
+      await platform.invokeMethod('openExactAlarmSettings');
+    } catch (e) {
+      debugPrint('Error opening exact alarm settings: $e');
     }
   }
 }

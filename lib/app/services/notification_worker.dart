@@ -102,8 +102,29 @@ class NotificationWorker {
 
       // Check if Kp exceeds threshold
       if (kpIndex >= settings.auroraNotificationThreshold) {
+        // Check if we already sent a notification recently (within 6 hours)
+        final now = DateTime.now();
+        if (settings.lastAuroraNotification != null) {
+          final hoursSinceLastNotification = now
+              .difference(settings.lastAuroraNotification!)
+              .inHours;
+
+          // Only notify again if:
+          // 1. It's been at least 6 hours, OR
+          // 2. The Kp has increased by at least 1.0
+          if (hoursSinceLastNotification < 6) {
+            final lastKp = settings.lastNotifiedAuroraKp ?? 0;
+            if (kpIndex - lastKp < 1.0) {
+              print(
+                '🔔 Aurora: Skipping notification (sent ${hoursSinceLastNotification}h ago, Kp change: ${kpIndex - lastKp})',
+              );
+              return;
+            }
+          }
+        }
+
         final activityLevel = data['activity_level'] as String? ?? 'Active';
-        await _showAuroraNotification(kpIndex, activityLevel);
+        await _showAuroraNotification(kpIndex, activityLevel, settings);
       }
     } catch (e) {
       print('🔔 Aurora: Error checking activity - $e');
@@ -187,7 +208,22 @@ class NotificationWorker {
 
       // Check if rain exceeds threshold
       if (totalRain >= settings.rainNotificationThreshold) {
-        await _showRainNotification(totalRain);
+        // Check if we already sent a notification recently (within 3 hours)
+        final now = DateTime.now();
+        if (settings.lastRainNotification != null) {
+          final hoursSinceLastNotification = now
+              .difference(settings.lastRainNotification!)
+              .inHours;
+
+          if (hoursSinceLastNotification < 3) {
+            print(
+              '🔔 Rain: Skipping notification (sent ${hoursSinceLastNotification}h ago)',
+            );
+            return;
+          }
+        }
+
+        await _showRainNotification(totalRain, settings);
       }
     } catch (e) {
       print('🔔 Rain: Error checking forecast - $e');
@@ -197,6 +233,7 @@ class NotificationWorker {
   static Future<void> _showAuroraNotification(
     double kpIndex,
     String activityLevel,
+    Settings settings,
   ) async {
     try {
       final androidDetails = AndroidNotificationDetails(
@@ -219,13 +256,23 @@ class NotificationWorker {
         notificationDetails,
       );
 
+      // Update tracking
+      isar.writeTxnSync(() {
+        settings.lastAuroraNotification = DateTime.now();
+        settings.lastNotifiedAuroraKp = kpIndex;
+        isar.settings.putSync(settings);
+      });
+
       print('🔔 Aurora: Notification sent');
     } catch (e) {
       print('🔔 Aurora: Error showing notification - $e');
     }
   }
 
-  static Future<void> _showRainNotification(double totalRain) async {
+  static Future<void> _showRainNotification(
+    double totalRain,
+    Settings settings,
+  ) async {
     try {
       final androidDetails = AndroidNotificationDetails(
         _rainChannelId,
@@ -246,6 +293,12 @@ class NotificationWorker {
         'Rain expected in the next 6 hours: ${totalRain.toStringAsFixed(1)}mm',
         notificationDetails,
       );
+
+      // Update tracking
+      isar.writeTxnSync(() {
+        settings.lastRainNotification = DateTime.now();
+        isar.settings.putSync(settings);
+      });
 
       print('🔔 Rain: Notification sent');
     } catch (e) {
@@ -338,7 +391,32 @@ class NotificationWorker {
       final severity = firstAlert['severity'] as String? ?? 'Unknown';
       final description = firstAlert['description'] as String? ?? '';
 
-      await _showWeatherAlertNotification(event, severity, description);
+      // Create a simple ID from event name for tracking
+      final alertId = '${event}_$severity';
+
+      // Check if we already sent a notification for this alert recently (within 12 hours)
+      final now = DateTime.now();
+      if (settings.lastWeatherAlertNotification != null &&
+          settings.lastNotifiedWeatherAlertId == alertId) {
+        final hoursSinceLastNotification = now
+            .difference(settings.lastWeatherAlertNotification!)
+            .inHours;
+
+        if (hoursSinceLastNotification < 12) {
+          print(
+            '🔔 Weather Alerts: Skipping notification for "$event" (sent ${hoursSinceLastNotification}h ago)',
+          );
+          return;
+        }
+      }
+
+      await _showWeatherAlertNotification(
+        event,
+        severity,
+        description,
+        alertId,
+        settings,
+      );
     } catch (e) {
       print('🔔 Weather Alerts: Error checking alerts - $e');
     }
@@ -349,8 +427,6 @@ class NotificationWorker {
       print('🔔 Forecast: Checking scheduled notifications');
 
       // Check if there are pending forecast notifications
-      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-          FlutterLocalNotificationsPlugin();
       final pendingNotificationRequests = await flutterLocalNotificationsPlugin
           .pendingNotificationRequests();
 
@@ -438,6 +514,21 @@ class NotificationWorker {
 
       print('🔔 Flood: Found ${items.length} flood warning(s)');
 
+      // Check if we already sent a notification recently (within 6 hours)
+      final now = DateTime.now();
+      if (settings.lastFloodNotification != null) {
+        final hoursSinceLastNotification = now
+            .difference(settings.lastFloodNotification!)
+            .inHours;
+
+        if (hoursSinceLastNotification < 6) {
+          print(
+            '🔔 Flood: Skipping notification (sent ${hoursSinceLastNotification}h ago)',
+          );
+          return;
+        }
+      }
+
       // Send notification for the first/most relevant warning
       final firstWarning = items.first;
       final severity = firstWarning['severity'] as String? ?? 'Unknown';
@@ -453,6 +544,7 @@ class NotificationWorker {
         severityLevel,
         areaName,
         description,
+        settings,
       );
     } catch (e) {
       print('🔔 Flood: Error checking warnings - $e');
@@ -463,6 +555,8 @@ class NotificationWorker {
     String event,
     String severity,
     String description,
+    String alertId,
+    Settings settings,
   ) async {
     try {
       // Determine emoji based on severity
@@ -514,6 +608,13 @@ class NotificationWorker {
         notificationDetails,
       );
 
+      // Update tracking
+      isar.writeTxnSync(() {
+        settings.lastWeatherAlertNotification = DateTime.now();
+        settings.lastNotifiedWeatherAlertId = alertId;
+        isar.settings.putSync(settings);
+      });
+
       print('🔔 Weather Alerts: Notification sent');
     } catch (e) {
       print('🔔 Weather Alerts: Error showing notification - $e');
@@ -525,6 +626,7 @@ class NotificationWorker {
     int severityLevel,
     String areaName,
     String description,
+    Settings settings,
   ) async {
     try {
       // Determine importance based on severity level
@@ -556,6 +658,12 @@ class NotificationWorker {
         notificationDetails,
       );
 
+      // Update tracking
+      isar.writeTxnSync(() {
+        settings.lastFloodNotification = DateTime.now();
+        isar.settings.putSync(settings);
+      });
+
       print('🔔 Flood: Notification sent');
     } catch (e) {
       print('🔔 Flood: Error showing notification - $e');
@@ -567,7 +675,7 @@ class NotificationWorker {
     Settings settings,
   ) async {
     try {
-      final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+      print('🔔 Forecast: Starting to schedule notifications');
       final now = DateTime.now();
       final timeRange = settings.timeRange;
       final timeStart = settings.timeStart;
@@ -596,6 +704,7 @@ class NotificationWorker {
 
       final timeList = mainWeatherCache.time ?? [];
       int scheduledCount = 0;
+      int skippedCount = 0;
       final range = timeRange ?? 1;
 
       for (var i = 0; i < timeList.length; i += range) {
@@ -637,20 +746,23 @@ class NotificationWorker {
                 body += ' · ${precipitation.toStringAsFixed(0)}% rain';
               }
 
-              // Schedule notification
+              final notificationId =
+                  notificationTime.millisecondsSinceEpoch ~/ 1000;
+              // Schedule notification using the correct channel ID 'Rain'
               await flutterLocalNotificationsPlugin.zonedSchedule(
-                notificationTime.millisecondsSinceEpoch ~/ 1000,
+                notificationId,
                 '$city: ${temp?.toStringAsFixed(0) ?? 0}°',
                 body,
                 _convertToTZDateTime(notificationTime),
                 const NotificationDetails(
                   android: AndroidNotificationDetails(
-                    'weather_forecast',
-                    'Weather Forecast',
-                    channelDescription:
-                        'Scheduled weather forecast notifications',
-                    importance: Importance.high,
+                    'Rain', // Use the same channel ID as in main.dart
+                    'DARK NIGHT',
+                    channelDescription: 'Weather forecast notifications',
+                    importance: Importance.max,
                     priority: Priority.high,
+                    playSound: false,
+                    enableVibration: false,
                   ),
                 ),
                 androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -659,12 +771,18 @@ class NotificationWorker {
               break;
             }
           }
+        } else {
+          skippedCount++;
         }
       }
 
-      print('🔔 Forecast: Scheduled $scheduledCount notifications');
-    } catch (e) {
+
+      // Verify scheduled notifications
+      final pending = await flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
+    } catch (e, stackTrace) {
       print('🔔 Forecast: Error scheduling - $e');
+      print('🔔 Forecast: Stack trace: $stackTrace');
     }
   }
 
