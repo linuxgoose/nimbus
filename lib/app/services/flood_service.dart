@@ -50,37 +50,48 @@ class FloodService {
     double radiusKm = 50.0,
   }) async {
     try {
-      final allWarnings = await getFloodWarnings();
-      if (allWarnings == null) return [];
+      // Use the Environment Agency API's built-in location filtering
+      // https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
+      final url = Uri.parse(
+        '$_baseUrl/id/floods?lat=$lat&long=$lon&dist=$radiusKm',
+      );
 
-      final items = allWarnings['items'] as List<dynamic>?;
+      debugPrint('🌊 Calling Flood Warnings API (Location): $url');
+
+      final response = await http.get(
+        url,
+        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+      );
+
+      if (response.statusCode != 200) {
+        debugPrint('❌ Flood Warnings API Error: ${response.statusCode}');
+        return [];
+      }
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final items = data['items'] as List<dynamic>?;
+
       if (items == null) return [];
 
       final nearbyWarnings = <Map<String, dynamic>>[];
 
       for (var item in items) {
         final floodArea = item['floodArea'] as Map<String, dynamic>?;
-        if (floodArea == null) continue;
 
-        final polygon = floodArea['polygon'] as String?;
-        if (polygon == null) continue;
-
-        // Parse polygon and check if location is nearby
-        if (_isLocationNearFloodArea(lat, lon, polygon, radiusKm)) {
-          nearbyWarnings.add({
-            'severity': item['severity'] as String? ?? 'Unknown',
-            'severityLevel': item['severityLevel'] as int? ?? 0,
-            'description': item['description'] as String? ?? '',
-            'message': item['message'] as String? ?? '',
-            'floodAreaID': floodArea['floodAreaId'] as String? ?? '',
-            'county': floodArea['county'] as String? ?? '',
-            'notation': floodArea['notation'] as String? ?? '',
-            'polygon': polygon,
-            'timeRaised': item['timeRaised'] as String?,
-            'timeMessageChanged': item['timeMessageChanged'] as String?,
-            'timeSeverityChanged': item['timeSeverityChanged'] as String?,
-          });
-        }
+        // Even though API filters by location, we parse the response into our format
+        nearbyWarnings.add({
+          'severity': item['severity'] as String? ?? 'Unknown',
+          'severityLevel': item['severityLevel'] as int? ?? 4,
+          'description': item['description'] as String? ?? '',
+          'message': item['message'] as String? ?? '',
+          'floodAreaID': floodArea?['floodAreaId'] as String? ?? '',
+          'county': floodArea?['county'] as String? ?? '',
+          'notation': floodArea?['notation'] as String? ?? '',
+          'polygon': floodArea?['polygon'] as String? ?? '',
+          'timeRaised': item['timeRaised'] as String?,
+          'timeMessageChanged': item['timeMessageChanged'] as String?,
+          'timeSeverityChanged': item['timeSeverityChanged'] as String?,
+        });
       }
 
       debugPrint('✅ Found ${nearbyWarnings.length} nearby flood warnings');

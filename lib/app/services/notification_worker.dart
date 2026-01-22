@@ -658,13 +658,36 @@ class NotificationWorker {
         notificationDetails,
       );
 
-      // Update tracking
-      isar.writeTxnSync(() {
-        settings.lastFloodNotification = DateTime.now();
-        isar.settings.putSync(settings);
-      });
+      // Save to Alert History
+      final locationCache = isar.locationCaches.where().findFirstSync();
+      if (locationCache != null &&
+          locationCache.lat != null &&
+          locationCache.lon != null) {
+        final alert = AlertHistory(
+          lat: locationCache.lat!,
+          lon: locationCache.lon!,
+          timestamp: DateTime.now(),
+          event: 'Flood Warning',
+          severity: severity,
+          description: '$severity flood warning for $areaName. $description',
+          eventKey:
+              '${locationCache.lat}_${locationCache.lon}_${DateTime.now().millisecondsSinceEpoch}_flood',
+        );
 
-      print('🔔 Flood: Notification sent');
+        isar.writeTxnSync(() {
+          isar.alertHistorys.putSync(alert);
+          settings.lastFloodNotification = DateTime.now();
+          isar.settings.putSync(settings);
+        });
+      } else {
+        // Fallback if no location cache (shouldn't happen if we are here)
+        isar.writeTxnSync(() {
+          settings.lastFloodNotification = DateTime.now();
+          isar.settings.putSync(settings);
+        });
+      }
+
+      print('🔔 Flood: Notification sent & saved to history');
     } catch (e) {
       print('🔔 Flood: Error showing notification - $e');
     }
@@ -681,11 +704,19 @@ class NotificationWorker {
       final timeStart = settings.timeStart;
       final timeEnd = settings.timeEnd;
 
+      print(
+        '🔔 Forecast: Settings - timeRange=$timeRange, timeStart=$timeStart, timeEnd=$timeEnd',
+      );
+
       // Parse start and end hours
       final startParts = (timeStart ?? '00:00').split(':');
       final endParts = (timeEnd ?? '23:59').split(':');
       final startHour = int.parse(startParts[0]);
       final endHour = int.parse(endParts[0]);
+
+      print(
+        '🔔 Forecast: Allowed hours: $startHour to $endHour, Current hour: ${now.hour}',
+      );
 
       // Check if we're in quiet hours
       final currentHour = now.hour;
@@ -703,6 +734,8 @@ class NotificationWorker {
       }
 
       final timeList = mainWeatherCache.time ?? [];
+      print('🔔 Forecast: Found ${timeList.length} time slots in cache');
+
       int scheduledCount = 0;
       int skippedCount = 0;
       final range = timeRange ?? 1;
@@ -748,6 +781,14 @@ class NotificationWorker {
 
               final notificationId =
                   notificationTime.millisecondsSinceEpoch ~/ 1000;
+              print(
+                '🔔 Forecast: Scheduling notification ID $notificationId for $notificationTime',
+              );
+              print(
+                '🔔 Forecast: Title: "$city: ${temp?.toStringAsFixed(0) ?? 0}°"',
+              );
+              print('🔔 Forecast: Body: "$body"');
+
               // Schedule notification using the correct channel ID 'Rain'
               await flutterLocalNotificationsPlugin.zonedSchedule(
                 notificationId,
@@ -768,6 +809,7 @@ class NotificationWorker {
                 androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
               );
               scheduledCount++;
+              print('✅ Forecast: Successfully scheduled for $notificationTime');
               break;
             }
           }
@@ -776,10 +818,16 @@ class NotificationWorker {
         }
       }
 
+      print(
+        '🔔 Forecast: Scheduled $scheduledCount notifications (skipped $skippedCount)',
+      );
 
       // Verify scheduled notifications
       final pending = await flutterLocalNotificationsPlugin
           .pendingNotificationRequests();
+      print(
+        '🔔 Forecast: Total pending notifications in system: ${pending.length}',
+      );
     } catch (e, stackTrace) {
       print('🔔 Forecast: Error scheduling - $e');
       print('🔔 Forecast: Stack trace: $stackTrace');
