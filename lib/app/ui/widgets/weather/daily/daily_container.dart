@@ -106,15 +106,31 @@ class _DailyContainerState extends State<DailyContainer> {
     WeatherCard weatherData,
     int index,
     TextStyle? labelLarge,
-  ) => Expanded(
-    child: Text(
-      DateFormat.EEEE(
-        locale.languageCode,
-      ).format((weatherData.timeDaily ?? [])[index]),
-      style: labelLarge,
-      overflow: TextOverflow.ellipsis,
-    ),
-  );
+  ) {
+    final date = (weatherData.timeDaily ?? [])[index];
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            DateFormat.EEEE(locale.languageCode).format(date),
+            style: labelLarge,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            DateFormat.MMMd(locale.languageCode).format(date),
+            style: labelLarge?.copyWith(
+              fontSize: 12,
+              color: Colors.grey,
+              fontWeight: FontWeight.w400,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildWeatherInfo(
     List<int?> weatherCodeDaily,
