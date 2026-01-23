@@ -172,6 +172,8 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildOpenMeteoText(context),
         if (settings.weatherDataSource == 'nimbusmeteo')
           _buildNimbusMeteoText(context),
+        if (settings.weatherDataSource == 'weatherapi')
+          _buildWeatherApiText(context),
         if (settings.weatherDataSource == 'pirateweather')
           _buildPirateWeatherText(context),
         const Gap(20),
@@ -228,6 +230,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   _buildWeatherProviderTitle(context),
                   _buildWeatherDataSourceSettingCard(context, setState),
+                  if (settings.weatherDataSource == 'weatherapi')
+                    _buildWeatherApiKeySettingCard(context, setState),
+                  if (settings.weatherDataSource == 'weatherapi')
+                    _buildWeatherApiInfoCard(context),
                   if (settings.weatherDataSource == 'pirateweather')
                     _buildPirateWeatherApiKeySettingCard(context, setState),
                   if (settings.weatherDataSource == 'pirateweather')
@@ -2457,6 +2463,7 @@ class _SettingsPageState extends State<SettingsPage> {
       'Open-Meteo',
       'MET Norway',
       'Hybrid (Open-Meteo + MET Norway)',
+      'WeatherAPI',
       'PirateWeather',
       'Nimbus Meteo',
     ],
@@ -2469,6 +2476,9 @@ class _SettingsPageState extends State<SettingsPage> {
           break;
         case 'Hybrid (Open-Meteo + MET Norway)':
           sourceValue = 'hybrid';
+          break;
+        case 'WeatherAPI':
+          sourceValue = 'weatherapi';
           break;
         case 'PirateWeather':
           sourceValue = 'pirateweather';
@@ -2500,6 +2510,8 @@ class _SettingsPageState extends State<SettingsPage> {
         return 'MET Norway';
       case 'hybrid':
         return 'Hybrid (Open-Meteo + MET Norway)';
+      case 'weatherapi':
+        return 'WeatherAPI';
       case 'pirateweather':
         return 'PirateWeather';
       case 'nimbusmeteo':
@@ -2699,6 +2711,118 @@ class _SettingsPageState extends State<SettingsPage> {
             Expanded(
               child: Text(
                 'Note: Some data (alerts, air quality) will be provided by Open-Meteo when not available from PirateWeather.',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeatherApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.key),
+      text: 'WeatherAPI Key',
+      info: true,
+      infoSettings: true,
+      infoWidget: _TextInfo(
+        info: settings.weatherApiKey?.isNotEmpty == true
+            ? '${settings.weatherApiKey!.substring(0, 8)}...'
+            : 'Not set',
+      ),
+      onPressed: () => _showWeatherApiKeyDialog(context, setState),
+    );
+  }
+
+  void _showWeatherApiKeyDialog(BuildContext context, StateSetter setState) {
+    final controller = TextEditingController(
+      text: settings.weatherApiKey ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('WeatherAPI Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'WeatherAPI provides global forecasts. A free key is required.',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Text('Get your API key from:', style: context.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://www.weatherapi.com',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              settings.weatherApiKey = controller.text.trim();
+              if (settings.weatherApiKey!.isEmpty) {
+                settings.weatherApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+
+              await weatherController.deleteAll(false);
+              await weatherController.setLocation();
+              await weatherController.updateCacheCard(true);
+
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeatherApiInfoCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      elevation: 0,
+      color: context.theme.colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              LucideIcons.info,
+              size: 20,
+              color: context.theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Note: Some data (alerts, radiation) will fall back to Open-Meteo if unavailable from WeatherAPI.',
                 style: context.textTheme.bodySmall?.copyWith(
                   color: context.theme.colorScheme.onSurfaceVariant,
                 ),
@@ -3615,6 +3739,19 @@ class _SettingsPageState extends State<SettingsPage> {
       style: context.textTheme.bodyMedium,
       overflow: TextOverflow.visible,
       textAlign: TextAlign.center,
+    ),
+  );
+
+  Widget _buildWeatherApiText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: GestureDetector(
+      child: Text(
+        'Weather data from WeatherAPI.com\nSome data may be supplemented by Open-Meteo',
+        style: context.textTheme.bodyMedium,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => weatherController.urlLauncher('https://www.weatherapi.com/'),
     ),
   );
 

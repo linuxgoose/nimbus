@@ -314,22 +314,27 @@ const SettingsSchema = CollectionSchema(
       name: r'weatherAlertNotifications',
       type: IsarType.bool,
     ),
-    r'weatherDataSource': PropertySchema(
+    r'weatherApiKey': PropertySchema(
       id: 65,
+      name: r'weatherApiKey',
+      type: IsarType.string,
+    ),
+    r'weatherDataSource': PropertySchema(
+      id: 66,
       name: r'weatherDataSource',
       type: IsarType.string,
     ),
     r'widgetBackgroundColor': PropertySchema(
-      id: 66,
+      id: 67,
       name: r'widgetBackgroundColor',
       type: IsarType.string,
     ),
     r'widgetTextColor': PropertySchema(
-      id: 67,
+      id: 68,
       name: r'widgetTextColor',
       type: IsarType.string,
     ),
-    r'wind': PropertySchema(id: 68, name: r'wind', type: IsarType.string),
+    r'wind': PropertySchema(id: 69, name: r'wind', type: IsarType.string),
   },
 
   estimateSize: _settingsEstimateSize,
@@ -444,6 +449,12 @@ int _settingsEstimateSize(
   }
   bytesCount += 3 + object.timeformat.length * 3;
   bytesCount += 3 + object.weatherAlertMinSeverity.length * 3;
+  {
+    final value = object.weatherApiKey;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.weatherDataSource.length * 3;
   {
     final value = object.widgetBackgroundColor;
@@ -532,10 +543,11 @@ void _settingsSerialize(
   writer.writeBool(offsets[62], object.useDummyTides);
   writer.writeString(offsets[63], object.weatherAlertMinSeverity);
   writer.writeBool(offsets[64], object.weatherAlertNotifications);
-  writer.writeString(offsets[65], object.weatherDataSource);
-  writer.writeString(offsets[66], object.widgetBackgroundColor);
-  writer.writeString(offsets[67], object.widgetTextColor);
-  writer.writeString(offsets[68], object.wind);
+  writer.writeString(offsets[65], object.weatherApiKey);
+  writer.writeString(offsets[66], object.weatherDataSource);
+  writer.writeString(offsets[67], object.widgetBackgroundColor);
+  writer.writeString(offsets[68], object.widgetTextColor);
+  writer.writeString(offsets[69], object.wind);
 }
 
 Settings _settingsDeserialize(
@@ -611,10 +623,11 @@ Settings _settingsDeserialize(
   object.useDummyTides = reader.readBool(offsets[62]);
   object.weatherAlertMinSeverity = reader.readString(offsets[63]);
   object.weatherAlertNotifications = reader.readBool(offsets[64]);
-  object.weatherDataSource = reader.readString(offsets[65]);
-  object.widgetBackgroundColor = reader.readStringOrNull(offsets[66]);
-  object.widgetTextColor = reader.readStringOrNull(offsets[67]);
-  object.wind = reader.readString(offsets[68]);
+  object.weatherApiKey = reader.readStringOrNull(offsets[65]);
+  object.weatherDataSource = reader.readString(offsets[66]);
+  object.widgetBackgroundColor = reader.readStringOrNull(offsets[67]);
+  object.widgetTextColor = reader.readStringOrNull(offsets[68]);
+  object.wind = reader.readString(offsets[69]);
   return object;
 }
 
@@ -756,12 +769,14 @@ P _settingsDeserializeProp<P>(
     case 64:
       return (reader.readBool(offset)) as P;
     case 65:
-      return (reader.readString(offset)) as P;
-    case 66:
       return (reader.readStringOrNull(offset)) as P;
+    case 66:
+      return (reader.readString(offset)) as P;
     case 67:
       return (reader.readStringOrNull(offset)) as P;
     case 68:
+      return (reader.readStringOrNull(offset)) as P;
+    case 69:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -5975,6 +5990,171 @@ extension SettingsQueryFilter
   }
 
   QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherApiKeyIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'weatherApiKey'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherApiKeyIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'weatherApiKey'),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> weatherApiKeyEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'weatherApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherApiKeyGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'weatherApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> weatherApiKeyLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'weatherApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> weatherApiKeyBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'weatherApiKey',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherApiKeyStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'weatherApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> weatherApiKeyEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'weatherApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> weatherApiKeyContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'weatherApiKey',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> weatherApiKeyMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'weatherApiKey',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherApiKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'weatherApiKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
+  weatherApiKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'weatherApiKey', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterFilterCondition>
   weatherDataSourceEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -7398,6 +7578,18 @@ extension SettingsQuerySortBy on QueryBuilder<Settings, Settings, QSortBy> {
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByWeatherApiKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherApiKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> sortByWeatherApiKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherApiKey', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> sortByWeatherDataSource() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherDataSource', Sort.asc);
@@ -8270,6 +8462,18 @@ extension SettingsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByWeatherApiKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherApiKey', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Settings, Settings, QAfterSortBy> thenByWeatherApiKeyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'weatherApiKey', Sort.desc);
+    });
+  }
+
   QueryBuilder<Settings, Settings, QAfterSortBy> thenByWeatherDataSource() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'weatherDataSource', Sort.asc);
@@ -8811,6 +9015,17 @@ extension SettingsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Settings, Settings, QDistinct> distinctByWeatherApiKey({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'weatherApiKey',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
   QueryBuilder<Settings, Settings, QDistinct> distinctByWeatherDataSource({
     bool caseSensitive = true,
   }) {
@@ -9265,6 +9480,12 @@ extension SettingsQueryProperty
   weatherAlertNotificationsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'weatherAlertNotifications');
+    });
+  }
+
+  QueryBuilder<Settings, String?, QQueryOperations> weatherApiKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'weatherApiKey');
     });
   }
 
