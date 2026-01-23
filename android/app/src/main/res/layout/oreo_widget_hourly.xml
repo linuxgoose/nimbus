@@ -4,19 +4,18 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:padding="8dp"
-              android:background="#FFFFFF">
+              android:padding="8dp">
     
     <TextView
         android:id="@+id/widget_location_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="4dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="4dp"
         android:text="Location, Country"
-        android:textColor="#000000"
-        android:textSize="11sp"
-        android:textStyle="bold" />
+        android:textColor="#2D3436"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium" />
     
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,8 +36,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#2D3436" />
             <ImageView
                 android:id="@+id/hourly_icon_0"
                 android:layout_width="match_parent"
@@ -53,23 +52,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#2D3436" />
             <TextView
                 android:id="@+id/hourly_wind_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
+                android:textSize="8sp"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/hourly_precip_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="8sp"
                 android:layout_marginTop="1dp"
-                android:textColor="#0066CC" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
         
         <LinearLayout
@@ -84,8 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#2D3436" />
             <ImageView
                 android:id="@+id/hourly_icon_1"
                 android:layout_width="match_parent"
@@ -100,23 +101,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#2D3436" />
             <TextView
                 android:id="@+id/hourly_wind_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
+                android:textSize="8sp"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/hourly_precip_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="8sp"
                 android:layout_marginTop="1dp"
-                android:textColor="#0066CC" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
         
         <LinearLayout
@@ -131,8 +134,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#2D3436" />
             <ImageView
                 android:id="@+id/hourly_icon_2"
                 android:layout_width="match_parent"
@@ -147,23 +150,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#2D3436" />
             <TextView
                 android:id="@+id/hourly_wind_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
+                android:textSize="8sp"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/hourly_precip_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="8sp"
                 android:layout_marginTop="1dp"
-                android:textColor="#0066CC" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
         
         <LinearLayout
@@ -178,8 +183,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#2D3436" />
             <ImageView
                 android:id="@+id/hourly_icon_3"
                 android:layout_width="match_parent"
@@ -194,23 +199,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#2D3436" />
             <TextView
                 android:id="@+id/hourly_wind_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
+                android:textSize="8sp"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/hourly_precip_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="8sp"
                 android:layout_marginTop="1dp"
-                android:textColor="#0066CC" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
         
         <LinearLayout
@@ -225,8 +232,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#2D3436" />
             <ImageView
                 android:id="@+id/hourly_icon_4"
                 android:layout_width="match_parent"
@@ -241,23 +248,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#2D3436" />
             <TextView
                 android:id="@+id/hourly_wind_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
+                android:textSize="8sp"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/hourly_precip_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="8sp"
                 android:layout_marginTop="1dp"
-                android:textColor="#0066CC" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
         
         <LinearLayout
@@ -272,8 +281,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="9sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#2D3436" />
             <ImageView
                 android:id="@+id/hourly_icon_5"
                 android:layout_width="match_parent"
@@ -288,23 +297,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
-                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#2D3436" />
             <TextView
                 android:id="@+id/hourly_wind_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="9sp"
+                android:textSize="8sp"
                 android:layout_marginTop="2dp"
-                android:textColor="#000000" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
             <TextView
                 android:id="@+id/hourly_precip_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="8sp"
                 android:layout_marginTop="1dp"
-                android:textColor="#0066CC" />
+                android:textColor="#64748B"
+                android:fontFamily="sans-serif" />
         </LinearLayout>
         
     </LinearLayout>

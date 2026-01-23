@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:description="@string/app_widget_description"
+    android:description="@string/oreo_widget_description"
     android:initialKeyguardLayout="@layout/oreo_widget_medium"
     android:initialLayout="@layout/oreo_widget_medium"
     android:previewLayout="@layout/oreo_widget_medium"

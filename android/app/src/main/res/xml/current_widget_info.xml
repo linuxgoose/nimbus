@@ -11,4 +11,5 @@
                     android:updatePeriodMillis="900000"
                     android:initialLayout="@layout/current_widget"
                     android:resizeMode="horizontal"
-                    android:widgetCategory="home_screen" />
+                    android:widgetCategory="home_screen"
+                    android:description="@string/current_widget_description" />

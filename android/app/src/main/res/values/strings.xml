@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Nimbus</string>
     <string name="app_widget_description">Rain Widget</string>
+    <string name="journal_widget_description">Weather Journal - Daily weather story with current conditions, high/low, and summary</string>
+    <string name="current_widget_description">Current Weather - Simple current conditions bar</string>
+    <string name="oreo_widget_description">Oreo Widget - Rich weather display with details</string>
+    <string name="hourly_widget_description">Hourly Forecast - Next 6 hours weather</string>
+    <string name="daily_widget_description">Daily Forecast - Next 7 days outlook</string>
+    <string name="small_widget_description">Small Widget - Compact current weather</string>
+    <string name="hourly_forecast_widget_description">Hourly Forecast - Next few hours with current conditions</string>
     <string name="date_format_widget_oreo_style">EEE, d MMM │</string>
     <string name="date_format_widget_oreo_big_style">EEEE, d MMM │</string>
 </resources>

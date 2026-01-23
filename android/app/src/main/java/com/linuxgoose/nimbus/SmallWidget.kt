@@ -63,31 +63,29 @@ class SmallWidget : HomeWidgetProvider() {
                         setInt(R.id.widget_small_container, "setBackgroundColor", Color.parseColor(backgroundColor))
                     } catch (e: Exception) { /* ignore */ }
                 } else {
-                    val defaultBg = if (isDarkMode) "#212121" else "#FFFFFF"
+                    val defaultBg = if (isDarkMode) "#212121" else "#FAFBFC"
                     setInt(R.id.widget_small_container, "setBackgroundColor", Color.parseColor(defaultBg))
                 }
 
-                // --- TEXT COLOR LOGIC ---
-                val textColor = widgetData.getString("text_color", null)
-                val finalTextColor = if (textColor != null) {
-                    try { Color.parseColor(textColor) } catch (e: Exception) { 
-                        if (isDarkMode) Color.WHITE else Color.BLACK 
-                    }
-                } else {
-                    if (isDarkMode) Color.WHITE else Color.BLACK
-                }
+                // --- TEXT COLOR LOGIC (MATCHING JOURNAL WIDGET) ---
+                val primaryTextColor = if (isDarkMode) Color.WHITE else Color.parseColor("#2D3436")
+                val secondaryTextColor = if (isDarkMode) Color.parseColor("#D1D5DB") else Color.parseColor("#6B7280")
+                val tertiaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#94A3B8")
+                val quaternaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#64748B")
 
-                val textViews = listOf(
-                    R.id.small_time,
-                    R.id.small_date,
-                    R.id.small_location,
-                    R.id.small_temperature,
-                    R.id.small_description
-                )
-                textViews.forEach { setTextColor(it, finalTextColor) }
+                // Primary text (time, temperature)
+                setTextColor(R.id.small_time, primaryTextColor)
+                setTextColor(R.id.small_temperature, primaryTextColor)
                 
-                // Keep precipitation blue
-                setTextColor(R.id.small_precipitation, Color.parseColor("#0066CC"))
+                // Secondary text (location, description)
+                setTextColor(R.id.small_location, secondaryTextColor)
+                setTextColor(R.id.small_description, secondaryTextColor)
+                
+                // Tertiary text (date)
+                setTextColor(R.id.small_date, tertiaryTextColor)
+                
+                // Quaternary text (precipitation)
+                setTextColor(R.id.small_precipitation, quaternaryTextColor)
             }
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
