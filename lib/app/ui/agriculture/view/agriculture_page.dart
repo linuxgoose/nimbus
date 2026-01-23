@@ -295,8 +295,9 @@ class _AgriculturePageState extends State<AgriculturePage> {
                         reservedSize: 30,
                         interval: 12,
                         getTitlesWidget: (value, meta) {
-                          if (value.toInt() >= times.length)
+                          if (value.toInt() >= times.length) {
                             return const Text('');
+                          }
                           final time = DateTime.parse(
                             times[value.toInt()] as String,
                           );
@@ -408,8 +409,9 @@ class _AgriculturePageState extends State<AgriculturePage> {
                         reservedSize: 30,
                         interval: 12,
                         getTitlesWidget: (value, meta) {
-                          if (value.toInt() >= times.length)
+                          if (value.toInt() >= times.length) {
                             return const Text('');
+                          }
                           final time = DateTime.parse(
                             times[value.toInt()] as String,
                           );

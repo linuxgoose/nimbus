@@ -850,6 +850,22 @@ class WeatherController extends GetxController {
       );
       await HomeWidget.saveWidgetData('friendly_summary', friendlySummary);
 
+      // --- Journal Widget Data ---
+      final journalDate = DateFormat(
+        'EEEE, MMMM d',
+        locale.languageCode,
+      ).format(DateTime.now());
+      final feelsLike =
+          '${(mainWeatherCache.apparentTemperature?[hour] ?? 0).round()}°';
+      final todayHigh =
+          '${(mainWeatherCache.temperature2MMax?[day] ?? 0).round()}°';
+      final todayLow =
+          '${(mainWeatherCache.temperature2MMin?[day] ?? 0).round()}°';
+      await HomeWidget.saveWidgetData('journal_date', journalDate);
+      await HomeWidget.saveWidgetData('journal_feels_like', feelsLike);
+      await HomeWidget.saveWidgetData('journal_high', todayHigh);
+      await HomeWidget.saveWidgetData('journal_low', todayLow);
+
       // --- Weather Icon ---
       try {
         // Parse widget text color or default to white
@@ -911,6 +927,7 @@ class WeatherController extends GetxController {
       // --- Hourly & Daily Forecasting ---
       await _updateHourlyWidget(mainWeatherCache, hour, day);
       await _updateDailyWidget(mainWeatherCache, day);
+      await _updateHourlyForecastWidget(mainWeatherCache, hour, day);
 
       final bool updated = (await Future.wait<bool?>([
         HomeWidget.updateWidget(androidName: 'CurrentWidget'),
@@ -918,6 +935,8 @@ class WeatherController extends GetxController {
         HomeWidget.updateWidget(androidName: 'HourlyWidget'),
         HomeWidget.updateWidget(androidName: 'DailyWidget'),
         HomeWidget.updateWidget(androidName: 'SmallWidget'),
+        HomeWidget.updateWidget(androidName: 'JournalWidget'),
+        HomeWidget.updateWidget(androidName: 'HourlyForecastWidget'),
       ])).any((result) => result == true);
 
       return updated;
@@ -1065,6 +1084,71 @@ class WeatherController extends GetxController {
       await HomeWidget.updateWidget(androidName: 'DailyWidget');
     } catch (e) {
       debugPrint("Widget Daily Loop Error: $e");
+    }
+  }
+
+  Future<void> _updateHourlyForecastWidget(
+    MainWeatherCache mainWeatherCache,
+    int currentHour,
+    int currentDay,
+  ) async {
+    try {
+      final speedUnit = settings.wind;
+      final timeList = mainWeatherCache.time ?? [];
+      for (int i = 0; i < 4; i++) {
+        final hourIndex = currentHour + i + 1; // Start from next hour
+        if (hourIndex >= timeList.length) break;
+
+        final time = timeList[hourIndex];
+        final weathercode = mainWeatherCache.weathercode?[hourIndex];
+        final temp = mainWeatherCache.temperature2M?[hourIndex];
+        final windGust = mainWeatherCache.windgusts10M?[hourIndex];
+        final precip = mainWeatherCache.precipitationProbability?[hourIndex];
+
+        final timeFormat = DateFormat.j(
+          locale.languageCode,
+        ).format(DateTime.parse(time));
+        final tempStr = '${temp?.round() ?? 0}°';
+        final windGustStr = '${windGust?.round() ?? 0}$speedUnit';
+        final precipStr = '${precip ?? 0}%';
+
+        await HomeWidget.saveWidgetData('hourly_forecast_time_$i', timeFormat);
+        await HomeWidget.saveWidgetData('hourly_forecast_temp_$i', tempStr);
+        await HomeWidget.saveWidgetData('hourly_forecast_wind_$i', windGustStr);
+        await HomeWidget.saveWidgetData('hourly_forecast_precip_$i', precipStr);
+
+        try {
+          int dayIdx = currentDay;
+          if (DateTime.parse(time).day != DateTime.now().day) {
+            if (currentDay + 1 < (mainWeatherCache.sunrise?.length ?? 0)) {
+              dayIdx = currentDay + 1;
+            }
+          }
+
+          final iconColor =
+              settings.widgetTextColor != null &&
+                  settings.widgetTextColor!.isNotEmpty
+              ? Color(
+                  int.parse(
+                    settings.widgetTextColor!.replaceFirst('#', '0xff'),
+                  ),
+                )
+              : Colors.white;
+
+          final imagePath = await StatusWeather().getImageNotification(
+            weathercode ?? 0,
+            time,
+            mainWeatherCache.sunrise?[dayIdx] ?? "",
+            mainWeatherCache.sunset?[dayIdx] ?? "",
+            iconColor: iconColor,
+          );
+          await HomeWidget.saveWidgetData('hourly_forecast_icon_$i', imagePath);
+        } catch (e) {
+          debugPrint("Hourly Forecast Widget Icon Error at index $i: $e");
+        }
+      }
+    } catch (e) {
+      debugPrint("Hourly Forecast Widget Error: $e");
     }
   }
 

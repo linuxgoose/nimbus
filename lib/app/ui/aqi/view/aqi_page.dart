@@ -105,7 +105,7 @@ class _AqiPageState extends State<AqiPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint(
       '🔍 AQI Cache lookup for key: $locationKey (lat: $lat -> $roundedLat, lon: $lon -> $roundedLon)',
@@ -149,7 +149,7 @@ class _AqiPageState extends State<AqiPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint(
       '💾 Caching AQI data with key: $locationKey, expires: $expiresAt',
@@ -677,9 +677,9 @@ class _AqiPageState extends State<AqiPage> {
     int maxBand = 1;
 
     // O3 bands (8-hour mean in µg/m³)
-    if (o3 > 240)
+    if (o3 > 240) {
       maxBand = 10;
-    else if (o3 > 213)
+    } else if (o3 > 213)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (o3 > 187)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -693,9 +693,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // NO2 bands (hourly mean in µg/m³)
-    if (no2 > 600)
+    if (no2 > 600) {
       maxBand = 10;
-    else if (no2 > 534)
+    } else if (no2 > 534)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (no2 > 467)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -709,9 +709,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // SO2 bands (15-min mean in µg/m³)
-    if (so2 > 1064)
+    if (so2 > 1064) {
       maxBand = 10;
-    else if (so2 > 887)
+    } else if (so2 > 887)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (so2 > 710)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -725,9 +725,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // PM2.5 bands (24-hour mean in µg/m³)
-    if (pm25 > 70)
+    if (pm25 > 70) {
       maxBand = 10;
-    else if (pm25 > 64)
+    } else if (pm25 > 64)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (pm25 > 58)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -741,9 +741,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // PM10 bands (24-hour mean in µg/m³)
-    if (pm10 > 100)
+    if (pm10 > 100) {
       maxBand = 10;
-    else if (pm10 > 91)
+    } else if (pm10 > 91)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (pm10 > 83)
       maxBand = maxBand > 8 ? maxBand : 8;

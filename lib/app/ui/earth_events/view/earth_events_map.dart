@@ -434,8 +434,8 @@ class _EarthEventsMapPageState extends State<EarthEventsMapPage> {
         ),
       );
     } catch (e, stackTrace) {
-      print('Error building Earth Events Map: $e');
-      print('Stack trace: $stackTrace');
+      debugPrint('Error building Earth Events Map: $e');
+      debugPrint('Stack trace: $stackTrace');
       return Scaffold(
         appBar: AppBar(title: const Text('Earth Events Map')),
         body: Center(

@@ -87,7 +87,7 @@ class _ElevationPageState extends State<ElevationPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint('🔍 Elevation cache lookup for key: $locationKey');
 
@@ -124,7 +124,7 @@ class _ElevationPageState extends State<ElevationPage> {
 
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint('💾 Caching elevation data for $locationKey');
 
@@ -179,8 +179,8 @@ class _ElevationPageState extends State<ElevationPage> {
           : _buildElevationContent(),
       floatingActionButton: FloatingActionButton(
         onPressed: _showSaveLocationDialog,
-        child: const Icon(LucideIcons.bookmark),
         tooltip: 'Save Current Location',
+        child: const Icon(LucideIcons.bookmark),
       ),
     );
   }
@@ -374,7 +374,7 @@ class _ElevationPageState extends State<ElevationPage> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: context.theme.colorScheme.surfaceVariant,
+            color: context.theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, size: 20),
@@ -406,7 +406,7 @@ class _ElevationPageState extends State<ElevationPage> {
 
   Widget _buildInfoCard(String source) {
     return Card(
-      color: context.theme.colorScheme.surfaceVariant,
+      color: context.theme.colorScheme.surfaceContainerHighest,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(

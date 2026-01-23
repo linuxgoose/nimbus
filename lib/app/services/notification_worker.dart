@@ -268,9 +268,9 @@ class NotificationWorker {
         isar.settings.putSync(settings);
       });
 
-      print('🔔 Aurora: Notification sent');
+      debugPrint('🔔 Aurora: Notification sent');
     } catch (e) {
-      print('🔔 Aurora: Error showing notification - $e');
+      debugPrint('🔔 Aurora: Error showing notification - $e');
     }
   }
 
@@ -305,9 +305,9 @@ class NotificationWorker {
         isar.settings.putSync(settings);
       });
 
-      print('🔔 Rain: Notification sent');
+      debugPrint('🔔 Rain: Notification sent');
     } catch (e) {
-      print('🔔 Rain: Error showing notification - $e');
+      debugPrint('🔔 Rain: Error showing notification - $e');
     }
   }
 

@@ -249,39 +249,6 @@ class FloodService {
     }
   }
 
-  /// Check if location is near a flood area polygon
-  static bool _isLocationNearFloodArea(
-    double lat,
-    double lon,
-    String polygonString,
-    double radiusKm,
-  ) {
-    try {
-      // Parse polygon string format: "lat1 lon1, lat2 lon2, ..."
-      final points = polygonString.split(',');
-
-      for (var point in points) {
-        final coords = point.trim().split(' ');
-        if (coords.length >= 2) {
-          final pLat = double.tryParse(coords[0]);
-          final pLon = double.tryParse(coords[1]);
-
-          if (pLat != null && pLon != null) {
-            final distance = _calculateDistance(lat, lon, pLat, pLon);
-            if (distance <= radiusKm) {
-              return true;
-            }
-          }
-        }
-      }
-
-      return false;
-    } catch (e) {
-      debugPrint('⚠️ Error parsing polygon: $e');
-      return false;
-    }
-  }
-
   /// Calculate distance between two coordinates (Haversine formula)
   static double _calculateDistance(
     double lat1,

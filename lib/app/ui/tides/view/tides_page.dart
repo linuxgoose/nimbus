@@ -150,7 +150,7 @@ class _TidesPageState extends State<TidesPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint(
       '🔍 Cache lookup for key: $locationKey (lat: $lat -> $roundedLat, lon: $lon -> $roundedLon)',
@@ -196,7 +196,7 @@ class _TidesPageState extends State<TidesPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint(
       '💾 Caching tide data with key: $locationKey, expires: $expiresAt',

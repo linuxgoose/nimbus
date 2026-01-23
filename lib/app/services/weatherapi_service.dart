@@ -238,34 +238,53 @@ class WeatherApiService {
     if (condition is Map<String, dynamic>) {
       return _mapConditionCodeToWmo(condition['code']);
     }
-    if (condition is! int) return null;
+    if (condition is! int) {
+      return null;
+    }
     final code = condition;
-    if (code == 1000) return 0; // clear
-    if (code == 1003) return 2; // partly cloudy
-    if (code == 1006 || code == 1009) return 3; // cloudy/overcast
-    if (code == 1030 || code == 1135 || code == 1147) return 45; // fog/mist
-    if (code == 1063 || code == 1150 || code == 1153 || code == 1168) return 51;
+    if (code == 1000) {
+      return 0; // clear
+    }
+    if (code == 1003) {
+      return 2; // partly cloudy
+    }
+    if (code == 1006 || code == 1009) {
+      return 3; // cloudy/overcast
+    }
+    if (code == 1030 || code == 1135 || code == 1147) {
+      return 45; // fog/mist
+    }
+    if (code == 1063 || code == 1150 || code == 1153 || code == 1168) {
+      return 51;
+    }
     if (code == 1171 ||
         code == 1204 ||
         code == 1207 ||
         code == 1249 ||
-        code == 1252)
+        code == 1252) {
       return 67; // sleet/freezing
+    }
     if (code == 1066 ||
         code == 1069 ||
         code == 1072 ||
         code == 1114 ||
-        code == 1117)
+        code == 1117) {
       return 71; // snow-ish
+    }
     if (code == 1180 ||
         code == 1183 ||
         code == 1186 ||
         code == 1189 ||
         code == 1240 ||
-        code == 1243)
+        code == 1243) {
       return 63; // rain
-    if (code == 1192 || code == 1195 || code == 1246) return 65; // heavy rain
-    if (code == 1198 || code == 1201) return 66; // freezing rain
+    }
+    if (code == 1192 || code == 1195 || code == 1246) {
+      return 65; // heavy rain
+    }
+    if (code == 1198 || code == 1201) {
+      return 66; // freezing rain
+    }
     if (code == 1210 ||
         code == 1213 ||
         code == 1216 ||
@@ -273,15 +292,19 @@ class WeatherApiService {
         code == 1222 ||
         code == 1225 ||
         code == 1255 ||
-        code == 1258)
+        code == 1258) {
       return 75; // snow heavy
-    if (code == 1237 || code == 1261 || code == 1264) return 67; // ice pellets
+    }
+    if (code == 1237 || code == 1261 || code == 1264) {
+      return 67; // ice pellets
+    }
     if (code == 1087 ||
         code == 1273 ||
         code == 1276 ||
         code == 1279 ||
-        code == 1282)
+        code == 1282) {
       return 95; // thunder
+    }
     return 0;
   }
 

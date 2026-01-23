@@ -291,7 +291,6 @@ class EnGb {
     'hide_hiking': 'Hide Hiking',
 
     // New keys
-    'flood_summary': 'Flood Summary',
     'active_flood_warnings': 'Active Flood Warnings',
     'severe_warnings': 'Severe Warnings',
     'warnings': 'Warnings',
@@ -311,7 +310,6 @@ class EnGb {
     'no_saved_locations': 'No saved locations. Use the + button to add one.',
     'location_saved': 'Location saved!',
     'uk_flood_monitoring': 'UK Flood Monitoring',
-    'cancel': 'Cancel',
     'latitude': 'Latitude',
     'longitude': 'Longitude',
     'search_tip':
