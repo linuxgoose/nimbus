@@ -1,10 +1,17 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/main.dart';
+import 'package:flutter/foundation.dart';
 
 class AuroraService {
   static const cacheDuration = Duration(minutes: 60);
+  static final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
 
   // Generate location key from coordinates
   static String _getLocationKey(double lat, double lon) {
@@ -18,18 +25,18 @@ class AuroraService {
       final cache = isar.auroraCaches.getByLocationKeySync(locationKey);
 
       if (cache?.cachedAt == null) {
-        print('🌌 Aurora Cache: No cache found for $locationKey');
+        debugPrint('🌌 Aurora Cache: No cache found for $locationKey');
         return false;
       }
 
       final age = DateTime.now().difference(cache!.cachedAt!);
       final isValid = age < cacheDuration;
-      print(
+      debugPrint(
         '🌌 Aurora Cache: Found cache for $locationKey, age: ${age.inMinutes}min, valid: $isValid',
       );
       return isValid;
     } catch (e) {
-      print('🌌 Aurora Cache: Error checking cache: $e');
+      debugPrint('🌌 Aurora Cache: Error checking cache: $e');
       return false;
     }
   }
@@ -70,7 +77,9 @@ class AuroraService {
   }) {
     try {
       final locationKey = _getLocationKey(lat, lon);
-      print('🌌 Aurora Cache: Storing data for $locationKey, Kp: $kpIndex');
+      debugPrint(
+        '🌌 Aurora Cache: Storing data for $locationKey, Kp: $kpIndex',
+      );
 
       isar.writeTxnSync(() {
         final newCache = AuroraCache()
@@ -86,9 +95,9 @@ class AuroraService {
 
         isar.auroraCaches.putByLocationKeySync(newCache);
       });
-      print('🌌 Aurora Cache: Successfully stored cache');
+      debugPrint('🌌 Aurora Cache: Successfully stored cache');
     } catch (e) {
-      print('🌌 Aurora Cache: Error storing cache: $e');
+      debugPrint('🌌 Aurora Cache: Error storing cache: $e');
       // Silently fail - caching is not critical
     }
   }
@@ -99,18 +108,18 @@ class AuroraService {
     required double lon,
     bool forceRefresh = false,
   }) async {
-    print(
+    debugPrint(
       '🌌 Aurora: Getting data for $lat, $lon (forceRefresh: $forceRefresh)',
     );
 
     // Check cache first unless force refresh
     if (!forceRefresh && isCacheValid(lat, lon)) {
-      print('🌌 Aurora: Using cached data');
+      debugPrint('🌌 Aurora: Using cached data');
       final cachedData = getCachedData(lat, lon);
       if (cachedData != null) return cachedData;
     }
 
-    print('🌌 Aurora: Fetching fresh data from APIs');
+    debugPrint('🌌 Aurora: Fetching fresh data from APIs');
     // Fetch fresh data
     final noaaData = await getNoaaAuroraData();
     if (noaaData == null) return null;
@@ -119,7 +128,7 @@ class AuroraService {
     final forecast = await getThreeDayForecast();
     final activityLevel = getActivityLevel(noaaData['kp_index'] as double);
 
-    print('🌌 Aurora: Caching fresh data');
+    debugPrint('🌌 Aurora: Caching fresh data');
     // Cache the fresh data
     cacheData(
       lat: lat,
@@ -144,14 +153,12 @@ class AuroraService {
   static Future<Map<String, dynamic>?> getNoaaAuroraData() async {
     try {
       // Get current Kp index
-      final kpResponse = await http.get(
-        Uri.parse(
-          'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json',
-        ),
+      final kpResponse = await _dio.get(
+        'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json',
       );
 
       if (kpResponse.statusCode == 200) {
-        final kpData = json.decode(kpResponse.body) as List;
+        final kpData = kpResponse.data as List;
         if (kpData.length > 1) {
           // Latest reading is last entry (skip header row)
           final latest = kpData.last;
@@ -171,12 +178,12 @@ class AuroraService {
   // AuroraWatch UK - UK-specific alerts
   static Future<Map<String, dynamic>?> getAuroraWatchUK() async {
     try {
-      final response = await http.get(
-        Uri.parse('https://aurorawatch.lancs.ac.uk/api/0.2/status.json'),
+      final response = await _dio.get(
+        'https://aurorawatch.lancs.ac.uk/api/0.2/status.json',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         return {
           'status_id': data['status_id'],
           'status': data['status'],
@@ -193,14 +200,12 @@ class AuroraService {
   // Get 3-day aurora forecast from NOAA
   static Future<List<Map<String, dynamic>>?> getThreeDayForecast() async {
     try {
-      final response = await http.get(
-        Uri.parse(
-          'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json',
-        ),
+      final response = await _dio.get(
+        'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
+        final data = response.data as List;
         final forecast = <Map<String, dynamic>>[];
         final now = DateTime.now().toUtc();
 
@@ -313,14 +318,12 @@ class AuroraService {
   // Get Solar Wind Speed from NOAA SWPC
   static Future<Map<String, dynamic>?> getSolarWindSpeed() async {
     try {
-      final response = await http.get(
-        Uri.parse(
-          'https://services.swpc.noaa.gov/products/solar-wind/mag-2-hour.json',
-        ),
+      final response = await _dio.get(
+        'https://services.swpc.noaa.gov/products/solar-wind/mag-2-hour.json',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
+        final data = response.data as List;
         if (data.length > 1) {
           // Latest reading is last entry (skip header row)
           final latest = data.last;
@@ -363,14 +366,12 @@ class AuroraService {
       final dateStr =
           '${startDate.year}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}';
 
-      final response = await http.get(
-        Uri.parse(
-          'https://api.nasa.gov/DONKI/FLR?startDate=$dateStr&api_key=DEMO_KEY',
-        ),
+      final response = await _dio.get(
+        'https://api.nasa.gov/DONKI/FLR?startDate=$dateStr&api_key=DEMO_KEY',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
+        final data = response.data as List;
         final flares = <Map<String, dynamic>>[];
 
         for (var flare in data) {
@@ -416,12 +417,12 @@ class AuroraService {
   // Get NASA Astronomy Picture of the Day
   static Future<Map<String, dynamic>?> getNasaAPOD() async {
     try {
-      final response = await http.get(
-        Uri.parse('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY'),
+      final response = await _dio.get(
+        'https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         return {
           'title': data['title'],
           'explanation': data['explanation'],
@@ -459,10 +460,10 @@ class AuroraService {
             'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson';
       }
 
-      final response = await http.get(Uri.parse(url));
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         final features = data['features'] as List;
         final earthquakes = <Map<String, dynamic>>[];
 
@@ -524,17 +525,17 @@ class AuroraService {
   }) async {
     try {
       // NWS requires a User-Agent header
-      final response = await http.get(
-        Uri.parse(
-          'https://api.weather.gov/alerts/active?point=$latitude,$longitude',
+      final response = await _dio.get(
+        'https://api.weather.gov/alerts/active?point=$latitude,$longitude',
+        options: Options(
+          headers: {
+            'User-Agent': '(Nimbus Weather App, contact@nimbusmeteo.com)',
+          },
         ),
-        headers: {
-          'User-Agent': '(Nimbus Weather App, contact@nimbusmeteo.com)',
-        },
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         final features = data['features'] as List?;
 
         if (features == null || features.isEmpty) return [];
@@ -587,12 +588,12 @@ class AuroraService {
   // Get additional NOAA SWPC data - Geomagnetic Storm Watches/Warnings
   static Future<List<Map<String, dynamic>>?> getGeomagneticStormData() async {
     try {
-      final response = await http.get(
-        Uri.parse('https://services.swpc.noaa.gov/products/alerts.json'),
+      final response = await _dio.get(
+        'https://services.swpc.noaa.gov/products/alerts.json',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
+        final data = response.data as List;
         final storms = <Map<String, dynamic>>[];
 
         for (var alert in data) {

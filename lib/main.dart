@@ -98,10 +98,10 @@ void notificationTapBackground(NotificationResponse response) {
 
 @pragma('vm:entry-point')
 void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
-  print('⚙️ =================================');
-  print('⚙️ Workmanager task started: $task');
-  print('⚙️ Time: ${DateTime.now()}');
-  print('⚙️ =================================');
+  debugPrint('⚙️ =================================');
+  debugPrint('⚙️ Workmanager task started: $task');
+  debugPrint('⚙️ Time: ${DateTime.now()}');
+  debugPrint('⚙️ =================================');
 
   // CRITICAL: Initialize required services for background task
   try {
@@ -112,7 +112,7 @@ void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
         ? timeZoneInfo
         : timeZoneInfo.toString();
     tz.setLocalLocation(tz.getLocation(timeZoneName));
-    print('⚙️ Timezone initialized: $timeZoneName');
+    debugPrint('⚙️ Timezone initialized: $timeZoneName');
 
     // Initialize Isar database
     final dir = await getApplicationSupportDirectory();
@@ -132,11 +132,11 @@ void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
       TideStationSchema,
       SavedTideStationSchema,
     ], directory: dir.path);
-    print('⚙️ Isar initialized for background task');
+    debugPrint('⚙️ Isar initialized for background task');
 
     // Initialize settings global variable
     settings = isar.settings.where().findFirstSync() ?? Settings();
-    print('⚙️ Settings initialized for background task');
+    debugPrint('⚙️ Settings initialized for background task');
 
     // Initialize notifications plugin for background task
     await flutterLocalNotificationsPlugin.initialize(
@@ -144,34 +144,34 @@ void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       ),
     );
-    print('⚙️ Notifications initialized for background task');
+    debugPrint('⚙️ Notifications initialized for background task');
   } catch (e, stackTrace) {
-    print('⚠️ Background task initialization error: $e');
-    print('⚠️ Stack trace: $stackTrace');
+    debugPrint('⚠️ Background task initialization error: $e');
+    debugPrint('⚠️ Stack trace: $stackTrace');
     return Future.value(false);
   }
 
   if (task == 'notificationCheck') {
     try {
-      print('⚙️ Running notificationCheck task');
+      debugPrint('⚙️ Running notificationCheck task');
       await NotificationWorker.checkAndNotify();
-      print('✅ notificationCheck task completed successfully');
+      debugPrint('✅ notificationCheck task completed successfully');
       return Future.value(true);
     } catch (e, stackTrace) {
-      print('⚠️ notificationCheck task error: $e');
-      print('⚠️ Stack trace: $stackTrace');
+      debugPrint('⚠️ notificationCheck task error: $e');
+      debugPrint('⚠️ Stack trace: $stackTrace');
       return Future.value(false);
     }
   }
 
-  print('⚙️ Running widget update task');
+  debugPrint('⚙️ Running widget update task');
   try {
     final result = await WeatherController().updateWidget();
-    print('⚙️ Widget update task completed: $result');
+    debugPrint('⚙️ Widget update task completed: $result');
     return result;
   } catch (e, stackTrace) {
-    print('⚠️ Widget update error: $e');
-    print('⚠️ Stack trace: $stackTrace');
+    debugPrint('⚠️ Widget update error: $e');
+    debugPrint('⚠️ Stack trace: $stackTrace');
     return Future.value(false);
   }
 });

@@ -2,10 +2,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/services/aurora_service.dart';
 import 'package:nimbus/main.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:isar_community/isar.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 class NotificationWorker {
   static const String _auroraChannelId = 'aurora_alerts';
@@ -17,13 +17,20 @@ class NotificationWorker {
   static const String _floodChannelId = 'flood_alerts';
   static const String _floodChannelName = 'Flood Alerts';
 
+  static final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 20),
+    ),
+  );
+
   static Future<void> checkAndNotify() async {
-    print('🔔 Notification Worker: Starting background check');
+    debugPrint('🔔 Notification Worker: Starting background check');
 
     try {
       final settings = isar.settings.getSync(1);
       if (settings == null) {
-        print('🔔 Notification Worker: No settings found');
+        debugPrint('🔔 Notification Worker: No settings found');
         return;
       }
 
@@ -52,26 +59,26 @@ class NotificationWorker {
         await _checkForecastNotifications(settings);
       }
 
-      print('🔔 Notification Worker: Completed background check');
+      debugPrint('🔔 Notification Worker: Completed background check');
     } catch (e) {
-      print('🔔 Notification Worker: Error - $e');
+      debugPrint('🔔 Notification Worker: Error - $e');
     }
   }
 
   static Future<void> _checkAuroraActivity(Settings settings) async {
     try {
-      print('🔔 Aurora: Checking activity');
+      debugPrint('🔔 Aurora: Checking activity');
 
       // Get location from cache
       final allLocations = isar.locationCaches.where().findAllSync();
       if (allLocations.isEmpty) {
-        print('🔔 Aurora: No location available');
+        debugPrint('🔔 Aurora: No location available');
         return;
       }
 
       final locationCache = allLocations.first;
       if (locationCache.lat == null || locationCache.lon == null) {
-        print('🔔 Aurora: No location available');
+        debugPrint('🔔 Aurora: No location available');
         return;
       }
 
@@ -86,17 +93,17 @@ class NotificationWorker {
       );
 
       if (data == null) {
-        print('🔔 Aurora: No data available');
+        debugPrint('🔔 Aurora: No data available');
         return;
       }
 
       final kpIndex = data['kp_index'] as double?;
       if (kpIndex == null) {
-        print('🔔 Aurora: No Kp index in data');
+        debugPrint('🔔 Aurora: No Kp index in data');
         return;
       }
 
-      print(
+      debugPrint(
         '🔔 Aurora: Current Kp: $kpIndex, Threshold: ${settings.auroraNotificationThreshold}',
       );
 
@@ -115,7 +122,7 @@ class NotificationWorker {
           if (hoursSinceLastNotification < 6) {
             final lastKp = settings.lastNotifiedAuroraKp ?? 0;
             if (kpIndex - lastKp < 1.0) {
-              print(
+              debugPrint(
                 '🔔 Aurora: Skipping notification (sent ${hoursSinceLastNotification}h ago, Kp change: ${kpIndex - lastKp})',
               );
               return;
@@ -127,24 +134,24 @@ class NotificationWorker {
         await _showAuroraNotification(kpIndex, activityLevel, settings);
       }
     } catch (e) {
-      print('🔔 Aurora: Error checking activity - $e');
+      debugPrint('🔔 Aurora: Error checking activity - $e');
     }
   }
 
   static Future<void> _checkRainForecast(Settings settings) async {
     try {
-      print('🔔 Rain: Checking forecast');
+      debugPrint('🔔 Rain: Checking forecast');
 
       // Get location from cache
       final allLocations = isar.locationCaches.where().findAllSync();
       if (allLocations.isEmpty) {
-        print('🔔 Rain: No location available');
+        debugPrint('🔔 Rain: No location available');
         return;
       }
 
       final locationCache = allLocations.first;
       if (locationCache.lat == null || locationCache.lon == null) {
-        print('🔔 Rain: No location available');
+        debugPrint('🔔 Rain: No location available');
         return;
       }
 
@@ -166,31 +173,29 @@ class NotificationWorker {
         }
       }
 
-      final response = await http.get(
-        Uri.parse(
-          '$baseUrl/v1/forecast?'
-          'latitude=$lat&longitude=$lon'
-          '&hourly=precipitation'
-          '&forecast_hours=6'
-          '&timezone=auto',
-        ),
+      final response = await _dio.get(
+        '$baseUrl/v1/forecast?'
+        'latitude=$lat&longitude=$lon'
+        '&hourly=precipitation'
+        '&forecast_hours=6'
+        '&timezone=auto',
       );
 
       if (response.statusCode != 200) {
-        print('🔔 Rain: API request failed');
+        debugPrint('🔔 Rain: API request failed');
         return;
       }
 
-      final data = json.decode(response.body);
+      final data = response.data;
       final hourly = data['hourly'];
       if (hourly == null) {
-        print('🔔 Rain: No hourly data');
+        debugPrint('🔔 Rain: No hourly data');
         return;
       }
 
       final precipitationList = hourly['precipitation'] as List?;
       if (precipitationList == null || precipitationList.isEmpty) {
-        print('🔔 Rain: No precipitation data');
+        debugPrint('🔔 Rain: No precipitation data');
         return;
       }
 
@@ -202,7 +207,7 @@ class NotificationWorker {
         }
       }
 
-      print(
+      debugPrint(
         '🔔 Rain: Total in next 6h: ${totalRain.toStringAsFixed(1)}mm, Threshold: ${settings.rainNotificationThreshold}mm',
       );
 
@@ -216,7 +221,7 @@ class NotificationWorker {
               .inHours;
 
           if (hoursSinceLastNotification < 3) {
-            print(
+            debugPrint(
               '🔔 Rain: Skipping notification (sent ${hoursSinceLastNotification}h ago)',
             );
             return;
@@ -226,7 +231,7 @@ class NotificationWorker {
         await _showRainNotification(totalRain, settings);
       }
     } catch (e) {
-      print('🔔 Rain: Error checking forecast - $e');
+      debugPrint('🔔 Rain: Error checking forecast - $e');
     }
   }
 
@@ -308,18 +313,18 @@ class NotificationWorker {
 
   static Future<void> _checkWeatherAlerts(Settings settings) async {
     try {
-      print('🔔 Weather Alerts: Checking for active alerts');
+      debugPrint('🔔 Weather Alerts: Checking for active alerts');
 
       // Get location from cache
       final allLocations = isar.locationCaches.where().findAllSync();
       if (allLocations.isEmpty) {
-        print('🔔 Weather Alerts: No location available');
+        debugPrint('🔔 Weather Alerts: No location available');
         return;
       }
 
       final locationCache = allLocations.first;
       if (locationCache.lat == null || locationCache.lon == null) {
-        print('🔔 Weather Alerts: No location available');
+        debugPrint('🔔 Weather Alerts: No location available');
         return;
       }
 
@@ -337,25 +342,23 @@ class NotificationWorker {
         baseUrl = settings.customOpenMeteoUrl!;
       }
 
-      final response = await http.get(
-        Uri.parse(
-          '$baseUrl/v1/forecast?'
-          'latitude=$lat&longitude=$lon'
-          '&alerts=true'
-          '&timezone=auto',
-        ),
+      final response = await _dio.get(
+        '$baseUrl/v1/forecast?'
+        'latitude=$lat&longitude=$lon'
+        '&alerts=true'
+        '&timezone=auto',
       );
 
       if (response.statusCode != 200) {
-        print('🔔 Weather Alerts: API request failed');
+        debugPrint('🔔 Weather Alerts: API request failed');
         return;
       }
 
-      final data = json.decode(response.body);
+      final data = response.data;
       final alerts = data['alerts'] as List?;
 
       if (alerts == null || alerts.isEmpty) {
-        print('🔔 Weather Alerts: No active alerts');
+        debugPrint('🔔 Weather Alerts: No active alerts');
         return;
       }
 
@@ -379,11 +382,11 @@ class NotificationWorker {
       }).toList();
 
       if (filteredAlerts.isEmpty) {
-        print('🔔 Weather Alerts: No alerts matching severity threshold');
+        debugPrint('🔔 Weather Alerts: No alerts matching severity threshold');
         return;
       }
 
-      print('🔔 Weather Alerts: Found ${filteredAlerts.length} alert(s)');
+      debugPrint('🔔 Weather Alerts: Found ${filteredAlerts.length} alert(s)');
 
       // Send notification for the most severe alert
       final firstAlert = filteredAlerts.first;
@@ -403,7 +406,7 @@ class NotificationWorker {
             .inHours;
 
         if (hoursSinceLastNotification < 12) {
-          print(
+          debugPrint(
             '🔔 Weather Alerts: Skipping notification for "$event" (sent ${hoursSinceLastNotification}h ago)',
           );
           return;
@@ -418,13 +421,13 @@ class NotificationWorker {
         settings,
       );
     } catch (e) {
-      print('🔔 Weather Alerts: Error checking alerts - $e');
+      debugPrint('🔔 Weather Alerts: Error checking alerts - $e');
     }
   }
 
   static Future<void> _checkForecastNotifications(Settings settings) async {
     try {
-      print('🔔 Forecast: Checking scheduled notifications');
+      debugPrint('🔔 Forecast: Checking scheduled notifications');
 
       // Check if there are pending forecast notifications
       final pendingNotificationRequests = await flutterLocalNotificationsPlugin
@@ -432,12 +435,14 @@ class NotificationWorker {
 
       // If no pending forecast notifications, reschedule them
       if (pendingNotificationRequests.isEmpty) {
-        print('🔔 Forecast: No pending notifications found, rescheduling...');
+        debugPrint(
+          '🔔 Forecast: No pending notifications found, rescheduling...',
+        );
 
         // Get weather data from cache
         final allLocations = isar.locationCaches.where().findAllSync();
         if (allLocations.isEmpty) {
-          print('🔔 Forecast: No location available');
+          debugPrint('🔔 Forecast: No location available');
           return;
         }
 
@@ -446,7 +451,7 @@ class NotificationWorker {
         final lon = locationCache.lon;
 
         if (lat == null || lon == null) {
-          print('🔔 Forecast: No location coordinates');
+          debugPrint('🔔 Forecast: No location coordinates');
           return;
         }
 
@@ -454,37 +459,37 @@ class NotificationWorker {
         final weatherCache = isar.mainWeatherCaches.where().findFirstSync();
 
         if (weatherCache == null) {
-          print('🔔 Forecast: No weather cache available');
+          debugPrint('🔔 Forecast: No weather cache available');
           return;
         }
 
         // Schedule forecast notifications using the weather controller logic
         await _scheduleForecastNotifications(weatherCache, settings);
-        print('🔔 Forecast: Successfully rescheduled notifications');
+        debugPrint('🔔 Forecast: Successfully rescheduled notifications');
       } else {
-        print(
+        debugPrint(
           '🔔 Forecast: ${pendingNotificationRequests.length} notifications already scheduled',
         );
       }
     } catch (e) {
-      print('🔔 Forecast: Error - $e');
+      debugPrint('🔔 Forecast: Error - $e');
     }
   }
 
   static Future<void> _checkFloodWarnings(Settings settings) async {
     try {
-      print('🔔 Flood: Checking for flood warnings');
+      debugPrint('🔔 Flood: Checking for flood warnings');
 
       // Get location from cache
       final allLocations = isar.locationCaches.where().findAllSync();
       if (allLocations.isEmpty) {
-        print('🔔 Flood: No location available');
+        debugPrint('🔔 Flood: No location available');
         return;
       }
 
       final locationCache = allLocations.first;
       if (locationCache.lat == null || locationCache.lon == null) {
-        print('🔔 Flood: No location available');
+        debugPrint('🔔 Flood: No location available');
         return;
       }
 
@@ -492,27 +497,25 @@ class NotificationWorker {
       final lon = locationCache.lon!;
 
       // Fetch flood warnings from UK Environment Agency API
-      final response = await http.get(
-        Uri.parse(
-          'https://environment.data.gov.uk/flood-monitoring/id/floods?'
-          'lat=$lat&long=$lon&dist=${settings.floodRadiusKm}',
-        ),
+      final response = await _dio.get(
+        'https://environment.data.gov.uk/flood-monitoring/id/floods?'
+        'lat=$lat&long=$lon&dist=${settings.floodRadiusKm}',
       );
 
       if (response.statusCode != 200) {
-        print('🔔 Flood: API request failed');
+        debugPrint('🔔 Flood: API request failed');
         return;
       }
 
-      final data = json.decode(response.body);
+      final data = response.data;
       final items = data['items'] as List?;
 
       if (items == null || items.isEmpty) {
-        print('🔔 Flood: No flood warnings in area');
+        debugPrint('🔔 Flood: No flood warnings in area');
         return;
       }
 
-      print('🔔 Flood: Found ${items.length} flood warning(s)');
+      debugPrint('🔔 Flood: Found ${items.length} flood warning(s)');
 
       // Check if we already sent a notification recently (within 6 hours)
       final now = DateTime.now();
@@ -522,7 +525,7 @@ class NotificationWorker {
             .inHours;
 
         if (hoursSinceLastNotification < 6) {
-          print(
+          debugPrint(
             '🔔 Flood: Skipping notification (sent ${hoursSinceLastNotification}h ago)',
           );
           return;
@@ -547,7 +550,7 @@ class NotificationWorker {
         settings,
       );
     } catch (e) {
-      print('🔔 Flood: Error checking warnings - $e');
+      debugPrint('🔔 Flood: Error checking warnings - $e');
     }
   }
 
@@ -615,9 +618,9 @@ class NotificationWorker {
         isar.settings.putSync(settings);
       });
 
-      print('🔔 Weather Alerts: Notification sent');
+      debugPrint('🔔 Weather Alerts: Notification sent');
     } catch (e) {
-      print('🔔 Weather Alerts: Error showing notification - $e');
+      debugPrint('🔔 Weather Alerts: Error showing notification - $e');
     }
   }
 
@@ -663,16 +666,18 @@ class NotificationWorker {
       if (locationCache != null &&
           locationCache.lat != null &&
           locationCache.lon != null) {
-        final alert = AlertHistory(
-          lat: locationCache.lat!,
-          lon: locationCache.lon!,
-          timestamp: DateTime.now(),
-          event: 'Flood Warning',
-          severity: severity,
-          description: '$severity flood warning for $areaName. $description',
-          eventKey:
-              '${locationCache.lat}_${locationCache.lon}_${DateTime.now().millisecondsSinceEpoch}_flood',
-        );
+        final alert =
+            AlertHistory(
+                lat: locationCache.lat!,
+                lon: locationCache.lon!,
+                timestamp: DateTime.now(),
+                event: 'Flood Warning',
+                severity: severity,
+                description:
+                    '$severity flood warning for $areaName. $description',
+              )
+              ..eventKey =
+                  '${locationCache.lat}_${locationCache.lon}_${DateTime.now().millisecondsSinceEpoch}_flood';
 
         isar.writeTxnSync(() {
           isar.alertHistorys.putSync(alert);
@@ -687,9 +692,9 @@ class NotificationWorker {
         });
       }
 
-      print('🔔 Flood: Notification sent & saved to history');
+      debugPrint('🔔 Flood: Notification sent & saved to history');
     } catch (e) {
-      print('🔔 Flood: Error showing notification - $e');
+      debugPrint('🔔 Flood: Error showing notification - $e');
     }
   }
 
@@ -698,13 +703,13 @@ class NotificationWorker {
     Settings settings,
   ) async {
     try {
-      print('🔔 Forecast: Starting to schedule notifications');
+      debugPrint('🔔 Forecast: Starting to schedule notifications');
       final now = DateTime.now();
       final timeRange = settings.timeRange;
       final timeStart = settings.timeStart;
       final timeEnd = settings.timeEnd;
 
-      print(
+      debugPrint(
         '🔔 Forecast: Settings - timeRange=$timeRange, timeStart=$timeStart, timeEnd=$timeEnd',
       );
 
@@ -714,7 +719,7 @@ class NotificationWorker {
       final startHour = int.parse(startParts[0]);
       final endHour = int.parse(endParts[0]);
 
-      print(
+      debugPrint(
         '🔔 Forecast: Allowed hours: $startHour to $endHour, Current hour: ${now.hour}',
       );
 
@@ -729,12 +734,12 @@ class NotificationWorker {
       }
 
       if (isInQuietHours) {
-        print('🔕 Forecast: Currently in quiet hours, skipping schedule');
+        debugPrint('🔕 Forecast: Currently in quiet hours, skipping schedule');
         return;
       }
 
       final timeList = mainWeatherCache.time ?? [];
-      print('🔔 Forecast: Found ${timeList.length} time slots in cache');
+      debugPrint('🔔 Forecast: Found ${timeList.length} time slots in cache');
 
       int scheduledCount = 0;
       int skippedCount = 0;
@@ -781,13 +786,13 @@ class NotificationWorker {
 
               final notificationId =
                   notificationTime.millisecondsSinceEpoch ~/ 1000;
-              print(
+              debugPrint(
                 '🔔 Forecast: Scheduling notification ID $notificationId for $notificationTime',
               );
-              print(
+              debugPrint(
                 '🔔 Forecast: Title: "$city: ${temp?.toStringAsFixed(0) ?? 0}°"',
               );
-              print('🔔 Forecast: Body: "$body"');
+              debugPrint('🔔 Forecast: Body: "$body"');
 
               // Schedule notification using the correct channel ID 'Rain'
               await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -809,7 +814,9 @@ class NotificationWorker {
                 androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
               );
               scheduledCount++;
-              print('✅ Forecast: Successfully scheduled for $notificationTime');
+              debugPrint(
+                '✅ Forecast: Successfully scheduled for $notificationTime',
+              );
               break;
             }
           }
@@ -818,19 +825,19 @@ class NotificationWorker {
         }
       }
 
-      print(
+      debugPrint(
         '🔔 Forecast: Scheduled $scheduledCount notifications (skipped $skippedCount)',
       );
 
       // Verify scheduled notifications
       final pending = await flutterLocalNotificationsPlugin
           .pendingNotificationRequests();
-      print(
+      debugPrint(
         '🔔 Forecast: Total pending notifications in system: ${pending.length}',
       );
     } catch (e, stackTrace) {
-      print('🔔 Forecast: Error scheduling - $e');
-      print('🔔 Forecast: Stack trace: $stackTrace');
+      debugPrint('🔔 Forecast: Error scheduling - $e');
+      debugPrint('🔔 Forecast: Stack trace: $stackTrace');
     }
   }
 

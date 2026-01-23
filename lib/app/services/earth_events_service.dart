@@ -1,8 +1,15 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 /// Service for natural disaster and Earth event data
 class EarthEventsService {
+  static final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
+
   // USGS Earthquakes (already implemented in aurora_service, keeping here for organization)
   static Future<List<Map<String, dynamic>>?> getRecentEarthquakes({
     double? latitude,
@@ -22,10 +29,14 @@ class EarthEventsService {
             'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson';
       }
 
-      final response = await http.get(Uri.parse(url));
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        // Dio handles JSON automatically if content-type is json
+        // If USGS returns string, we might need manual decode, but usually it works
+        final data = response.data is String
+            ? json.decode(response.data)
+            : response.data;
         final features = data['features'] as List;
         final earthquakes = <Map<String, dynamic>>[];
 
@@ -66,17 +77,17 @@ class EarthEventsService {
     required double longitude,
   }) async {
     try {
-      final response = await http.get(
-        Uri.parse(
-          'https://api.weather.gov/alerts/active?point=$latitude,$longitude',
+      final response = await _dio.get(
+        'https://api.weather.gov/alerts/active?point=$latitude,$longitude',
+        options: Options(
+          headers: {
+            'User-Agent': '(Nimbus Weather App, contact@nimbusmeteo.com)',
+          },
         ),
-        headers: {
-          'User-Agent': '(Nimbus Weather App, contact@nimbusmeteo.com)',
-        },
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         final features = data['features'] as List?;
 
         if (features == null || features.isEmpty) return [];
@@ -128,10 +139,10 @@ class EarthEventsService {
           '${latitude - radiusDegrees},${longitude - radiusDegrees},'
           '${latitude + radiusDegrees},${longitude + radiusDegrees}/$daysBack';
 
-      final response = await http.get(Uri.parse(url));
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
-        final lines = response.body.split('\n');
+        final lines = response.data.toString().split('\n');
         if (lines.isEmpty) return [];
 
         final headers = lines[0].split(',');
@@ -173,12 +184,12 @@ class EarthEventsService {
   // GDACS - Global Disaster Alerts
   static Future<List<Map<String, dynamic>>?> getGDACSAlerts() async {
     try {
-      final response = await http.get(
-        Uri.parse('https://www.gdacs.org/gdacsapi/api/events/geteventlist/MAP'),
+      final response = await _dio.get(
+        'https://www.gdacs.org/gdacsapi/api/events/geteventlist/MAP',
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         final features = data['features'] as List?;
 
         if (features == null || features.isEmpty) return [];
@@ -227,10 +238,10 @@ class EarthEventsService {
         url += '&category=$category';
       }
 
-      final response = await http.get(Uri.parse(url));
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         final events = data['events'] as List?;
 
         if (events == null || events.isEmpty) return [];

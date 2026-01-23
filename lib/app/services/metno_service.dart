@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 /// Service for interacting with MET Norway Weather API
 /// API Documentation: https://api.met.no/
@@ -9,6 +9,18 @@ class MetNoService {
   static const String _baseUrl = 'https://api.met.no/weatherapi';
   static const String _userAgent =
       'Nimbus Weather App github.com/linuxgoose/nimbus';
+  static final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: _baseUrl,
+      headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      validateStatus: (status) {
+        // Accept 203 (Deprecated) and 204 (No Content) as success
+        return status != null && (status >= 200 && status < 300);
+      },
+    ),
+  );
 
   /// Get location forecast from MET Norway
   /// Uses the compact format for efficiency
@@ -20,23 +32,17 @@ class MetNoService {
   }) async {
     try {
       final altitudeParam = altitude != null ? '&altitude=$altitude' : '';
-      final url = Uri.parse(
-        '$_baseUrl/locationforecast/2.0/compact?lat=$lat&lon=$lon$altitudeParam',
+      final response = await _dio.get(
+        '/locationforecast/2.0/compact?lat=$lat&lon=$lon$altitudeParam',
       );
 
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
-      } else if (response.statusCode == 203) {
-        // 203 means deprecated version, but still works
-        return jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200 || response.statusCode == 203) {
+        // Dio processes JSON automatically when response is application/json
+        // But MET API returns complex objects so we ensure it's Map
+        return response.data as Map<String, dynamic>;
       } else {
         debugPrint('❌ MET Norway API Error: ${response.statusCode}');
-        debugPrint('Response: ${response.body}');
+        debugPrint('Response: ${response.data}');
         return null;
       }
     } catch (e) {
@@ -53,15 +59,12 @@ class MetNoService {
     required double lon,
   }) async {
     try {
-      final url = Uri.parse('$_baseUrl/nowcast/2.0/complete?lat=$lat&lon=$lon');
-
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+      final response = await _dio.get(
+        '/nowcast/2.0/complete?lat=$lat&lon=$lon',
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        return response.data as Map<String, dynamic>;
       } else if (response.statusCode == 204) {
         // 204 means location outside Nordic area
         debugPrint('ℹ️ MET Nowcast: Location outside coverage area');
@@ -86,22 +89,24 @@ class MetNoService {
     try {
       // MetAlerts API - fetch all alerts for the region
       // We'll filter by location in the response
-      final url = Uri.parse('$_baseUrl/metalerts/2.0/current.json');
-
-      debugPrint('🔍 MetAlerts URL: $url');
-
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/geo+json'},
+      // For MetAlerts, we need different Accept header
+      final response = await _dio.get(
+        '/metalerts/2.0/current.json',
+        options: Options(headers: {'Accept': 'application/geo+json'}),
       );
 
+      debugPrint('🔍 MetAlerts URL: ${response.realUri}');
+
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
         debugPrint('✅ MetAlerts response received');
-        return data;
+        // If response.data is string (sometimes happens with geojson content type not being auto-detected by Dio)
+        if (response.data is String) {
+          return jsonDecode(response.data) as Map<String, dynamic>;
+        }
+        return response.data as Map<String, dynamic>;
       } else {
         debugPrint('❌ MET Alerts API Error: ${response.statusCode}');
-        debugPrint('Response body: ${response.body}');
+        debugPrint('Response body: ${response.data}');
         return null;
       }
     } catch (e) {
@@ -121,23 +126,18 @@ class MetNoService {
     try {
       final dateStr = date.toIso8601String().split('T')[0];
       // Note: 'days' parameter is NOT supported by MET Norway Sunrise API
-      final url = Uri.parse(
-        '$_baseUrl/sunrise/3.0/sun?lat=$lat&lon=$lon&date=$dateStr',
-      );
+      debugPrint('🌅 Calling MET Sunrise API for $dateStr');
 
-      debugPrint('🌅 Calling MET Sunrise API: $url');
-
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+      final response = await _dio.get(
+        '/sunrise/3.0/sun?lat=$lat&lon=$lon&date=$dateStr',
       );
 
       if (response.statusCode == 200) {
         debugPrint('✅ MET Sunrise API Success for $dateStr');
-        return jsonDecode(response.body) as Map<String, dynamic>;
+        return response.data as Map<String, dynamic>;
       } else {
         debugPrint('❌ MET Sunrise API Error: ${response.statusCode}');
-        debugPrint('❌ Response body: ${response.body}');
+        debugPrint('❌ Response body: ${response.data}');
         return null;
       }
     } catch (e) {
@@ -153,17 +153,12 @@ class MetNoService {
     String type = 'precipitation',
   }) async {
     try {
-      final url = Uri.parse(
-        '$_baseUrl/radar/2.0/available.json?area=$area&type=$type',
-      );
-
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+      final response = await _dio.get(
+        '/radar/2.0/available.json?area=$area&type=$type',
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = response.data as Map<String, dynamic>;
         final available = data['available'] as List<dynamic>?;
         return available?.map((e) => e.toString()).toList();
       } else {
