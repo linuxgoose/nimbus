@@ -54,13 +54,15 @@ class Settings {
   String alertMinSeverity = 'all'; // all, moderate, severe, extreme
   bool showAlertsOnMainPage = true;
   bool showAlertsOnMap = true;
-  String weatherDataSource = 'openmeteo'; // openmeteo, metno, hybrid
+  String weatherDataSource =
+      'openmeteo'; // openmeteo, metno, hybrid, pirateweather
   bool preferMetNoInHybrid =
       false; // Override Nordic region detection in hybrid mode
   bool hideRainForecast = false; // Hide 6-hour rain forecast chart
   bool useCustomOpenMeteoEndpoint = false; // Use custom Open-Meteo server
   String?
   customOpenMeteoUrl; // Custom Open-Meteo API base URL (e.g., https://nimbusmeteo.linuxgoose.com)
+  String? pirateWeatherApiKey; // PirateWeather API key
   String? customAirQualityUrl; // Custom Air Quality API URL
   String? customMarineUrl; // Custom Marine API URL
   String? customGeocodingUrl; // Custom Geocoding API URL

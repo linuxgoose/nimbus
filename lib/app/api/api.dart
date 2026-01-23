@@ -5,6 +5,7 @@ import 'package:nimbus/app/api/city_api.dart';
 import 'package:nimbus/app/api/weather_api.dart';
 import 'package:nimbus/app/data/db.dart';
 import 'package:nimbus/app/services/hybrid_weather_service.dart';
+import 'package:nimbus/app/services/pirateweather_service.dart';
 import 'package:nimbus/main.dart';
 
 class WeatherAPI {
@@ -74,6 +75,29 @@ class WeatherAPI {
   }
 
   Future<MainWeatherCache> getWeatherData(double lat, double lon) async {
+    // Check if we should use PirateWeather
+    if (settings.weatherDataSource == 'pirateweather') {
+      try {
+        debugPrint('🏴‍☠️ Using PirateWeather as primary source');
+        final pirateData = await PirateWeatherService.getWeatherData(
+          lat: lat,
+          lon: lon,
+        );
+
+        if (pirateData != null) {
+          debugPrint('✅ Using PirateWeather data');
+          WeatherDataApi weatherData = WeatherDataApi.fromJson(pirateData);
+          return _mapWeatherDataToCache(weatherData);
+        } else {
+          debugPrint(
+            '⚠️ PirateWeather returned null, falling back to Open-Meteo',
+          );
+        }
+      } catch (e) {
+        debugPrint('❌ PirateWeather error: $e, falling back to Open-Meteo');
+      }
+    }
+
     // Check if we should use hybrid/MET Norway service (but NOT for Nimbus Meteo)
     if ((settings.weatherDataSource == 'metno' ||
             settings.weatherDataSource == 'hybrid') &&

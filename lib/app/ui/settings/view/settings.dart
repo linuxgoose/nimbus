@@ -172,6 +172,8 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildOpenMeteoText(context),
         if (settings.weatherDataSource == 'nimbusmeteo')
           _buildNimbusMeteoText(context),
+        if (settings.weatherDataSource == 'pirateweather')
+          _buildPirateWeatherText(context),
         const Gap(20),
       ],
     ),
@@ -226,6 +228,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   _buildWeatherProviderTitle(context),
                   _buildWeatherDataSourceSettingCard(context, setState),
+                  if (settings.weatherDataSource == 'pirateweather')
+                    _buildPirateWeatherApiKeySettingCard(context, setState),
+                  if (settings.weatherDataSource == 'pirateweather')
+                    _buildPirateWeatherInfoCard(context),
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
                   _buildGeocodingSourceSettingCard(context, setState),
@@ -2451,6 +2457,7 @@ class _SettingsPageState extends State<SettingsPage> {
       'Open-Meteo',
       'MET Norway',
       'Hybrid (Open-Meteo + MET Norway)',
+      'PirateWeather',
       'Nimbus Meteo',
     ],
     dropdownChange: (String? newValue) async {
@@ -2462,6 +2469,9 @@ class _SettingsPageState extends State<SettingsPage> {
           break;
         case 'Hybrid (Open-Meteo + MET Norway)':
           sourceValue = 'hybrid';
+          break;
+        case 'PirateWeather':
+          sourceValue = 'pirateweather';
           break;
         case 'Nimbus Meteo':
           sourceValue = 'nimbusmeteo';
@@ -2490,6 +2500,8 @@ class _SettingsPageState extends State<SettingsPage> {
         return 'MET Norway';
       case 'hybrid':
         return 'Hybrid (Open-Meteo + MET Norway)';
+      case 'pirateweather':
+        return 'PirateWeather';
       case 'nimbusmeteo':
         return 'Nimbus Meteo';
       default:
@@ -2578,6 +2590,122 @@ class _SettingsPageState extends State<SettingsPage> {
             child: const Text('Close'),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPirateWeatherApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.key),
+      text: 'PirateWeather API Key',
+      info: true,
+      infoSettings: true,
+      infoWidget: _TextInfo(
+        info: settings.pirateWeatherApiKey?.isNotEmpty == true
+            ? '${settings.pirateWeatherApiKey!.substring(0, 8)}...'
+            : 'Not set',
+      ),
+      onPressed: () => _showPirateWeatherApiKeyDialog(context, setState),
+    );
+  }
+
+  void _showPirateWeatherApiKeyDialog(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    final controller = TextEditingController(
+      text: settings.pirateWeatherApiKey ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('PirateWeather API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'PirateWeather is a free, open weather API compatible with Dark Sky.',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Text('Get your API key from:', style: context.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://pirateweather.net',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              settings.pirateWeatherApiKey = controller.text.trim();
+              if (settings.pirateWeatherApiKey!.isEmpty) {
+                settings.pirateWeatherApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+
+              // Refresh weather data with new API key
+              await weatherController.deleteAll(false);
+              await weatherController.setLocation();
+              await weatherController.updateCacheCard(true);
+
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPirateWeatherInfoCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      elevation: 0,
+      color: context.theme.colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              LucideIcons.info,
+              size: 20,
+              color: context.theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Note: Some data (alerts, air quality) will be provided by Open-Meteo when not available from PirateWeather.',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -3487,6 +3615,19 @@ class _SettingsPageState extends State<SettingsPage> {
       style: context.textTheme.bodyMedium,
       overflow: TextOverflow.visible,
       textAlign: TextAlign.center,
+    ),
+  );
+
+  Widget _buildPirateWeatherText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: GestureDetector(
+      child: Text(
+        'Weather data from PirateWeather (pirateweather.net)\nSome data provided by Open-Meteo',
+        style: context.textTheme.bodyMedium,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => weatherController.urlLauncher('https://pirateweather.net/'),
     ),
   );
 }
