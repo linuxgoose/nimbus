@@ -10,9 +10,9 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.55"
         android:orientation="vertical"
-        android:paddingEnd="8dp">
+        android:paddingEnd="4dp">
 
         <TextView
             android:id="@+id/hourly_forecast_date"
@@ -56,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2PM"
-                    android:textSize="8sp"
+                    android:textSize="9sp"
                     android:textColor="#94A3B8"
                     android:fontFamily="sans-serif" />
                 
@@ -72,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="72°"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="#2D3436"
                     android:layout_marginTop="2dp"
                     android:fontFamily="sans-serif-medium" />
@@ -82,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5mph"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:layout_marginTop="1dp"
                     android:fontFamily="sans-serif" />
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0%"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:fontFamily="sans-serif" />
             </LinearLayout>
@@ -111,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3PM"
-                    android:textSize="8sp"
+                    android:textSize="9sp"
                     android:textColor="#94A3B8"
                     android:fontFamily="sans-serif" />
                 
@@ -127,7 +127,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="71°"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="#2D3436"
                     android:layout_marginTop="2dp"
                     android:fontFamily="sans-serif-medium" />
@@ -137,7 +137,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5mph"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:layout_marginTop="1dp"
                     android:fontFamily="sans-serif" />
@@ -147,7 +147,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0%"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:fontFamily="sans-serif" />
             </LinearLayout>
@@ -166,7 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="4PM"
-                    android:textSize="8sp"
+                    android:textSize="9sp"
                     android:textColor="#94A3B8"
                     android:fontFamily="sans-serif" />
                 
@@ -182,7 +182,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="70°"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="#2D3436"
                     android:layout_marginTop="2dp"
                     android:fontFamily="sans-serif-medium" />
@@ -192,7 +192,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5mph"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:layout_marginTop="1dp"
                     android:fontFamily="sans-serif" />
@@ -202,7 +202,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0%"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:fontFamily="sans-serif" />
             </LinearLayout>
@@ -220,7 +220,7 @@
                     android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                     android:text="5PM"
-                    android:textSize="8sp"
+                    android:textSize="9sp"
                     android:textColor="#94A3B8"
                     android:fontFamily="sans-serif" />
                 
@@ -236,7 +236,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="68°"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:textColor="#2D3436"
                     android:layout_marginTop="2dp"
                     android:fontFamily="sans-serif-medium" />
@@ -246,7 +246,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5mph"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:layout_marginTop="1dp"
                     android:fontFamily="sans-serif" />
@@ -256,7 +256,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0%"
-                    android:textSize="7sp"
+                    android:textSize="8sp"
                     android:textColor="#64748B"
                     android:fontFamily="sans-serif" />
             </LinearLayout>
@@ -265,9 +265,11 @@
 
     <!-- Right Side: Icon and Temp -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_weight="0.45"
+        android:orientation="vertical"
+        android:gravity="end">
 
         <!-- Icon and Temp Row -->
         <LinearLayout
@@ -281,7 +283,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="6dp"
                 android:gravity="center_horizontal">
 
                 <TextView
@@ -289,27 +291,43 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Partly cloudy"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textColor="#6B7280"
                     android:paddingBottom="2dp"
                     android:fontFamily="sans-serif" />
 
                 <ImageView
                     android:id="@+id/hourly_forecast_current_icon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:scaleType="fitCenter" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/hourly_forecast_current_temp"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="72°"
-                android:textSize="28sp"
-                android:textColor="#2D3436"
-                android:letterSpacing="-0.02"
-                android:fontFamily="sans-serif-thin" />
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/hourly_forecast_current_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="72°"
+                    android:textSize="40sp"
+                    android:textColor="#2D3436"
+                    android:letterSpacing="-0.02"
+                    android:fontFamily="sans-serif-thin" />
+
+                <TextView
+                    android:id="@+id/hourly_forecast_feels_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feels 70°"
+                    android:textSize="12sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Stats Grid (Compact 3 columns) -->
@@ -329,7 +347,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Hi/Lo"
-                    android:textSize="7sp"
+                    android:textSize="9sp"
                     android:textColor="#94A3B8"
                     android:fontFamily="sans-serif" />
 
@@ -343,7 +361,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="75°"
-                        android:textSize="10sp"
+                        android:textSize="13sp"
                         android:textColor="#2D3436"
                         android:fontFamily="sans-serif-medium" />
 
@@ -351,7 +369,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="/"
-                        android:textSize="8sp"
+                        android:textSize="9sp"
                         android:textColor="#94A3B8"
                         android:paddingHorizontal="1dp"
                         android:fontFamily="sans-serif" />
@@ -361,89 +379,66 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="62°"
-                        android:textSize="9sp"
+                        android:textSize="11sp"
                         android:textColor="#94A3B8"
                         android:fontFamily="sans-serif" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Feels -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingEnd="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Feels"
-                    android:textSize="7sp"
-                    android:textColor="#94A3B8"
-                    android:fontFamily="sans-serif" />
-
-                <TextView
-                    android:id="@+id/hourly_forecast_feels_like"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="70°"
-                    android:textSize="10sp"
-                    android:textColor="#2D3436"
-                    android:fontFamily="sans-serif-medium" />
-            </LinearLayout>
-
-            <!-- Precip -->
+            <!-- Precip & Wind -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rain"
-                    android:textSize="7sp"
-                    android:textColor="#94A3B8"
-                    android:fontFamily="sans-serif" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/hourly_forecast_precip"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rain"
+                        android:textSize="8sp"
+                        android:textColor="#94A3B8"
+                        android:paddingEnd="8dp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Wind"
+                        android:textSize="8sp"
+                        android:textColor="#94A3B8"
+                        android:fontFamily="sans-serif" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0%"
-                    android:textSize="10sp"
-                    android:textColor="#2D3436"
-                    android:fontFamily="sans-serif-medium" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hourly_forecast_precip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0%"
+                        android:textSize="11sp"
+                        android:textColor="#2D3436"
+                        android:paddingEnd="8dp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/hourly_forecast_wind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5 mph"
+                        android:textSize="11sp"
+                        android:textColor="#2D3436"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-
-        <!-- Secondary Stats Row -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dp">
-
-            <!-- Wind -->
-            <TextView
-                android:id="@+id/hourly_forecast_wind"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5 mph"
-                android:textSize="8sp"
-                android:textColor="#64748B"
-                android:paddingEnd="6dp"
-                android:fontFamily="sans-serif" />
-
-            <!-- Humidity -->
-            <TextView
-                android:id="@+id/hourly_forecast_humidity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="65%"
-                android:textSize="8sp"
-                android:textColor="#64748B"
-                android:fontFamily="sans-serif" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

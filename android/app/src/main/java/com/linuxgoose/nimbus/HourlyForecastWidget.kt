@@ -42,10 +42,9 @@ class HourlyForecastWidget : HomeWidgetProvider() {
                 setTextViewText(R.id.hourly_forecast_description, description)
                 setTextViewText(R.id.hourly_forecast_high, high)
                 setTextViewText(R.id.hourly_forecast_low, low)
-                setTextViewText(R.id.hourly_forecast_feels_like, feelsLike)
+                setTextViewText(R.id.hourly_forecast_feels_like, "Feels $feelsLike")
                 setTextViewText(R.id.hourly_forecast_precip, precip)
                 setTextViewText(R.id.hourly_forecast_wind, wind)
-                setTextViewText(R.id.hourly_forecast_humidity, humidity)
 
                 // Current Icon
                 val iconPath = widgetData.getString("small_weather_icon", null) ?: widgetData.getString("weather_icon", null)
@@ -118,7 +117,7 @@ class HourlyForecastWidget : HomeWidgetProvider() {
                 val quaternaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#64748B")
 
                 // Primary text
-                listOf(R.id.hourly_forecast_current_temp, R.id.hourly_forecast_high, R.id.hourly_forecast_feels_like, R.id.hourly_forecast_precip)
+                listOf(R.id.hourly_forecast_current_temp, R.id.hourly_forecast_high, R.id.hourly_forecast_feels_like, R.id.hourly_forecast_precip, R.id.hourly_forecast_wind)
                     .forEach { try { setTextColor(it, primaryTextColor) } catch (e: Exception) { /* ignore */ } }
 
                 // Secondary text
@@ -128,10 +127,6 @@ class HourlyForecastWidget : HomeWidgetProvider() {
                 // Tertiary text
                 listOf(R.id.hourly_forecast_date, R.id.hourly_forecast_low)
                     .forEach { try { setTextColor(it, tertiaryTextColor) } catch (e: Exception) { /* ignore */ } }
-
-                // Quaternary text
-                listOf(R.id.hourly_forecast_wind, R.id.hourly_forecast_humidity)
-                    .forEach { try { setTextColor(it, quaternaryTextColor) } catch (e: Exception) { /* ignore */ } }
 
                 // Hourly forecast temps and times
                 for (i in 0 until 4) {

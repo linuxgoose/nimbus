@@ -436,7 +436,9 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     );
 
     if (time == null || weatherCode == null || temperature == null) {
-      debugPrint('Daily card info - One of the values is null, returning Container');
+      debugPrint(
+        'Daily card info - One of the values is null, returning Container',
+      );
       return Container();
     }
 
