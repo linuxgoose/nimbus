@@ -1,4 +1,4 @@
-package com.yoshi.rain
+package com.linuxgoose.nimbus
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -84,30 +84,27 @@ class DailyWidget : HomeWidgetProvider() {
                 }
             }
 
-            // --- DARK MODE BACKGROUND LOGIC ---
+            // --- PAPER-PASTEL BACKGROUND ---
             val backgroundColor = widgetData.getString("background_color", null)
             if (backgroundColor != null) {
                 try {
                     remoteViews.setInt(R.id.widget_daily_container, "setBackgroundColor", Color.parseColor(backgroundColor))
                 } catch (e: Exception) { /* ignore */ }
             } else {
-                val defaultBg = if (isDarkMode) "#212121" else "#FFFFFF"
+                val defaultBg = if (isDarkMode) "#212121" else "#FAFBFC"
                 remoteViews.setInt(R.id.widget_daily_container, "setBackgroundColor", Color.parseColor(defaultBg))
             }
 
-            // --- DARK MODE TEXT LOGIC ---
-            val textColor = widgetData.getString("text_color", null)
-            val finalTextColor = if (textColor != null) {
-                try { Color.parseColor(textColor) } catch (e: Exception) { 
-                    if (isDarkMode) Color.WHITE else Color.BLACK 
-                }
-            } else {
-                if (isDarkMode) Color.WHITE else Color.BLACK
-            }
+            // --- PAPER-PASTEL TEXT COLORS ---
+            val primaryTextColor = if (isDarkMode) Color.WHITE else Color.parseColor("#2D3436")
+            val secondaryTextColor = if (isDarkMode) Color.parseColor("#D1D5DB") else Color.parseColor("#6B7280")
+            val tertiaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#94A3B8")
+            val quaternaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#64748B")
+            
+            // Apply location text color
+            remoteViews.setTextColor(R.id.widget_location_name, primaryTextColor)
 
-            // Apply color to Location Name
-            remoteViews.setTextColor(R.id.widget_location_name, finalTextColor)
-
+            // Apply paper-pastel color hierarchy to all daily forecast elements
             for (i in 0 until 6) {
                 val dateViewId = context.resources.getIdentifier("daily_date_$i", "id", context.packageName)
                 val maxViewId = context.resources.getIdentifier("daily_max_$i", "id", context.packageName)
@@ -115,12 +112,11 @@ class DailyWidget : HomeWidgetProvider() {
                 val windViewId = context.resources.getIdentifier("daily_wind_$i", "id", context.packageName)
                 val precipViewId = context.resources.getIdentifier("daily_precip_$i", "id", context.packageName)
                 
-                if (dateViewId != 0) remoteViews.setTextColor(dateViewId, finalTextColor)
-                if (maxViewId != 0) remoteViews.setTextColor(maxViewId, finalTextColor)
-                if (minViewId != 0) remoteViews.setTextColor(minViewId, finalTextColor)
-                if (windViewId != 0) remoteViews.setTextColor(windViewId, finalTextColor)
-                // Keep precip color blue for visibility
-                if (precipViewId != 0) remoteViews.setTextColor(precipViewId, Color.parseColor("#0066CC"))
+                if (dateViewId != 0) remoteViews.setTextColor(dateViewId, primaryTextColor)
+                if (maxViewId != 0) remoteViews.setTextColor(maxViewId, primaryTextColor)
+                if (minViewId != 0) remoteViews.setTextColor(minViewId, tertiaryTextColor)
+                if (windViewId != 0) remoteViews.setTextColor(windViewId, quaternaryTextColor)
+                if (precipViewId != 0) remoteViews.setTextColor(precipViewId, quaternaryTextColor)
             }
 
             appWidgetManager.updateAppWidget(appWidgetId, remoteViews)

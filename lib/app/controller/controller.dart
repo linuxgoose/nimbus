@@ -10,9 +10,9 @@ import 'package:lat_lng_to_timezone/lat_lng_to_timezone.dart' as tzmap;
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/api/api.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/services/notification_worker.dart';
 import 'package:nimbus/app/utils/notification.dart';
 import 'package:nimbus/app/utils/show_snack_bar.dart';
-import 'package:nimbus/app/ui/widgets/weather/status/status_data.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/status_weather.dart';
 import 'package:nimbus/app/ui/widgets/weather/status/weather_summary.dart';
 import 'package:nimbus/main.dart';
@@ -234,6 +234,13 @@ class WeatherController extends GetxController {
 
     _mainWeather.value = mainWeatherCache;
     _location.value = locationCache;
+
+    debugPrint(
+      '📊 After cache load - precipitationProbability length: ${_mainWeather.value.precipitationProbability?.length}',
+    );
+    debugPrint(
+      '📊 After cache load - precipitationProbability values: ${_mainWeather.value.precipitationProbability?.take(5)}',
+    );
 
     hourOfDay.value = getTime(
       _mainWeather.value.time,
@@ -543,6 +550,32 @@ class WeatherController extends GetxController {
     }
   }
 
+  /// Check if current time is within quiet hours
+  bool _isQuietHours() {
+    final timeStartStr = settings.timeStart ?? '22:00';
+    final timeEndStr = settings.timeEnd ?? '08:00';
+
+    final now = DateTime.now();
+    final currentMinutes = now.hour * 60 + now.minute;
+
+    // Parse start and end times
+    final startParts = timeStartStr.split(':');
+    final endParts = timeEndStr.split(':');
+
+    final startMinutes =
+        int.parse(startParts[0]) * 60 + int.parse(startParts[1]);
+    final endMinutes = int.parse(endParts[0]) * 60 + int.parse(endParts[1]);
+
+    // Handle cases where quiet hours span midnight
+    if (startMinutes > endMinutes) {
+      // Quiet hours span midnight (e.g., 22:00 to 08:00)
+      return currentMinutes >= startMinutes || currentMinutes < endMinutes;
+    } else {
+      // Quiet hours within same day (e.g., 13:00 to 14:00)
+      return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+    }
+  }
+
   Future<String> getLocalImagePath(String icon) async {
     final directory = await getApplicationSupportDirectory();
     final imagePath = '${directory.path}/$icon';
@@ -557,11 +590,29 @@ class WeatherController extends GetxController {
   }
 
   void notification(MainWeatherCache mainWeatherCache) async {
+    debugPrint('📬 notification() called');
     final now = DateTime.now();
     final startHour = parseTime(timeStart).hour;
     final endHour = parseTime(timeEnd).hour;
 
+    debugPrint(
+      '📬 Quiet hours: $timeStart to $timeEnd (${startHour}h - ${endHour}h)',
+    );
+    debugPrint('📬 Current hour: ${now.hour}');
+
+    // Skip scheduling forecast notifications if we're in quiet hours
+    if (_isQuietHours()) {
+      debugPrint(
+        '🔕 Forecast notifications: Currently in quiet hours, skipping',
+      );
+      return;
+    }
+
+    debugPrint('📬 Notification settings: timeRange=$timeRange');
     final timeList = mainWeatherCache.time ?? [];
+    debugPrint('📬 Time list length: ${timeList.length}');
+    int scheduledCount = 0;
+
     for (var i = 0; i < timeList.length; i += timeRange) {
       final timeStr = timeList[i];
       final notificationTime = DateTime.parse(timeStr);
@@ -591,17 +642,72 @@ class WeatherController extends GetxController {
               iconColor: iconColor,
             );
 
-            NotificationShow().showNotification(
-              UniqueKey().hashCode,
-              '$city: ${mainWeatherCache.temperature2M?[i] ?? 0}°',
-              '${StatusWeather().getText(mainWeatherCache.weathercode?[i] ?? 0)} · ${StatusData().getTimeFormat(timeStr)}',
-              notificationTime,
-              iconPath,
-            );
+            // Get current weather metrics for a richer notification
+            final temp = mainWeatherCache.temperature2M?[i];
+            final feelsLike = mainWeatherCache.apparentTemperature?[i];
+            final humidity = mainWeatherCache.relativehumidity2M?[i];
+            final windSpeed = mainWeatherCache.windspeed10M?[i];
+            final precipitation = mainWeatherCache.precipitationProbability?[i];
+            final weatherCode = mainWeatherCache.weathercode?[i] ?? 0;
+
+            // Build detailed notification body
+            String body = StatusWeather().getText(weatherCode);
+            if (feelsLike != null) {
+              body += ' · Feels like ${feelsLike.toStringAsFixed(0)}°';
+            }
+            if (humidity != null) {
+              body += ' · ${humidity.toStringAsFixed(0)}% humidity';
+            }
+            if (windSpeed != null) {
+              body += ' · ${windSpeed.toStringAsFixed(0)} mph wind';
+            }
+            if (precipitation != null && precipitation > 0) {
+              body += ' · ${precipitation.toStringAsFixed(0)}% rain';
+            }
+
+            // Use deterministic ID based on time (seconds since epoch)
+            // This ensures consistent IDs and avoids conflicts
+            final notificationId =
+                notificationTime.millisecondsSinceEpoch ~/ 1000;
+
+            try {
+              await NotificationShow().showNotification(
+                notificationId,
+                '$city: ${temp?.toStringAsFixed(0) ?? 0}°',
+                body,
+                notificationTime,
+                iconPath,
+              );
+              scheduledCount++;
+              debugPrint(
+                '📬 Scheduled notification ID $notificationId for $notificationTime',
+              );
+              debugPrint(
+                '📬   Title: $city: ${temp?.toStringAsFixed(0) ?? 0}°',
+              );
+              debugPrint('📬   Body: $body');
+            } catch (e) {
+              debugPrint('❌ Failed to schedule notification: $e');
+            }
           }
         }
       }
     }
+    debugPrint('📬 Total notifications scheduled: $scheduledCount');
+
+    // Verify what's actually scheduled
+    Future.delayed(const Duration(seconds: 1), () async {
+      final pending = await flutterLocalNotificationsPlugin
+          .pendingNotificationRequests();
+      debugPrint(
+        '📬 Verified ${pending.length} pending notifications in system',
+      );
+      for (var notification in pending.take(5)) {
+        debugPrint(
+          '   - ID: ${notification.id}, Title: ${notification.title}, Body: ${notification.body}',
+        );
+      }
+    });
   }
 
   void notificationCheck() async {
@@ -671,10 +777,31 @@ class WeatherController extends GetxController {
             WeatherCardSchema,
           ], directory: (await getApplicationSupportDirectory()).path);
 
+      final locationCache = isarWidget.locationCaches.where().findFirstSync();
+
+      // Attempt to fetch fresh data background
+      if (locationCache != null &&
+          locationCache.lat != null &&
+          locationCache.lon != null) {
+        try {
+          final weatherData = await WeatherAPI().getWeatherData(
+            locationCache.lat!,
+            locationCache.lon!,
+          );
+
+          await isarWidget.writeTxn(() async {
+            await isarWidget.mainWeatherCaches.clear();
+            await isarWidget.mainWeatherCaches.put(weatherData);
+          });
+          debugPrint('Background weather data updated successfully');
+        } catch (e) {
+          debugPrint('Background weather update failed: $e');
+        }
+      }
+
       final mainWeatherCache = isarWidget.mainWeatherCaches
           .where()
           .findFirstSync();
-      final locationCache = isarWidget.locationCaches.where().findFirstSync();
       final speedUnit = settings.wind;
 
       if (mainWeatherCache == null) return false;
@@ -722,6 +849,22 @@ class WeatherController extends GetxController {
         uvIndex: mainWeatherCache.uvIndex?[hour]?.round(),
       );
       await HomeWidget.saveWidgetData('friendly_summary', friendlySummary);
+
+      // --- Journal Widget Data ---
+      final journalDate = DateFormat(
+        'EEEE, MMMM d',
+        locale.languageCode,
+      ).format(DateTime.now());
+      final feelsLike =
+          '${(mainWeatherCache.apparentTemperature?[hour] ?? 0).round()}°';
+      final todayHigh =
+          '${(mainWeatherCache.temperature2MMax?[day] ?? 0).round()}°';
+      final todayLow =
+          '${(mainWeatherCache.temperature2MMin?[day] ?? 0).round()}°';
+      await HomeWidget.saveWidgetData('journal_date', journalDate);
+      await HomeWidget.saveWidgetData('journal_feels_like', feelsLike);
+      await HomeWidget.saveWidgetData('journal_high', todayHigh);
+      await HomeWidget.saveWidgetData('journal_low', todayLow);
 
       // --- Weather Icon ---
       try {
@@ -784,6 +927,7 @@ class WeatherController extends GetxController {
       // --- Hourly & Daily Forecasting ---
       await _updateHourlyWidget(mainWeatherCache, hour, day);
       await _updateDailyWidget(mainWeatherCache, day);
+      await _updateHourlyForecastWidget(mainWeatherCache, hour, day);
 
       final bool updated = (await Future.wait<bool?>([
         HomeWidget.updateWidget(androidName: 'CurrentWidget'),
@@ -791,6 +935,8 @@ class WeatherController extends GetxController {
         HomeWidget.updateWidget(androidName: 'HourlyWidget'),
         HomeWidget.updateWidget(androidName: 'DailyWidget'),
         HomeWidget.updateWidget(androidName: 'SmallWidget'),
+        HomeWidget.updateWidget(androidName: 'JournalWidget'),
+        HomeWidget.updateWidget(androidName: 'HourlyForecastWidget'),
       ])).any((result) => result == true);
 
       return updated;
@@ -941,6 +1087,71 @@ class WeatherController extends GetxController {
     }
   }
 
+  Future<void> _updateHourlyForecastWidget(
+    MainWeatherCache mainWeatherCache,
+    int currentHour,
+    int currentDay,
+  ) async {
+    try {
+      final speedUnit = settings.wind;
+      final timeList = mainWeatherCache.time ?? [];
+      for (int i = 0; i < 4; i++) {
+        final hourIndex = currentHour + i + 1; // Start from next hour
+        if (hourIndex >= timeList.length) break;
+
+        final time = timeList[hourIndex];
+        final weathercode = mainWeatherCache.weathercode?[hourIndex];
+        final temp = mainWeatherCache.temperature2M?[hourIndex];
+        final windGust = mainWeatherCache.windgusts10M?[hourIndex];
+        final precip = mainWeatherCache.precipitationProbability?[hourIndex];
+
+        final timeFormat = DateFormat.j(
+          locale.languageCode,
+        ).format(DateTime.parse(time));
+        final tempStr = '${temp?.round() ?? 0}°';
+        final windGustStr = '${windGust?.round() ?? 0}$speedUnit';
+        final precipStr = '${precip ?? 0}%';
+
+        await HomeWidget.saveWidgetData('hourly_forecast_time_$i', timeFormat);
+        await HomeWidget.saveWidgetData('hourly_forecast_temp_$i', tempStr);
+        await HomeWidget.saveWidgetData('hourly_forecast_wind_$i', windGustStr);
+        await HomeWidget.saveWidgetData('hourly_forecast_precip_$i', precipStr);
+
+        try {
+          int dayIdx = currentDay;
+          if (DateTime.parse(time).day != DateTime.now().day) {
+            if (currentDay + 1 < (mainWeatherCache.sunrise?.length ?? 0)) {
+              dayIdx = currentDay + 1;
+            }
+          }
+
+          final iconColor =
+              settings.widgetTextColor != null &&
+                  settings.widgetTextColor!.isNotEmpty
+              ? Color(
+                  int.parse(
+                    settings.widgetTextColor!.replaceFirst('#', '0xff'),
+                  ),
+                )
+              : Colors.white;
+
+          final imagePath = await StatusWeather().getImageNotification(
+            weathercode ?? 0,
+            time,
+            mainWeatherCache.sunrise?[dayIdx] ?? "",
+            mainWeatherCache.sunset?[dayIdx] ?? "",
+            iconColor: iconColor,
+          );
+          await HomeWidget.saveWidgetData('hourly_forecast_icon_$i', imagePath);
+        } catch (e) {
+          debugPrint("Hourly Forecast Widget Icon Error at index $i: $e");
+        }
+      }
+    } catch (e) {
+      debugPrint("Hourly Forecast Widget Error: $e");
+    }
+  }
+
   void urlLauncher(String uri) async {
     final url = Uri.parse(uri);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
@@ -950,16 +1161,43 @@ class WeatherController extends GetxController {
 
   static void scheduleNotificationChecks() {
     if (Platform.isAndroid) {
+      // Get update frequency from settings (in hours)
+      final settings = isar.settings.getSync(1);
+      final timeRangeHours = settings?.timeRange ?? 1;
+
+      // Convert hours to minutes, Android WorkManager minimum is 15 minutes
+      // For 1 hour (60 min), we use 60 min directly
+      final frequencyMinutes = (timeRangeHours * 60).clamp(15, 1440);
+
+      debugPrint(
+        '📅 Scheduling notification checks: every ${timeRangeHours}h (${frequencyMinutes}min)',
+      );
+
+      // Register a one-time task to run immediately
+      Workmanager().registerOneOffTask(
+        'notificationCheck-immediate',
+        'notificationCheck',
+        initialDelay: const Duration(seconds: 5),
+        constraints: Constraints(networkType: NetworkType.notRequired),
+      );
+      debugPrint('📅 Registered immediate one-time notification check');
+
+      // Register periodic task for ongoing checks
       Workmanager().registerPeriodicTask(
         'notificationCheck',
         'notificationCheck',
-        frequency: const Duration(minutes: 30),
-        existingWorkPolicy: ExistingPeriodicWorkPolicy.update,
-        constraints: Constraints(networkType: NetworkType.connected),
+        frequency: Duration(minutes: frequencyMinutes),
+        existingWorkPolicy: ExistingPeriodicWorkPolicy.replace,
+        constraints: Constraints(networkType: NetworkType.notRequired),
       );
-      debugPrint(
-        '📅 Scheduled periodic notification checks (every 30 minutes)',
-      );
+
+      debugPrint('📅 Successfully registered periodic notification checks');
+
+      // Also trigger an in-app check
+      Future.delayed(const Duration(seconds: 2), () async {
+        debugPrint('📅 Triggering in-app notification check');
+        await NotificationWorker.checkAndNotify();
+      });
     }
   }
 
@@ -967,6 +1205,58 @@ class WeatherController extends GetxController {
     if (Platform.isAndroid) {
       Workmanager().cancelByUniqueName('notificationCheck');
       debugPrint('🚫 Cancelled periodic notification checks');
+    }
+  }
+
+  static Future<bool> isBatteryOptimizationDisabled() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/battery');
+      final bool isIgnoring = await platform.invokeMethod(
+        'isIgnoringBatteryOptimizations',
+      );
+      return isIgnoring;
+    } catch (e) {
+      debugPrint('Error checking battery optimization: $e');
+      return false;
+    }
+  }
+
+  static Future<void> requestBatteryOptimizationExemption() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/battery');
+      await platform.invokeMethod('requestIgnoreBatteryOptimizations');
+    } catch (e) {
+      debugPrint('Error requesting battery optimization exemption: $e');
+    }
+  }
+
+  static Future<bool> canScheduleExactAlarms() async {
+    if (!Platform.isAndroid) return true;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/alarms');
+      final bool canSchedule = await platform.invokeMethod(
+        'canScheduleExactAlarms',
+      );
+      return canSchedule;
+    } catch (e) {
+      debugPrint('Error checking exact alarms permission: $e');
+      return false;
+    }
+  }
+
+  static Future<void> openExactAlarmSettings() async {
+    if (!Platform.isAndroid) return;
+
+    try {
+      const platform = MethodChannel('com.cirrusweather.nimbus/alarms');
+      await platform.invokeMethod('openExactAlarmSettings');
+    } catch (e) {
+      debugPrint('Error opening exact alarm settings: $e');
     }
   }
 }

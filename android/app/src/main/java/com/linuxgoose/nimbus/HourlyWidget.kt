@@ -1,4 +1,4 @@
-package com.yoshi.rain
+package com.linuxgoose.nimbus
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -30,28 +30,24 @@ class HourlyWidget : HomeWidgetProvider() {
             val locationName = widgetData.getString("location_name", "Unknown Location")
             remoteViews.setTextViewText(R.id.widget_location_name, locationName)
 
-            // --- DARK MODE THEME COLORS ---
-            val textColor = widgetData.getString("text_color", null)
-            val finalTextColor = if (textColor != null) {
-                try { Color.parseColor(textColor) } catch (e: Exception) { 
-                    if (isDarkMode) Color.WHITE else Color.BLACK 
-                }
-            } else {
-                if (isDarkMode) Color.WHITE else Color.BLACK
-            }
-
+            // --- PAPER-PASTEL THEME COLORS ---
+            val primaryTextColor = if (isDarkMode) Color.WHITE else Color.parseColor("#2D3436")
+            val secondaryTextColor = if (isDarkMode) Color.parseColor("#D1D5DB") else Color.parseColor("#6B7280")
+            val tertiaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#94A3B8")
+            val quaternaryTextColor = if (isDarkMode) Color.parseColor("#9CA3AF") else Color.parseColor("#64748B")
+            
             val backgroundColor = widgetData.getString("background_color", null)
             val finalBgColor = if (backgroundColor != null) {
                 try { Color.parseColor(backgroundColor) } catch (e: Exception) {
-                    Color.parseColor(if (isDarkMode) "#212121" else "#FFFFFF")
+                    Color.parseColor(if (isDarkMode) "#212121" else "#FAFBFC")
                 }
             } else {
-                Color.parseColor(if (isDarkMode) "#212121" else "#FFFFFF")
+                Color.parseColor(if (isDarkMode) "#212121" else "#FAFBFC")
             }
 
             // Apply global colors
             remoteViews.setInt(R.id.widget_hourly_container, "setBackgroundColor", finalBgColor)
-            remoteViews.setTextColor(R.id.widget_location_name, finalTextColor)
+            remoteViews.setTextColor(R.id.widget_location_name, primaryTextColor)
 
             // --- HOURLY FORECAST LOOP (0-5) ---
             for (i in 0 until 6) {
@@ -73,12 +69,11 @@ class HourlyWidget : HomeWidgetProvider() {
                 if (wind != null && windViewId != 0) remoteViews.setTextViewText(windViewId, wind)
                 if (precip != null && precipViewId != 0) remoteViews.setTextViewText(precipViewId, precip)
 
-                // Apply Text Colors
-                if (timeViewId != 0) remoteViews.setTextColor(timeViewId, finalTextColor)
-                if (tempViewId != 0) remoteViews.setTextColor(tempViewId, finalTextColor)
-                if (windViewId != 0) remoteViews.setTextColor(windViewId, finalTextColor)
-                // Keep precip color blue for visibility
-                if (precipViewId != 0) remoteViews.setTextColor(precipViewId, Color.parseColor("#0066CC"))
+                // Apply Text Colors (Paper-Pastel Hierarchy)
+                if (timeViewId != 0) remoteViews.setTextColor(timeViewId, primaryTextColor)
+                if (tempViewId != 0) remoteViews.setTextColor(tempViewId, primaryTextColor)
+                if (windViewId != 0) remoteViews.setTextColor(windViewId, quaternaryTextColor)
+                if (precipViewId != 0) remoteViews.setTextColor(precipViewId, quaternaryTextColor)
 
                 // Handle Icon with Memory Protection (Downsampling)
                 if (icon != null) {

@@ -130,13 +130,13 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     final hourlyTimes = weatherData.time ?? [];
 
     // Debug logging
-    print(
+    debugPrint(
       'Daily card info - Looking for day index: $index, target day: $targetDay',
     );
-    print('Daily card info - Hourly times length: ${hourlyTimes.length}');
+    debugPrint('Daily card info - Hourly times length: ${hourlyTimes.length}');
     if (hourlyTimes.isNotEmpty) {
-      print('Daily card info - First hourly time: ${hourlyTimes.first}');
-      print('Daily card info - Last hourly time: ${hourlyTimes.last}');
+      debugPrint('Daily card info - First hourly time: ${hourlyTimes.first}');
+      debugPrint('Daily card info - Last hourly time: ${hourlyTimes.last}');
     }
 
     // Find the first hourly entry that matches this day
@@ -147,7 +147,7 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
             hourlyTime.month == targetDay.month &&
             hourlyTime.day == targetDay.day) {
           startIndex = i;
-          print(
+          debugPrint(
             'Daily card info - Found start index: $startIndex for day: $targetDay',
           );
           break;
@@ -159,7 +159,7 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
 
     // If we couldn't find matching hourly data, return empty
     if (startIndex == -1 || startIndex >= hourlyTimes.length) {
-      print(
+      debugPrint(
         'Daily card info - No matching hourly data found for day: $targetDay',
       );
       return Container();
@@ -361,7 +361,7 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
       }
     }
 
-    print('Daily card info - Hour count for this day: $hourCount');
+    debugPrint('Daily card info - Hour count for this day: $hourCount');
 
     if (hourCount == 0) {
       return Container();
@@ -403,14 +403,14 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     int hourlyIndex = startIndex + i;
     bool isSelected = i == hourOfDay;
 
-    print(
+    debugPrint(
       'Daily card info - Building hourly item $i, hourlyIndex: $hourlyIndex',
     );
 
     // Helper function to safely get array value
     T? safeGet<T>(List<T?>? array, int index) {
       if (array == null || index >= array.length) {
-        print(
+        debugPrint(
           'Daily card info - safeGet returning null for index $index (array length: ${array?.length ?? 0})',
         );
         return null;
@@ -421,7 +421,7 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     // Safety check: ensure index is within bounds
     final hourlyDataLength = weatherData.time?.length ?? 0;
     if (hourlyIndex >= hourlyDataLength) {
-      print(
+      debugPrint(
         'Daily card info - hourlyIndex $hourlyIndex >= hourlyDataLength $hourlyDataLength, returning Container',
       );
       return Container();
@@ -431,12 +431,14 @@ class _DailyCardInfoState extends State<DailyCardInfo> {
     final weatherCode = safeGet(weatherData.weathercode, hourlyIndex);
     final temperature = safeGet(weatherData.temperature2M, hourlyIndex);
 
-    print(
+    debugPrint(
       'Daily card info - time: $time, weatherCode: $weatherCode, temperature: $temperature',
     );
 
     if (time == null || weatherCode == null || temperature == null) {
-      print('Daily card info - One of the values is null, returning Container');
+      debugPrint(
+        'Daily card info - One of the values is null, returning Container',
+      );
       return Container();
     }
 

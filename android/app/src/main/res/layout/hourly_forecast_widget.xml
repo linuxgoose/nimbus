@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/hourly_forecast_widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <!-- Left Side: Date, Location, Description, Hourly Forecast -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.55"
+        android:orientation="vertical"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/hourly_forecast_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thursday, January 23"
+            android:textSize="10sp"
+            android:textColor="#6B7280"
+            android:letterSpacing="0.01"
+            android:paddingBottom="2dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/hourly_forecast_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="14sp"
+            android:textColor="#2D3436"
+            android:letterSpacing="0.005"
+            android:paddingBottom="4dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Hourly Forecast (3-4 hours in a row) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Hour 1 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingEnd="4dp">
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_time_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2PM"
+                    android:textSize="9sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+                
+                <ImageView
+                    android:id="@+id/hourly_forecast_icon_0"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="2dp"
+                    android:scaleType="fitCenter" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_temp_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="72°"
+                    android:textSize="12sp"
+                    android:textColor="#2D3436"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_wind_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5mph"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="sans-serif" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_precip_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+
+            <!-- Hour 2 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingEnd="4dp">
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_time_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3PM"
+                    android:textSize="9sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+                
+                <ImageView
+                    android:id="@+id/hourly_forecast_icon_1"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="2dp"
+                    android:scaleType="fitCenter" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_temp_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="71°"
+                    android:textSize="12sp"
+                    android:textColor="#2D3436"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_wind_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5mph"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="sans-serif" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_precip_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+
+            <!-- Hour 3 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingEnd="4dp">
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_time_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4PM"
+                    android:textSize="9sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+                
+                <ImageView
+                    android:id="@+id/hourly_forecast_icon_2"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="2dp"
+                    android:scaleType="fitCenter" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_temp_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="70°"
+                    android:textSize="12sp"
+                    android:textColor="#2D3436"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_wind_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5mph"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="sans-serif" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_precip_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+
+            <!-- Hour 4 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_time_3"
+                    android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                    android:text="5PM"
+                    android:textSize="9sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+                
+                <ImageView
+                    android:id="@+id/hourly_forecast_icon_3"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="2dp"
+                    android:scaleType="fitCenter" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_temp_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="68°"
+                    android:textSize="12sp"
+                    android:textColor="#2D3436"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_wind_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5mph"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:layout_marginTop="1dp"
+                    android:fontFamily="sans-serif" />
+                
+                <TextView
+                    android:id="@+id/hourly_forecast_precip_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textSize="8sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Right Side: Icon and Temp -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.45"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <!-- Icon and Temp Row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="4dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginEnd="6dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/hourly_forecast_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Partly cloudy"
+                    android:textSize="11sp"
+                    android:textColor="#6B7280"
+                    android:paddingBottom="2dp"
+                    android:fontFamily="sans-serif" />
+
+                <ImageView
+                    android:id="@+id/hourly_forecast_current_icon"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitCenter" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/hourly_forecast_current_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="72°"
+                    android:textSize="40sp"
+                    android:textColor="#2D3436"
+                    android:letterSpacing="-0.02"
+                    android:fontFamily="sans-serif-thin" />
+
+                <TextView
+                    android:id="@+id/hourly_forecast_feels_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feels 70°"
+                    android:textSize="12sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Stats Grid (Compact 3 columns) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- High/Low -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hi/Lo"
+                    android:textSize="9sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hourly_forecast_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="75°"
+                        android:textSize="13sp"
+                        android:textColor="#2D3436"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="/"
+                        android:textSize="9sp"
+                        android:textColor="#94A3B8"
+                        android:paddingHorizontal="1dp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:id="@+id/hourly_forecast_low"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="62°"
+                        android:textSize="11sp"
+                        android:textColor="#94A3B8"
+                        android:fontFamily="sans-serif" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Precip & Wind -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rain"
+                        android:textSize="8sp"
+                        android:textColor="#94A3B8"
+                        android:paddingEnd="8dp"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Wind"
+                        android:textSize="8sp"
+                        android:textColor="#94A3B8"
+                        android:fontFamily="sans-serif" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hourly_forecast_precip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0%"
+                        android:textSize="11sp"
+                        android:textColor="#2D3436"
+                        android:paddingEnd="8dp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:id="@+id/hourly_forecast_wind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5 mph"
+                        android:textSize="11sp"
+                        android:textColor="#2D3436"
+                        android:fontFamily="sans-serif-medium" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

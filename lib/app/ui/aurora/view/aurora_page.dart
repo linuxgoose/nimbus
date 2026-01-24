@@ -22,6 +22,9 @@ class _AuroraPageState extends State<AuroraPage> {
   String? error;
   bool isFromCache = false;
   DateTime? cacheTime;
+  bool showAuroraOverlay = true;
+  Map<String, dynamic>? solarWindData;
+  List<Map<String, dynamic>>? solarFlares;
 
   @override
   void initState() {
@@ -41,7 +44,7 @@ class _AuroraPageState extends State<AuroraPage> {
 
       if (lat == null || lon == null) {
         setState(() {
-          error = 'Location unavailable';
+          error = 'location_unavailable'.tr;
           isLoading = false;
         });
         return;
@@ -55,7 +58,7 @@ class _AuroraPageState extends State<AuroraPage> {
 
       if (data == null) {
         setState(() {
-          error = 'Failed to load aurora data';
+          error = 'failed_to_load_data'.tr;
           isLoading = false;
         });
         return;
@@ -64,9 +67,17 @@ class _AuroraPageState extends State<AuroraPage> {
       // Also fetch UK data separately (not cached)
       final ukDataResult = await AuroraService.getAuroraWatchUK();
 
+      // Fetch solar wind speed
+      final solarWindResult = await AuroraService.getSolarWindSpeed();
+
+      // Fetch recent solar flares
+      final solarFlaresResult = await AuroraService.getSolarFlares(daysBack: 7);
+
       setState(() {
         auroraData = data;
         ukData = ukDataResult;
+        solarWindData = solarWindResult;
+        solarFlares = solarFlaresResult;
         forecast = data['forecast'] != null
             ? (data['forecast'] as List).cast<Map<String, dynamic>>()
             : null;
@@ -78,7 +89,7 @@ class _AuroraPageState extends State<AuroraPage> {
       });
     } catch (e) {
       setState(() {
-        error = 'Failed to load aurora data';
+        error = 'failed_to_load_data'.tr;
         isLoading = false;
       });
     }
@@ -88,7 +99,7 @@ class _AuroraPageState extends State<AuroraPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aurora Watch'),
+        title: Text('aurora_watch'.tr),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.refreshCw),
@@ -118,7 +129,7 @@ class _AuroraPageState extends State<AuroraPage> {
         ElevatedButton.icon(
           onPressed: _loadAuroraData,
           icon: const Icon(LucideIcons.refreshCw),
-          label: const Text('Retry'),
+          label: Text('retry'.tr),
         ),
       ],
     ),
@@ -130,10 +141,20 @@ class _AuroraPageState extends State<AuroraPage> {
       children: [
         _buildCurrentActivityCard(),
         const SizedBox(height: 16),
+        if (solarWindData != null) ...[
+          _buildSolarWindCard(),
+          const SizedBox(height: 16),
+        ],
         _buildVisibilityCard(),
+        const SizedBox(height: 16),
+        _buildAuroraMapCard(),
         const SizedBox(height: 16),
         if (ukData != null) ...[
           _buildUKAlertCard(),
+          const SizedBox(height: 16),
+        ],
+        if (solarFlares != null && solarFlares!.isNotEmpty) ...[
+          _buildSolarFlaresCard(),
           const SizedBox(height: 16),
         ],
         _buildForecastCard(),
@@ -158,7 +179,7 @@ class _AuroraPageState extends State<AuroraPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Current Activity',
+                  'current_activity'.tr,
                   style: context.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -298,6 +319,269 @@ class _AuroraPageState extends State<AuroraPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAuroraMapCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      LucideIcons.map,
+                      color: context.theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Aurora Forecast Map',
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                height: 400,
+                child: Image.network(
+                  'https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg?${DateTime.now().millisecondsSinceEpoch ~/ 1800000}', // Cache bust every 30 min
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: context.theme.colorScheme.surfaceContainerHighest,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              LucideIcons.cloudOff,
+                              size: 48,
+                              color: context.theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Aurora map unavailable',
+                              style: context.textTheme.bodyMedium?.copyWith(
+                                color:
+                                    context.theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'The aurora oval shows the current predicted extent of aurora visibility. Green indicates likely aurora, with intensity increasing through yellow, orange, and red.',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.refreshCw,
+                  size: 12,
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Map updates every 30 minutes from NOAA',
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSolarWindCard() {
+    final speed = solarWindData?['speed'] ?? 0.0;
+    final status = solarWindData?['status'] ?? 'Unknown';
+    final colorHex = solarWindData?['color'] ?? '#666666';
+    final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  LucideIcons.wind,
+                  color: context.theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Solar Wind Speed',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${speed.toStringAsFixed(0)} km/s',
+                      style: context.textTheme.displaySmall?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      status,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(_getSolarWindIcon(status), size: 64, color: color),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _getSolarWindDescription(status),
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSolarFlaresCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(LucideIcons.zap, color: context.theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Recent Solar Flares',
+                  style: context.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...solarFlares!.take(5).map((flare) => _buildFlareItem(flare)),
+            if (solarFlares!.isEmpty)
+              Text(
+                'No significant solar flares in the past 7 days',
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlareItem(Map<String, dynamic> flare) {
+    final classType = flare['classType'] ?? 'Unknown';
+    final severity = flare['severity'] ?? 'Unknown';
+    final colorHex = flare['color'] ?? '#666666';
+    final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+    final peakTime = flare['peakTime'] as String?;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: color, width: 2),
+            ),
+            child: Center(
+              child: Text(
+                classType,
+                style: context.textTheme.titleMedium?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  severity,
+                  style: context.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (peakTime != null)
+                  Text(
+                    _formatFlareTime(peakTime),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Icon(LucideIcons.zap, color: color, size: 24),
+        ],
       ),
     );
   }
@@ -614,5 +898,51 @@ class _AuroraPageState extends State<AuroraPage> {
     if (age.inMinutes < 1) return 'just now';
     if (age.inMinutes < 60) return '${age.inMinutes}m ago';
     return '${age.inHours}h ago';
+  }
+
+  IconData _getSolarWindIcon(String status) {
+    switch (status) {
+      case 'Storm':
+        return LucideIcons.cloudLightning;
+      case 'Elevated':
+        return LucideIcons.wind;
+      case 'Normal':
+        return LucideIcons.cloudSun;
+      default:
+        return LucideIcons.cloud;
+    }
+  }
+
+  String _getSolarWindDescription(String status) {
+    switch (status) {
+      case 'Storm':
+        return 'High-speed solar wind detected! Strong geomagnetic storm conditions possible. Aurora may be visible at lower latitudes.';
+      case 'Elevated':
+        return 'Solar wind speed is elevated. Minor to moderate geomagnetic activity possible.';
+      case 'Normal':
+        return 'Solar wind speed is within normal range. Typical geomagnetic conditions.';
+      default:
+        return 'Solar wind data unavailable.';
+    }
+  }
+
+  String _formatFlareTime(String timestamp) {
+    try {
+      final dt = DateTime.parse(timestamp);
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+
+      if (diff.inHours < 1) {
+        return '${diff.inMinutes}m ago';
+      } else if (diff.inHours < 24) {
+        return '${diff.inHours}h ago';
+      } else if (diff.inDays < 7) {
+        return '${diff.inDays}d ago';
+      } else {
+        return DateFormat('MMM d').format(dt.toLocal());
+      }
+    } catch (e) {
+      return timestamp;
+    }
   }
 }

@@ -18,6 +18,7 @@ import 'package:nimbus/app/ui/aqi/view/aqi_page.dart';
 import 'package:nimbus/app/ui/tides/view/tides_page.dart';
 import 'package:nimbus/app/ui/elevation/view/elevation_page.dart';
 import 'package:nimbus/app/ui/aurora/view/aurora_page.dart';
+import 'package:nimbus/app/ui/earth_events/view/earth_events_page.dart';
 import 'package:nimbus/app/ui/moon/moon_phase_tile.dart';
 import 'package:nimbus/app/ui/flood/flood_tile.dart';
 import 'package:nimbus/app/ui/agriculture/agriculture_tile.dart';
@@ -41,57 +42,101 @@ class _MainPageState extends State<MainPage> {
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Obx(() {
-        if (weatherController.isLoading.isTrue) {
-          return _buildLoadingView();
+        try {
+          if (weatherController.isLoading.isTrue) {
+            return _buildLoadingView();
+          }
+
+          final mainWeather = weatherController.mainWeather;
+
+          // Check if mainWeather has any data
+          if (mainWeather.time == null || mainWeather.time!.isEmpty) {
+            debugPrint('⚠️ MainWeather has no time data');
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(LucideIcons.cloudOff, size: 48),
+                  const SizedBox(height: 16),
+                  const Text('No weather data available'),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: _handleRefresh,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final weatherCard = WeatherCard.fromJson(mainWeather.toJson());
+          final hourOfDay = weatherController.hourOfDay.value;
+          var dayOfNow = weatherController.dayOfNow.value;
+
+          // Ensure dayOfNow is within valid bounds for all arrays
+          final sunriseLen = mainWeather.sunrise?.length ?? 0;
+          final sunsetLen = mainWeather.sunset?.length ?? 0;
+          final tempMaxLen = mainWeather.temperature2MMax?.length ?? 0;
+          final tempMinLen = mainWeather.temperature2MMin?.length ?? 0;
+
+          if (sunriseLen == 0 ||
+              sunsetLen == 0 ||
+              tempMaxLen == 0 ||
+              tempMinLen == 0) {
+            debugPrint(
+              '⚠️ Missing daily data - sunrise: $sunriseLen, sunset: $sunsetLen, tempMax: $tempMaxLen, tempMin: $tempMinLen',
+            );
+            return _buildLoadingView();
+          }
+
+          final maxDayIndex =
+              [
+                sunriseLen,
+                sunsetLen,
+                tempMaxLen,
+                tempMinLen,
+              ].reduce((a, b) => a < b ? a : b) -
+              1;
+
+          if (maxDayIndex < 0 || dayOfNow > maxDayIndex || dayOfNow < 0) {
+            dayOfNow = 0;
+          }
+
+          final sunrise = mainWeather.sunrise?[dayOfNow];
+          final sunset = mainWeather.sunset?[dayOfNow];
+          final tempMax = mainWeather.temperature2MMax?[dayOfNow];
+          final tempMin = mainWeather.temperature2MMin?[dayOfNow];
+
+          return _buildMainView(
+            context,
+            mainWeather,
+            weatherCard,
+            hourOfDay,
+            dayOfNow,
+            sunrise ?? '',
+            sunset ?? '',
+            tempMax ?? 0.0,
+            tempMin ?? 0.0,
+          );
+        } catch (e, stackTrace) {
+          debugPrint('❌ Error building main page: $e');
+          debugPrint('Stack trace: $stackTrace');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.circleAlert, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error loading weather: $e'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _handleRefresh,
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
         }
-
-        final mainWeather = weatherController.mainWeather;
-        final weatherCard = WeatherCard.fromJson(mainWeather.toJson());
-        final hourOfDay = weatherController.hourOfDay.value;
-        var dayOfNow = weatherController.dayOfNow.value;
-
-        // Ensure dayOfNow is within valid bounds for all arrays
-        final sunriseLen = mainWeather.sunrise?.length ?? 0;
-        final sunsetLen = mainWeather.sunset?.length ?? 0;
-        final tempMaxLen = mainWeather.temperature2MMax?.length ?? 0;
-        final tempMinLen = mainWeather.temperature2MMin?.length ?? 0;
-
-        if (sunriseLen == 0 ||
-            sunsetLen == 0 ||
-            tempMaxLen == 0 ||
-            tempMinLen == 0) {
-          return _buildLoadingView();
-        }
-
-        final maxDayIndex =
-            [
-              sunriseLen,
-              sunsetLen,
-              tempMaxLen,
-              tempMinLen,
-            ].reduce((a, b) => a < b ? a : b) -
-            1;
-
-        if (maxDayIndex < 0 || dayOfNow > maxDayIndex || dayOfNow < 0) {
-          dayOfNow = 0;
-        }
-
-        final sunrise = mainWeather.sunrise![dayOfNow];
-        final sunset = mainWeather.sunset![dayOfNow];
-        final tempMax = mainWeather.temperature2MMax![dayOfNow];
-        final tempMin = mainWeather.temperature2MMin![dayOfNow];
-
-        return _buildMainView(
-          context,
-          mainWeather,
-          weatherCard,
-          hourOfDay,
-          dayOfNow,
-          sunrise,
-          sunset,
-          tempMax!,
-          tempMin!,
-        );
       }),
     ),
   );
@@ -150,6 +195,7 @@ class _MainPageState extends State<MainPage> {
         if (!settings.hideTides) _buildTidesTile(),
         if (!settings.hideElevation) _buildElevationTile(),
         if (!settings.hideAurora) _buildAuroraTile(),
+        if (!settings.hideEarthEvents) _buildEarthEventsTile(),
         if (!settings.hideFlood) const FloodTile(),
         _buildHourlyList(context, mainWeather, hourOfDay, dayOfNow),
         _buildSunsetSunriseWidget(sunrise, sunset),
@@ -338,22 +384,41 @@ class _MainPageState extends State<MainPage> {
     String sunset,
     double tempMax,
     double tempMin,
-  ) => Now(
-    time: mainWeather.time![hourOfDay],
-    weather: mainWeather.weathercode?[hourOfDay] ?? 0,
-    degree: mainWeather.temperature2M![hourOfDay],
-    feels:
-        (mainWeather.apparentTemperature?[hourOfDay] ??
-        mainWeather.temperature2M![hourOfDay])!,
-    timeDay: sunrise,
-    timeNight: sunset,
-    tempMax: tempMax,
-    tempMin: tempMin,
-    humidity: mainWeather.relativehumidity2M?[hourOfDay],
-    windSpeed: mainWeather.windspeed10M?[hourOfDay],
-    precipitationProbability: mainWeather.precipitationProbability?[hourOfDay],
-    uvIndex: mainWeather.uvIndex?[hourOfDay]?.round(),
-  );
+  ) {
+    debugPrint('📊 Now widget - hourOfDay: $hourOfDay');
+    debugPrint(
+      '📊 Now widget - humidity: ${mainWeather.relativehumidity2M?[hourOfDay]}',
+    );
+    debugPrint(
+      '📊 Now widget - windSpeed: ${mainWeather.windspeed10M?[hourOfDay]}',
+    );
+    debugPrint(
+      '📊 Now widget - precipProb: ${mainWeather.precipitationProbability?[hourOfDay]}',
+    );
+    debugPrint('📊 Now widget - uvIndex: ${mainWeather.uvIndex?[hourOfDay]}');
+    debugPrint(
+      '📊 Now widget - relativehumidity2M length: ${mainWeather.relativehumidity2M?.length}',
+    );
+
+    return Now(
+      time: mainWeather.time?[hourOfDay] ?? '',
+      weather: mainWeather.weathercode?[hourOfDay] ?? 0,
+      degree: mainWeather.temperature2M?[hourOfDay] ?? 0.0,
+      feels:
+          mainWeather.apparentTemperature?[hourOfDay] ??
+          mainWeather.temperature2M?[hourOfDay] ??
+          0.0,
+      timeDay: sunrise,
+      timeNight: sunset,
+      tempMax: tempMax,
+      tempMin: tempMin,
+      humidity: mainWeather.relativehumidity2M?[hourOfDay],
+      windSpeed: mainWeather.windspeed10M?[hourOfDay],
+      precipitationProbability:
+          mainWeather.precipitationProbability?[hourOfDay],
+      uvIndex: mainWeather.uvIndex?[hourOfDay]?.round(),
+    );
+  }
 
   Widget _buildRainForecastChart(MainWeatherCache mainWeather) {
     // Get current location from the weather controller
@@ -723,6 +788,61 @@ class _MainPageState extends State<MainPage> {
                   const SizedBox(height: 4),
                   Text(
                     'Northern lights forecast and alerts',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.arrowRight,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _buildEarthEventsTile() => Card(
+    margin: const EdgeInsets.only(bottom: 15),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => Get.to(
+        () => const EarthEventsPage(),
+        transition: Transition.downToUp,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.theme.colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                LucideIcons.globe,
+                size: 32,
+                color: context.theme.colorScheme.onTertiaryContainer,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Earth Events',
+                    style: context.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Earthquakes, wildfires, and disaster alerts',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.onSurfaceVariant,
                     ),

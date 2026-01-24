@@ -5,6 +5,7 @@ part 'db.g.dart';
 @collection
 class Settings {
   Id id = Isar.autoIncrement;
+  int schemaVersion = 1; // Track schema version for migrations
   bool onboard = false;
   String? theme = 'system';
   bool location = false;
@@ -24,13 +25,18 @@ class Settings {
   String tideDatum = 'mllw'; // mllw, mlw, msl, mhw, mhhw
   bool hideElevation = false;
   bool useDummyElevation = true;
+  String elevationSource =
+      'open_meteo'; // open_meteo, nimbusmeteo, open_elevation
   String? elevationApiKey;
   bool hideAurora = false;
   bool auroraNotifications = false;
   double auroraNotificationThreshold = 5.0; // Kp index threshold
+  bool hideEarthEvents = false;
   bool hideFlood = false;
   bool floodNotifications = false;
   double floodRadiusKm = 100.0; // Radius to check for flood warnings
+  bool weatherAlertNotifications = false;
+  String weatherAlertMinSeverity = 'moderate'; // all, moderate, severe, extreme
   bool hideAgriculture = false;
   bool hideMarine = false;
   bool hideHiking = false;
@@ -48,16 +54,34 @@ class Settings {
   String alertMinSeverity = 'all'; // all, moderate, severe, extreme
   bool showAlertsOnMainPage = true;
   bool showAlertsOnMap = true;
-  String weatherDataSource = 'openmeteo'; // openmeteo, metno, hybrid
+  String weatherDataSource =
+      'openmeteo'; // openmeteo, metno, hybrid, pirateweather, weatherapi
   bool preferMetNoInHybrid =
       false; // Override Nordic region detection in hybrid mode
   bool hideRainForecast = false; // Hide 6-hour rain forecast chart
+  bool useCustomOpenMeteoEndpoint = false; // Use custom Open-Meteo server
+  String?
+  customOpenMeteoUrl; // Custom Open-Meteo API base URL (e.g., https://nimbusmeteo.linuxgoose.com)
+  String? pirateWeatherApiKey; // PirateWeather API key
+  String? weatherApiKey; // WeatherAPI.com key
+  String? customAirQualityUrl; // Custom Air Quality API URL
+  String? customMarineUrl; // Custom Marine API URL
+  String? customGeocodingUrl; // Custom Geocoding API URL
+  String geocodingSource = 'openmeteo'; // openmeteo, nimbusmeteo, custom
   String nowTileMetric1 = 'humidity'; // First metric to show in now tile
   String nowTileMetric2 = 'wind'; // Second metric to show in now tile
   String? language;
   int? timeRange;
   String? timeStart;
   String? timeEnd;
+
+  // Notification tracking to prevent spam
+  DateTime? lastAuroraNotification;
+  DateTime? lastRainNotification;
+  DateTime? lastWeatherAlertNotification;
+  DateTime? lastFloodNotification;
+  double? lastNotifiedAuroraKp; // Track the Kp value we last notified about
+  String? lastNotifiedWeatherAlertId; // Track the alert ID to avoid duplicates
 }
 
 @collection

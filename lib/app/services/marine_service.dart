@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:nimbus/main.dart';
 
 /// Service for fetching marine weather data from Open-Meteo
 /// Includes wave height, swell, ocean currents, and tides
@@ -13,7 +14,18 @@ class MarineService {
     required double lon,
   }) async {
     try {
-      final url = 'https://marine-api.open-meteo.com/v1/marine';
+      String baseUrl = 'https://marine-api.open-meteo.com';
+
+      // Use Nimbus Meteo if selected
+      if (settings.weatherDataSource == 'nimbusmeteo') {
+        baseUrl = 'https://nimbusmeteo.linuxgoose.com';
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customMarineUrl != null &&
+          settings.customMarineUrl!.isNotEmpty) {
+        baseUrl = settings.customMarineUrl!;
+      }
+
+      final url = '$baseUrl/v1/marine';
 
       debugPrint('🌊 Calling Marine API: $url');
 

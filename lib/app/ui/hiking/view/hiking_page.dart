@@ -63,7 +63,7 @@ class _HikingPageState extends State<HikingPage> {
 
   String _formatDistance(double distanceMeters) {
     if (settings.measurements == 'imperial') {
-      return '${(distanceMeters * 3.28084).toStringAsFixed(0)} ft';
+      return '${(distanceMeters * 3.28084).toStringAsFixed(0)} ${'ft'.tr}';
     }
     return '${distanceMeters.toStringAsFixed(0)} m';
   }
@@ -72,7 +72,7 @@ class _HikingPageState extends State<HikingPage> {
     if (settings.measurements == 'imperial') {
       return '${(snowDepthCm * 0.393701).toStringAsFixed(1)} ${'inch'.tr}';
     }
-    return '${snowDepthCm.toStringAsFixed(0)} cm';
+    return '${snowDepthCm.toStringAsFixed(0)} ${'cm'.tr}';
   }
 
   Future<void> _loadHikingData() async {
@@ -96,7 +96,7 @@ class _HikingPageState extends State<HikingPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load hiking data';
+          _error = 'failed_to_load_data'.tr;
           _isLoading = false;
         });
       }
@@ -110,7 +110,7 @@ class _HikingPageState extends State<HikingPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Hiking Conditions'),
+            Text('hiking_conditions'.tr),
             Text(
               widget.locationName,
               style: context.textTheme.bodySmall?.copyWith(
@@ -137,7 +137,7 @@ class _HikingPageState extends State<HikingPage> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadHikingData,
-                    child: const Text('Retry'),
+                    child: Text('retry'.tr),
                   ),
                 ],
               ),
@@ -219,7 +219,7 @@ class _HikingPageState extends State<HikingPage> {
                 const Icon(LucideIcons.mountain, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Current Trail Conditions',
+                  'current_trail_conditions'.tr,
                   style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -240,33 +240,33 @@ class _HikingPageState extends State<HikingPage> {
               runSpacing: 12,
               children: [
                 _buildConditionChip(
-                  'Temperature',
-                  temp != null ? _formatTemperature(temp) : 'N/A',
+                  'temperature'.tr,
+                  temp != null ? _formatTemperature(temp) : 'na'.tr,
                   LucideIcons.thermometer,
                 ),
                 _buildConditionChip(
-                  'Feels Like',
-                  feelsLike != null ? _formatTemperature(feelsLike) : 'N/A',
+                  'feels_like'.tr,
+                  feelsLike != null ? _formatTemperature(feelsLike) : 'na'.tr,
                   LucideIcons.thermometer,
                 ),
                 _buildConditionChip(
-                  'UV Index',
-                  uvIndex != null ? uvIndex.toStringAsFixed(1) : 'N/A',
+                  'uv_index'.tr,
+                  uvIndex != null ? uvIndex.toStringAsFixed(1) : 'na'.tr,
                   LucideIcons.sun,
                 ),
                 _buildConditionChip(
-                  'Visibility',
-                  visibility != null ? _formatVisibility(visibility) : 'N/A',
+                  'visibility'.tr,
+                  visibility != null ? _formatVisibility(visibility) : 'na'.tr,
                   LucideIcons.eye,
                 ),
                 _buildConditionChip(
-                  'Wind',
-                  windSpeed != null ? _formatWindSpeed(windSpeed) : 'N/A',
+                  'wind'.tr,
+                  windSpeed != null ? _formatWindSpeed(windSpeed) : 'na'.tr,
                   LucideIcons.wind,
                 ),
                 if (snowDepth != null && snowDepth > 0)
                   _buildConditionChip(
-                    'Snow Depth',
+                    'snow_depth'.tr,
                     _formatSnowDepth(snowDepth),
                     LucideIcons.snowflake,
                   ),
@@ -345,10 +345,10 @@ class _HikingPageState extends State<HikingPage> {
     }
 
     if (dataPoints.isEmpty) {
-      return const Card(
+      return Card(
         child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text('No UV data available'),
+          padding: const EdgeInsets.all(16),
+          child: Text('no_uv_data'.tr),
         ),
       );
     }
@@ -1046,7 +1046,9 @@ class _HikingPageState extends State<HikingPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'This page provides comprehensive hiking weather data including UV index, visibility, wind conditions, and snow depth. Data is updated hourly from Open-Meteo. Plan your outdoor adventures safely with detailed forecasts and safety recommendations.',
+              settings.weatherDataSource == 'nimbusmeteo'
+                  ? 'This page provides comprehensive hiking weather data including UV index, visibility, wind conditions, and snow depth. Data is updated hourly from Nimbus Meteo. Plan your outdoor adventures safely with detailed forecasts and safety recommendations.'
+                  : 'This page provides comprehensive hiking weather data including UV index, visibility, wind conditions, and snow depth. Data is updated hourly from Open-Meteo. Plan your outdoor adventures safely with detailed forecasts and safety recommendations.',
               style: context.textTheme.bodyMedium,
             ),
           ],

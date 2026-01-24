@@ -92,12 +92,88 @@ const List<Map<String, dynamic>> appLanguages = [
 ];
 
 @pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse response) {
+  debugPrint('Background notification tapped: ${response.payload}');
+}
+
+@pragma('vm:entry-point')
 void callbackDispatcher() => Workmanager().executeTask((task, inputData) async {
-  if (task == 'notificationCheck') {
-    await NotificationWorker.checkAndNotify();
-    return Future.value(true);
+  debugPrint('⚙️ =================================');
+  debugPrint('⚙️ Workmanager task started: $task');
+  debugPrint('⚙️ Time: ${DateTime.now()}');
+  debugPrint('⚙️ =================================');
+
+  // CRITICAL: Initialize required services for background task
+  try {
+    // Initialize timezone first
+    tz.initializeTimeZones();
+    final dynamic timeZoneInfo = await FlutterTimezone.getLocalTimezone();
+    final String timeZoneName = timeZoneInfo is String
+        ? timeZoneInfo
+        : timeZoneInfo.toString();
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    debugPrint('⚙️ Timezone initialized: $timeZoneName');
+
+    // Initialize Isar database
+    final dir = await getApplicationSupportDirectory();
+    isar = await Isar.open([
+      SettingsSchema,
+      MainWeatherCacheSchema,
+      LocationCacheSchema,
+      WeatherCardSchema,
+      TideLocationSchema,
+      ElevationLocationSchema,
+      TideCacheSchema,
+      AqiCacheSchema,
+      AlertHistorySchema,
+      RainForecastCacheSchema,
+      ElevationCacheSchema,
+      AuroraCacheSchema,
+      TideStationSchema,
+      SavedTideStationSchema,
+    ], directory: dir.path);
+    debugPrint('⚙️ Isar initialized for background task');
+
+    // Initialize settings global variable
+    settings = isar.settings.where().findFirstSync() ?? Settings();
+    debugPrint('⚙️ Settings initialized for background task');
+
+    // Initialize notifications plugin for background task
+    await flutterLocalNotificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+    );
+    debugPrint('⚙️ Notifications initialized for background task');
+  } catch (e, stackTrace) {
+    debugPrint('⚠️ Background task initialization error: $e');
+    debugPrint('⚠️ Stack trace: $stackTrace');
+    return Future.value(false);
   }
-  return WeatherController().updateWidget();
+
+  if (task == 'notificationCheck') {
+    try {
+      debugPrint('⚙️ Running notificationCheck task');
+      await NotificationWorker.checkAndNotify();
+      debugPrint('✅ notificationCheck task completed successfully');
+      return Future.value(true);
+    } catch (e, stackTrace) {
+      debugPrint('⚠️ notificationCheck task error: $e');
+      debugPrint('⚠️ Stack trace: $stackTrace');
+      return Future.value(false);
+    }
+  }
+
+  debugPrint('⚙️ Running widget update task');
+  try {
+    final result = await WeatherController().updateWidget();
+    debugPrint('⚙️ Widget update task completed: $result');
+    return result;
+  } catch (e, stackTrace) {
+    debugPrint('⚠️ Widget update error: $e');
+    debugPrint('⚠️ Stack trace: $stackTrace');
+    return Future.value(false);
+  }
 });
 
 void main() async {
@@ -115,6 +191,15 @@ Future<void> initializeApp() async {
     await setOptimalDisplayMode();
     Workmanager().initialize(callbackDispatcher);
     HomeWidget.setAppGroupId(appGroupId);
+
+    // Initialize notification checks if any notification type is enabled
+    if (settings.auroraNotifications ||
+        settings.rainNotifications ||
+        settings.weatherAlertNotifications ||
+        settings.floodNotifications ||
+        settings.notifications) {
+      WeatherController.scheduleNotificationChecks();
+    }
   }
   DeviceFeature().init();
 }
@@ -132,6 +217,8 @@ Future<void> initializeTimeZone() async {
 }
 
 Future<void> initializeIsar() async {
+  const int currentSchemaVersion = 1;
+
   try {
     isar = await Isar.open([
       SettingsSchema,
@@ -149,8 +236,25 @@ Future<void> initializeIsar() async {
       TideStationSchema,
       SavedTideStationSchema,
     ], directory: (await getApplicationSupportDirectory()).path);
+
+    // Check schema version and migrate if needed
+    final existingSettings = isar.settings.where().findFirstSync();
+    if (existingSettings != null &&
+        existingSettings.schemaVersion < currentSchemaVersion) {
+      debugPrint(
+        '🔄 Schema migration needed: v${existingSettings.schemaVersion} → v$currentSchemaVersion',
+      );
+      await _migrateSchema(
+        existingSettings.schemaVersion,
+        currentSchemaVersion,
+      );
+    }
   } catch (e) {
-    // If schema is invalid (e.g., after adding new collections), delete and recreate
+    debugPrint('⚠️ Isar initialization error: $e');
+
+    // Export critical user data before wiping database
+    final backupData = await _exportCriticalData();
+
     final dir = await getApplicationSupportDirectory();
     final isarFile = File('${dir.path}/default.isar');
     final isarLockFile = File('${dir.path}/default.isar.lock');
@@ -158,7 +262,7 @@ Future<void> initializeIsar() async {
     if (await isarFile.exists()) await isarFile.delete();
     if (await isarLockFile.exists()) await isarLockFile.delete();
 
-    // Retry opening
+    // Retry opening with fresh database
     isar = await Isar.open([
       SettingsSchema,
       MainWeatherCacheSchema,
@@ -175,6 +279,10 @@ Future<void> initializeIsar() async {
       TideStationSchema,
       SavedTideStationSchema,
     ], directory: dir.path);
+
+    // Restore critical user data
+    await _importCriticalData(backupData);
+    debugPrint('✅ Database recreated and user data restored');
   }
 
   settings = isar.settings.where().findFirstSync() ?? Settings();
@@ -202,15 +310,202 @@ Future<void> initializeIsar() async {
     settings.weatherDataSource = 'openmeteo';
     isar.writeTxnSync(() => isar.settings.putSync(settings));
   }
+
+  // Initialize weather alert notification settings if not set
+  if (settings.weatherAlertMinSeverity.isEmpty) {
+    settings.weatherAlertMinSeverity = 'moderate';
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+  }
+
+  // Update schema version to current
+  if (settings.schemaVersion < currentSchemaVersion) {
+    settings.schemaVersion = currentSchemaVersion;
+    isar.writeTxnSync(() => isar.settings.putSync(settings));
+    debugPrint('✅ Schema version updated to v$currentSchemaVersion');
+  }
+}
+
+Future<Map<String, dynamic>> _exportCriticalData() async {
+  try {
+    if (isar.isOpen) {
+      final savedStations = isar.savedTideStations.where().findAllSync();
+      final weatherCards = isar.weatherCards.where().findAllSync();
+
+      return {
+        'savedTideStations': savedStations
+            .map(
+              (s) => {
+                'stationId': s.stationId,
+                'name': s.name,
+                'lat': s.lat,
+                'lon': s.lon,
+              },
+            )
+            .toList(),
+        'weatherCards': weatherCards
+            .map(
+              (w) => {
+                'lat': w.lat,
+                'lon': w.lon,
+                'city': w.city,
+                'district': w.district,
+              },
+            )
+            .toList(),
+      };
+    }
+  } catch (e) {
+    debugPrint('⚠️ Error exporting data: $e');
+  }
+  return {};
+}
+
+Future<void> _importCriticalData(Map<String, dynamic> backupData) async {
+  if (backupData.isEmpty) return;
+
+  try {
+    isar.writeTxnSync(() {
+      // Restore saved tide stations
+      final stations = backupData['savedTideStations'] as List?;
+      if (stations != null) {
+        for (var stationData in stations) {
+          final station = SavedTideStation(
+            stationId: (stationData['stationId'] as String?) ?? '',
+            name: (stationData['name'] as String?) ?? '',
+            lat: (stationData['lat'] as double?) ?? 0.0,
+            lon: (stationData['lon'] as double?) ?? 0.0,
+          );
+          isar.savedTideStations.putSync(station);
+        }
+        debugPrint('✅ Restored ${stations.length} saved tide stations');
+      }
+
+      // Restore weather cards
+      final cards = backupData['weatherCards'] as List?;
+      if (cards != null) {
+        for (var cardData in cards) {
+          final card = WeatherCard(
+            lat: cardData['lat'] as double?,
+            lon: cardData['lon'] as double?,
+            city: cardData['city'] as String?,
+            district: cardData['district'] as String?,
+          );
+          isar.weatherCards.putSync(card);
+        }
+        debugPrint('✅ Restored ${cards.length} weather cards');
+      }
+
+      // Note: Settings will be initialized with defaults,
+      // but critical user preferences are preserved in the Settings() defaults
+    });
+  } catch (e) {
+    debugPrint('⚠️ Error importing data: $e');
+  }
+}
+
+Future<void> _migrateSchema(int fromVersion, int toVersion) async {
+  debugPrint('🔄 Migrating schema from v$fromVersion to v$toVersion');
+
+  // Future migrations will go here
+  // Example:
+  // if (fromVersion < 2) {
+  //   // Migrate from v1 to v2
+  //   // Add new fields, transform data, etc.
+  // }
+
+  debugPrint('✅ Schema migration completed');
 }
 
 Future<void> initializeNotifications() async {
   const initializationSettings = InitializationSettings(
     android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    iOS: DarwinInitializationSettings(),
+    iOS: DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    ),
     linux: LinuxInitializationSettings(defaultActionName: 'Rain'),
   );
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      debugPrint('Notification clicked: ${response.payload}');
+    },
+    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+  );
+
+  // Create notification channels for Android
+  if (Platform.isAndroid) {
+    final androidImplementation = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    if (androidImplementation != null) {
+      // Forecast/Rain channel - used by daily forecast notifications
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'Rain',
+          'DARK NIGHT',
+          description: 'Weather forecast notifications',
+          importance: Importance.max,
+          playSound: false,
+          enableVibration: false,
+        ),
+      );
+
+      // Aurora channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'aurora_alerts',
+          'Aurora Alerts',
+          description: 'Notifications for aurora activity',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+
+      // Rain alerts channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'rain_alerts',
+          'Rain Alerts',
+          description: 'Notifications for upcoming rain',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+
+      // Weather alerts channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'weather_alerts',
+          'Weather Alerts',
+          description: 'Notifications for severe weather alerts',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+
+      // Flood alerts channel
+      await androidImplementation.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'flood_alerts',
+          'Flood Alerts',
+          description: 'Notifications for flood warnings',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+
+      debugPrint('✅ All notification channels created');
+    }
+  }
 }
 
 Future<void> setOptimalDisplayMode() async {

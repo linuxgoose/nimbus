@@ -16,17 +16,20 @@ class Result {
     required this.name,
     required this.latitude,
     required this.longitude,
+    this.country,
   });
 
   String admin1;
   String name;
   double latitude;
   double longitude;
+  String? country;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-    admin1: json['admin1'] ?? '',
-    name: json['name'],
-    latitude: json['latitude'],
-    longitude: json['longitude'],
+    admin1: json['admin2'] ?? json['admin1'] ?? '',
+    name: json['name'] ?? '',
+    latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+    longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+    country: json['country'],
   );
 }

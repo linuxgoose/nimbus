@@ -5,9 +5,13 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
-        android:label="Nimbus"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:extractNativeLibs="true">
@@ -90,6 +94,30 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/small_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".JournalWidget"
+            android:label="Journal Widget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/journal_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".HourlyForecastWidget"
+            android:label="Hourly Forecast Widget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/hourly_forecast_widget_info" />
         </receiver>
 
         <receiver android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"

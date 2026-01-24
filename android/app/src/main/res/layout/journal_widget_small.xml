@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/journal_widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <!-- Left Side: Date, Location, Description, Summary -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:id="@+id/journal_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thursday, January 23"
+            android:textSize="10sp"
+            android:textColor="#6B7280"
+            android:letterSpacing="0.01"
+            android:paddingBottom="2dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/journal_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="14sp"
+            android:textColor="#2D3436"
+            android:letterSpacing="0.005"
+            android:paddingBottom="2dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/journal_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Partly cloudy"
+            android:textSize="11sp"
+            android:textColor="#6B7280"
+            android:paddingBottom="4dp"
+            android:fontFamily="sans-serif" />
+
+        <TextView
+            android:id="@+id/journal_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pleasant conditions with partly cloudy skies."
+            android:textSize="10sp"
+            android:textColor="#4B5563"
+            android:lineSpacingExtra="0dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif" />
+    </LinearLayout>
+
+    <!-- Right Side: Icon, Temp, and Stats -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Icon and Temp Row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="4dp">
+
+            <ImageView
+                android:id="@+id/journal_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/journal_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="72°"
+                android:textSize="28sp"
+                android:textColor="#2D3436"
+                android:letterSpacing="-0.02"
+                android:fontFamily="sans-serif-thin" />
+        </LinearLayout>
+
+        <!-- Stats Grid (Compact 3 columns) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- High/Low -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hi/Lo"
+                    android:textSize="8sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/journal_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="75°"
+                        android:textSize="10sp"
+                        android:textColor="#2D3436"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="/"
+                        android:textSize="10sp"
+                        android:textColor="#94A3B8"
+                        android:fontFamily="sans-serif" />
+
+                    <TextView
+                        android:id="@+id/journal_low"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="58°"
+                        android:textSize="10sp"
+                        android:textColor="#94A3B8"
+                        android:fontFamily="sans-serif" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Feels Like -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feels"
+                    android:textSize="8sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+
+                <TextView
+                    android:id="@+id/journal_feels_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="70°"
+                    android:textSize="10sp"
+                    android:textColor="#2D3436"
+                    android:fontFamily="sans-serif-medium" />
+            </LinearLayout>
+
+            <!-- Rain -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rain"
+                    android:textSize="8sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+
+                <TextView
+                    android:id="@+id/journal_precip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="20%"
+                    android:textSize="10sp"
+                    android:textColor="#2D3436"
+                    android:fontFamily="sans-serif-medium" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Secondary Stats Row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="4dp">
+
+            <!-- Wind -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wind"
+                    android:textSize="8sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+
+                <TextView
+                    android:id="@+id/journal_wind"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8 mph"
+                    android:textSize="10sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+
+            <!-- Humidity -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Humidity"
+                    android:textSize="8sp"
+                    android:textColor="#94A3B8"
+                    android:fontFamily="sans-serif" />
+
+                <TextView
+                    android:id="@+id/journal_humidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="65%"
+                    android:textSize="10sp"
+                    android:textColor="#64748B"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Hidden compatibility fields -->
+    <TextView android:id="@+id/journal_time" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+    <TextView android:id="@+id/journal_feels" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+</LinearLayout>

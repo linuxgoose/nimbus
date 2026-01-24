@@ -12,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:nimbus/app/controller/controller.dart';
 import 'package:nimbus/app/data/db.dart';
+import 'package:nimbus/app/services/notification_worker.dart';
 import 'package:nimbus/app/ui/alert_history/view/alert_history_page.dart';
 import 'package:nimbus/app/ui/settings/widgets/setting_card.dart';
 import 'package:nimbus/main.dart';
@@ -131,30 +132,73 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildSectionHeader(context, 'General', LucideIcons.settings),
         _buildAppearanceCard(context),
         _buildWeatherProviderCard(context),
         _buildFunctionsCard(context),
+        _buildLanguageCard(context),
+
+        const Gap(20),
+        _buildSectionHeader(context, 'Data Sources', LucideIcons.database),
         _buildTidesCard(context),
         _buildElevationCard(context),
         _buildAuroraCard(context),
+        _buildEarthEventsCard(context),
         _buildFloodMonitoringCard(context),
         _buildAgricultureCard(context),
         _buildMarineCard(context),
         _buildHikingCard(context),
         _buildWeatherAlertsCard(context),
         _buildAqiCard(context),
+
+        const Gap(20),
+        _buildSectionHeader(context, 'System', LucideIcons.smartphone),
         _buildDataCard(context),
         _buildWidgetCard(context),
         _buildMapCard(context),
-        _buildLanguageCard(context),
+
+        const Gap(20),
+        _buildSectionHeader(context, 'About', LucideIcons.info),
         _buildLicenseCard(context),
         _buildVersionCard(context),
         _buildGitHubCard(context),
         _buildSupportCard(context),
+
+        const Gap(20),
+        _buildSectionHeader(context, 'Attributions', LucideIcons.heart),
         _buildMetNorwayText(context),
         _buildOpenMeteoText(context),
+        if (settings.weatherDataSource == 'nimbusmeteo')
+          _buildNimbusMeteoText(context),
+        if (settings.weatherDataSource == 'weatherapi')
+          _buildWeatherApiText(context),
+        if (settings.weatherDataSource == 'pirateweather')
+          _buildPirateWeatherText(context),
+        const Gap(20),
+      ],
+    ),
+  );
+
+  Widget _buildSectionHeader(
+    BuildContext context,
+    String title,
+    IconData icon,
+  ) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
+    child: Row(
+      children: [
+        Icon(icon, size: 20, color: context.theme.colorScheme.primary),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: context.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: context.theme.colorScheme.primary,
+            letterSpacing: 0.5,
+          ),
+        ),
       ],
     ),
   );
@@ -186,8 +230,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   _buildWeatherProviderTitle(context),
                   _buildWeatherDataSourceSettingCard(context, setState),
+                  if (settings.weatherDataSource == 'weatherapi')
+                    _buildWeatherApiKeySettingCard(context, setState),
+                  if (settings.weatherDataSource == 'weatherapi')
+                    _buildWeatherApiInfoCard(context),
+                  if (settings.weatherDataSource == 'pirateweather')
+                    _buildPirateWeatherApiKeySettingCard(context, setState),
+                  if (settings.weatherDataSource == 'pirateweather')
+                    _buildPirateWeatherInfoCard(context),
                   if (settings.weatherDataSource == 'hybrid')
                     _buildPreferMetNoSettingCard(context, setState),
+                  _buildGeocodingSourceSettingCard(context, setState),
                   _buildHideRainForecastSettingCard(context, setState),
                   _buildRainNotificationsSettingCard(context, setState),
                   _buildRainThresholdSettingCard(context, setState),
@@ -377,6 +430,40 @@ class _SettingsPageState extends State<SettingsPage> {
     onPressed: () => _showAuroraBottomSheet(context),
   );
 
+  Widget _buildEarthEventsCard(BuildContext context) => SettingCard(
+    icon: const Icon(LucideIcons.globe),
+    text: 'Earth Events',
+    onPressed: () => _showEarthEventsBottomSheet(context),
+  );
+
+  void _showEarthEventsBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (BuildContext context, setState) => SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildEarthEventsTitle(context),
+                  _buildHideEarthEventsSettingCard(context, setState),
+                  const Gap(10),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildEarthEventsTitle(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(20),
+    child: Text('Earth Events', style: context.textTheme.headlineSmall),
+  );
+
   void _showElevationBottomSheet(BuildContext context) => showModalBottomSheet(
     context: context,
     builder: (BuildContext context) => Padding(
@@ -390,7 +477,9 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildElevationTitle(context),
               _buildHideElevationSettingCard(context, setState),
               _buildUseDummyElevationSettingCard(context, setState),
-              _buildElevationApiKeySettingCard(context, setState),
+              _buildElevationSourceSettingCard(context, setState),
+              if (settings.elevationSource == 'open_elevation')
+                _buildElevationApiKeySettingCard(context, setState),
               _buildCheckElevationCacheSettingCard(context, setState),
               const Gap(10),
               _buildClearElevationCacheSettingCard(context, setState),
@@ -595,37 +684,117 @@ class _SettingsPageState extends State<SettingsPage> {
         },
       );
 
-  void _showWeatherAlertsBottomSheet(BuildContext context) =>
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) => Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).padding.bottom,
-          ),
-          child: StatefulBuilder(
-            builder: (BuildContext context, setState) => SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildWeatherAlertsTitle(context),
-                  _buildDummyAlertsSettingCard(context, setState),
-                  _buildAlertSeveritySettingCard(context, setState),
-                  _buildShowAlertsOnMainPageSettingCard(context, setState),
-                  _buildShowAlertsOnMapSettingCard(context, setState),
-                  _buildViewAlertHistoryCard(context),
-                  const Gap(10),
-                ],
-              ),
-            ),
+  void _showWeatherAlertsBottomSheet(
+    BuildContext context,
+  ) => showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      child: StatefulBuilder(
+        builder: (BuildContext context, setState) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildWeatherAlertsTitle(context),
+              _buildWeatherAlertNotificationsSettingCard(context, setState),
+              _buildWeatherAlertSeverityThresholdSettingCard(context, setState),
+              const Divider(),
+              _buildDummyAlertsSettingCard(context, setState),
+              _buildAlertSeveritySettingCard(context, setState),
+              _buildShowAlertsOnMainPageSettingCard(context, setState),
+              _buildShowAlertsOnMapSettingCard(context, setState),
+              _buildViewAlertHistoryCard(context),
+              const Gap(10),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _buildWeatherAlertsTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.all(20),
     child: Text('Weather Alerts', style: context.textTheme.headlineSmall),
   );
+
+  Widget _buildWeatherAlertNotificationsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.bell),
+    text: 'Weather Alert Notifications',
+    switcher: true,
+    value: settings.weatherAlertNotifications,
+    onChange: (value) {
+      settings.weatherAlertNotifications = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      if (value ||
+          settings.rainNotifications ||
+          settings.auroraNotifications ||
+          settings.floodNotifications) {
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        WeatherController.cancelNotificationChecks();
+      }
+      setState(() {});
+    },
+  );
+
+  Widget _buildWeatherAlertSeverityThresholdSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.gauge),
+    text: 'Notification Severity Threshold',
+    dropdown: true,
+    dropdownName: _getNotificationSeverityDisplayName(
+      settings.weatherAlertMinSeverity,
+    ),
+    dropdownList: <String>[
+      'All Alerts',
+      'Moderate+',
+      'Severe+',
+      'Extreme Only',
+    ],
+    dropdownChange: (String? newValue) {
+      if (newValue == null) return;
+      String severityValue;
+      switch (newValue) {
+        case 'Moderate+':
+          severityValue = 'moderate';
+          break;
+        case 'Severe+':
+          severityValue = 'severe';
+          break;
+        case 'Extreme Only':
+          severityValue = 'extreme';
+          break;
+        default:
+          severityValue = 'all';
+      }
+      isar.writeTxnSync(() {
+        settings.weatherAlertMinSeverity = severityValue;
+        isar.settings.putSync(settings);
+      });
+      setState(() {});
+    },
+  );
+
+  String _getNotificationSeverityDisplayName(String severity) {
+    switch (severity) {
+      case 'moderate':
+        return 'Moderate+';
+      case 'severe':
+        return 'Severe+';
+      case 'extreme':
+        return 'Extreme Only';
+      default:
+        return 'All Alerts';
+    }
+  }
 
   void _showFunctionsBottomSheet(BuildContext context) => showModalBottomSheet(
     context: context,
@@ -640,6 +809,8 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildFunctionsTitle(context),
               _buildLocationSettingCard(context, setState),
               _buildNotificationsSettingCard(context, setState),
+              if (Platform.isAndroid)
+                _buildBatteryOptimizationCard(context, setState),
               _buildTimeRangeSettingCard(context, setState),
               _buildTimeStartSettingCard(context, setState),
               _buildTimeEndSettingCard(context, setState),
@@ -670,12 +841,48 @@ class _SettingsPageState extends State<SettingsPage> {
     value: settings.location,
     onChange: (value) async {
       if (value) {
+        // Check if location service is enabled
         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (!serviceEnabled) {
           if (!context.mounted) return;
           await _showLocationDialog(context);
           return;
         }
+
+        // Request location permissions
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+          if (permission == LocationPermission.denied) {
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location permissions are denied'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+            return;
+          }
+        }
+
+        if (permission == LocationPermission.deniedForever) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Location permissions are permanently denied. Please enable in settings.',
+              ),
+              duration: const Duration(seconds: 4),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () => Geolocator.openAppSettings(),
+              ),
+            ),
+          );
+          return;
+        }
+
+        // Permission granted, get location
         weatherController.getCurrentLocation();
       }
       isar.writeTxnSync(() {
@@ -718,6 +925,208 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       );
 
+  Widget _buildBatteryOptimizationCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => Card(
+    elevation: 4,
+    margin: const EdgeInsets.only(bottom: 15),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                LucideIcons.batteryWarning,
+                color: context.theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Battery Optimization',
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Disable battery optimization to ensure reliable notifications',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<bool>(
+            future: WeatherController.isBatteryOptimizationDisabled(),
+            builder: (context, snapshot) {
+              final isDisabled = snapshot.data ?? false;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isDisabled
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isDisabled ? Colors.green : Colors.orange,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isDisabled ? LucideIcons.check : LucideIcons.info,
+                          color: isDisabled ? Colors.green : Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isDisabled
+                                ? 'Battery optimization disabled ✓'
+                                : 'Battery optimization is enabled (may affect notifications)',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: isDisabled ? Colors.green : Colors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!isDisabled) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await WeatherController.requestBatteryOptimizationExemption();
+                          setState(() {});
+                        },
+                        icon: const Icon(LucideIcons.settings, size: 18),
+                        label: const Text('Open Battery Settings'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          // Exact Alarms Permission Card
+          Row(
+            children: [
+              Icon(
+                LucideIcons.alarmClock,
+                color: context.theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Exact Alarms',
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Required for scheduled notifications to work when app is closed',
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<bool>(
+            future: WeatherController.canScheduleExactAlarms(),
+            builder: (context, snapshot) {
+              final canSchedule = snapshot.data ?? false;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: canSchedule
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.orange.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: canSchedule ? Colors.green : Colors.orange,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          canSchedule ? LucideIcons.check : LucideIcons.info,
+                          color: canSchedule ? Colors.green : Colors.orange,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            canSchedule
+                                ? 'Exact alarms permission granted ✓'
+                                : 'Exact alarms permission needed for background notifications',
+                            style: context.textTheme.bodySmall?.copyWith(
+                              color: canSchedule ? Colors.green : Colors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!canSchedule) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          await WeatherController.openExactAlarmSettings();
+                          setState(() {});
+                        },
+                        icon: const Icon(LucideIcons.settings, size: 18),
+                        label: const Text('Open Alarms & Reminders Settings'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+
   Widget _buildNotificationsSettingCard(
     BuildContext context,
     StateSetter setState,
@@ -728,34 +1137,89 @@ class _SettingsPageState extends State<SettingsPage> {
     switcher: true,
     value: settings.notifications,
     onChange: (value) async {
-      final resultExact = await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.requestExactAlarmsPermission();
-      final result = Platform.isIOS
-          ? await flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<
-                  IOSFlutterLocalNotificationsPlugin
-                >()
-                ?.requestPermissions()
-          : await flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin
-                >()
-                ?.requestNotificationsPermission();
-      if (result != null && resultExact != null) {
-        isar.writeTxnSync(() {
-          settings.notifications = value;
-          isar.settings.putSync(settings);
-        });
-        if (value) {
-          weatherController.notification(weatherController.mainWeather);
+      if (value) {
+        // Request permissions when enabling notifications
+        bool permissionGranted = false;
+
+        if (Platform.isAndroid) {
+          final resultExact = await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.requestExactAlarmsPermission();
+          final resultNotif = await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >()
+              ?.requestNotificationsPermission();
+
+          debugPrint('📬 Exact alarms permission: $resultExact');
+          debugPrint('📬 Notifications permission: $resultNotif');
+
+          if (resultExact == false) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    '⚠️ Exact alarms permission denied. Notifications may not work reliably. Please enable in system settings.',
+                  ),
+                  duration: Duration(seconds: 5),
+                ),
+              );
+            }
+          }
+
+          permissionGranted = (resultExact ?? false) && (resultNotif ?? false);
+        } else if (Platform.isIOS) {
+          final result = await flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin
+              >()
+              ?.requestPermissions(alert: true, badge: true, sound: true);
+          permissionGranted = result ?? false;
         } else {
-          flutterLocalNotificationsPlugin.cancelAll();
+          permissionGranted = true; // Other platforms
         }
-        setState(() {});
+
+        if (!permissionGranted) {
+          // Show error message if permission denied
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Notification permissions are required. Please enable them in system settings.',
+                ),
+                duration: Duration(seconds: 4),
+              ),
+            );
+          }
+          return; // Don't enable if permission denied
+        }
       }
+
+      isar.writeTxnSync(() {
+        settings.notifications = value;
+        isar.settings.putSync(settings);
+      });
+
+      if (value) {
+        // Schedule forecast notifications directly using current weather data
+        debugPrint('📬 Scheduling forecast notifications directly');
+        weatherController.notification(weatherController.mainWeather);
+
+        // Start background worker for aurora/rain/flood alerts
+        WeatherController.scheduleNotificationChecks();
+      } else {
+        flutterLocalNotificationsPlugin.cancelAll();
+        // Cancel background worker if no notification types are enabled
+        if (!settings.auroraNotifications &&
+            !settings.rainNotifications &&
+            !settings.weatherAlertNotifications &&
+            !settings.floodNotifications) {
+          WeatherController.cancelNotificationChecks();
+        }
+      }
+      setState(() {});
     },
   );
 
@@ -1058,6 +1522,91 @@ class _SettingsPageState extends State<SettingsPage> {
     },
   );
 
+  Widget _buildElevationSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.database),
+    text: 'Elevation Data Source',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.elevationSource == 'open_meteo'
+          ? 'Open-Meteo'
+          : settings.elevationSource == 'nimbusmeteo'
+          ? 'Nimbus Meteo'
+          : 'Open-Elevation',
+    ),
+    onPressed: () => _showElevationSourceDialog(context, setState),
+  );
+
+  void _showElevationSourceDialog(BuildContext context, StateSetter setState) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Elevation Data Source'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('Open-Meteo'),
+              subtitle: const Text(
+                'Free, no API key required. Fast and reliable.',
+              ),
+              value: 'open_meteo',
+              groupValue: settings.elevationSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.elevationSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Nimbus Meteo'),
+              subtitle: const Text(
+                'Free, no API key required. Fast and reliable.',
+              ),
+              value: 'nimbusmeteo',
+              groupValue: settings.elevationSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.elevationSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Open-Elevation'),
+              subtitle: const Text('Free public API or self-hosted option.'),
+              value: 'open_elevation',
+              groupValue: settings.elevationSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.elevationSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildAuroraTitle(BuildContext context) => Padding(
     padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
     child: Text(
@@ -1084,6 +1633,22 @@ class _SettingsPageState extends State<SettingsPage> {
     },
   );
 
+  Widget _buildHideEarthEventsSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.eyeOff),
+    text: 'Hide Earth Events',
+    switcher: true,
+    value: settings.hideEarthEvents,
+    onChange: (value) {
+      settings.hideEarthEvents = value;
+      isar.writeTxnSync(() => isar.settings.putSync(settings));
+      setState(() {});
+    },
+  );
+
   Widget _buildAuroraNotificationsSettingCard(
     BuildContext context,
     StateSetter setState,
@@ -1093,11 +1658,30 @@ class _SettingsPageState extends State<SettingsPage> {
     text: 'Aurora Notifications',
     switcher: true,
     value: settings.auroraNotifications,
-    onChange: (value) {
+    onChange: (value) async {
       settings.auroraNotifications = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
-      if (value || settings.rainNotifications || settings.floodNotifications) {
+      if (value ||
+          settings.rainNotifications ||
+          settings.floodNotifications ||
+          settings.weatherAlertNotifications) {
         WeatherController.scheduleNotificationChecks();
+
+        // Show immediate test by triggering aurora check
+        if (value) {
+          debugPrint('🧪 Testing aurora notification immediately');
+          await NotificationWorker.checkAndNotify();
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Aurora check triggered. Check notification if Kp index exceeds threshold.',
+                ),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
       } else {
         WeatherController.cancelNotificationChecks();
       }
@@ -1158,7 +1742,10 @@ class _SettingsPageState extends State<SettingsPage> {
     onChange: (value) {
       settings.floodNotifications = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
-      if (value || settings.rainNotifications || settings.auroraNotifications) {
+      if (value ||
+          settings.rainNotifications ||
+          settings.auroraNotifications ||
+          settings.weatherAlertNotifications) {
         WeatherController.scheduleNotificationChecks();
       } else {
         WeatherController.cancelNotificationChecks();
@@ -1872,7 +2459,14 @@ class _SettingsPageState extends State<SettingsPage> {
     text: 'Weather Data Source',
     dropdown: true,
     dropdownName: _getDataSourceDisplayName(settings.weatherDataSource),
-    dropdownList: <String>['Open-Meteo', 'MET Norway', 'Hybrid (Best of Both)'],
+    dropdownList: <String>[
+      'Open-Meteo',
+      'MET Norway',
+      'Hybrid (Open-Meteo + MET Norway)',
+      'WeatherAPI',
+      'PirateWeather',
+      'Nimbus Meteo',
+    ],
     dropdownChange: (String? newValue) async {
       if (newValue == null) return;
       String sourceValue;
@@ -1880,8 +2474,17 @@ class _SettingsPageState extends State<SettingsPage> {
         case 'MET Norway':
           sourceValue = 'metno';
           break;
-        case 'Hybrid (Best of Both)':
+        case 'Hybrid (Open-Meteo + MET Norway)':
           sourceValue = 'hybrid';
+          break;
+        case 'WeatherAPI':
+          sourceValue = 'weatherapi';
+          break;
+        case 'PirateWeather':
+          sourceValue = 'pirateweather';
+          break;
+        case 'Nimbus Meteo':
+          sourceValue = 'nimbusmeteo';
           break;
         default:
           sourceValue = 'openmeteo';
@@ -1895,7 +2498,9 @@ class _SettingsPageState extends State<SettingsPage> {
       await weatherController.deleteAll(false);
       await weatherController.setLocation();
       await weatherController.updateCacheCard(true);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     },
   );
 
@@ -1904,10 +2509,329 @@ class _SettingsPageState extends State<SettingsPage> {
       case 'metno':
         return 'MET Norway';
       case 'hybrid':
-        return 'Hybrid (Best of Both)';
+        return 'Hybrid (Open-Meteo + MET Norway)';
+      case 'weatherapi':
+        return 'WeatherAPI';
+      case 'pirateweather':
+        return 'PirateWeather';
+      case 'nimbusmeteo':
+        return 'Nimbus Meteo';
       default:
         return 'Open-Meteo';
     }
+  }
+
+  Widget _buildGeocodingSourceSettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) => SettingCard(
+    elevation: 4,
+    icon: const Icon(LucideIcons.search),
+    text: 'City Search Provider',
+    info: true,
+    infoSettings: true,
+    infoWidget: _TextInfo(
+      info: settings.geocodingSource == 'openmeteo'
+          ? 'Open-Meteo'
+          : settings.geocodingSource == 'nimbusmeteo'
+          ? 'Nimbus Meteo'
+          : 'Custom',
+    ),
+    onPressed: () => _showGeocodingSourceDialog(context, setState),
+  );
+
+  void _showGeocodingSourceDialog(BuildContext context, StateSetter setState) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('City Search Provider'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('Open-Meteo'),
+              subtitle: const Text(
+                'Public geocoding API with worldwide city data.',
+              ),
+              value: 'openmeteo',
+              groupValue: settings.geocodingSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.geocodingSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Nimbus Meteo'),
+              subtitle: const Text(
+                'Public geocoding API with worldwide city data (powered by Nominatim).',
+              ),
+              value: 'nimbusmeteo',
+              groupValue: settings.geocodingSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.geocodingSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('Custom'),
+              subtitle: const Text('Use your custom geocoding URL.'),
+              value: 'custom',
+              groupValue: settings.geocodingSource,
+              onChanged: (value) {
+                if (value != null) {
+                  settings.geocodingSource = value;
+                  isar.writeTxnSync(() => isar.settings.putSync(settings));
+                  setState(() {});
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPirateWeatherApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.key),
+      text: 'PirateWeather API Key',
+      info: true,
+      infoSettings: true,
+      infoWidget: _TextInfo(
+        info: settings.pirateWeatherApiKey?.isNotEmpty == true
+            ? '${settings.pirateWeatherApiKey!.substring(0, 8)}...'
+            : 'Not set',
+      ),
+      onPressed: () => _showPirateWeatherApiKeyDialog(context, setState),
+    );
+  }
+
+  void _showPirateWeatherApiKeyDialog(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    final controller = TextEditingController(
+      text: settings.pirateWeatherApiKey ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('PirateWeather API Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'PirateWeather is a free, open weather API compatible with Dark Sky.',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Text('Get your API key from:', style: context.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://pirateweather.net',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              settings.pirateWeatherApiKey = controller.text.trim();
+              if (settings.pirateWeatherApiKey!.isEmpty) {
+                settings.pirateWeatherApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+
+              // Refresh weather data with new API key
+              await weatherController.deleteAll(false);
+              await weatherController.setLocation();
+              await weatherController.updateCacheCard(true);
+
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPirateWeatherInfoCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      elevation: 0,
+      color: context.theme.colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              LucideIcons.info,
+              size: 20,
+              color: context.theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Note: Some data (alerts, air quality) will be provided by Open-Meteo when not available from PirateWeather.',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeatherApiKeySettingCard(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    return SettingCard(
+      elevation: 4,
+      icon: const Icon(LucideIcons.key),
+      text: 'WeatherAPI Key',
+      info: true,
+      infoSettings: true,
+      infoWidget: _TextInfo(
+        info: settings.weatherApiKey?.isNotEmpty == true
+            ? '${settings.weatherApiKey!.substring(0, 8)}...'
+            : 'Not set',
+      ),
+      onPressed: () => _showWeatherApiKeyDialog(context, setState),
+    );
+  }
+
+  void _showWeatherApiKeyDialog(BuildContext context, StateSetter setState) {
+    final controller = TextEditingController(
+      text: settings.weatherApiKey ?? '',
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('WeatherAPI Key'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'WeatherAPI provides global forecasts. A free key is required.',
+              style: context.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Text('Get your API key from:', style: context.textTheme.bodySmall),
+            const SizedBox(height: 8),
+            SelectableText(
+              'https://www.weatherapi.com',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'API Key',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(LucideIcons.key),
+              ),
+              obscureText: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              settings.weatherApiKey = controller.text.trim();
+              if (settings.weatherApiKey!.isEmpty) {
+                settings.weatherApiKey = null;
+              }
+              isar.writeTxnSync(() => isar.settings.putSync(settings));
+
+              await weatherController.deleteAll(false);
+              await weatherController.setLocation();
+              await weatherController.updateCacheCard(true);
+
+              setState(() {});
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeatherApiInfoCard(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      elevation: 0,
+      color: context.theme.colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              LucideIcons.info,
+              size: 20,
+              color: context.theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Note: Some data (alerts, radiation) will fall back to Open-Meteo if unavailable from WeatherAPI.',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildRoundDegreeSettingCard(
@@ -1957,7 +2881,10 @@ class _SettingsPageState extends State<SettingsPage> {
     onChange: (value) {
       settings.rainNotifications = value;
       isar.writeTxnSync(() => isar.settings.putSync(settings));
-      if (value || settings.auroraNotifications) {
+      if (value ||
+          settings.auroraNotifications ||
+          settings.floodNotifications ||
+          settings.weatherAlertNotifications) {
         WeatherController.scheduleNotificationChecks();
       } else {
         WeatherController.cancelNotificationChecks();
@@ -1987,7 +2914,7 @@ class _SettingsPageState extends State<SettingsPage> {
   ) => SettingCard(
     elevation: 4,
     icon: const Icon(LucideIcons.mapPin),
-    text: 'Prefer MET Norway in Hybrid Mode',
+    text: 'Prefer MET Norway (Hybrid Mode)',
     switcher: true,
     value: settings.preferMetNoInHybrid,
     onChange: (value) {
@@ -2802,6 +3729,42 @@ class _SettingsPageState extends State<SettingsPage> {
         textAlign: TextAlign.center,
       ),
       onTap: () => weatherController.urlLauncher('https://api.met.no/'),
+    ),
+  );
+
+  Widget _buildNimbusMeteoText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: Text(
+      'Data from Nimbus Meteo, powered by Open-Meteo',
+      style: context.textTheme.bodyMedium,
+      overflow: TextOverflow.visible,
+      textAlign: TextAlign.center,
+    ),
+  );
+
+  Widget _buildWeatherApiText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: GestureDetector(
+      child: Text(
+        'Weather data from WeatherAPI.com\nSome data may be supplemented by Open-Meteo',
+        style: context.textTheme.bodyMedium,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => weatherController.urlLauncher('https://www.weatherapi.com/'),
+    ),
+  );
+
+  Widget _buildPirateWeatherText(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(10),
+    child: GestureDetector(
+      child: Text(
+        'Weather data from PirateWeather (pirateweather.net)\nSome data provided by Open-Meteo',
+        style: context.textTheme.bodyMedium,
+        overflow: TextOverflow.visible,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => weatherController.urlLauncher('https://pirateweather.net/'),
     ),
   );
 }

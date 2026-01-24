@@ -58,8 +58,19 @@ class _AqiPageState extends State<AqiPage> {
 
       // Fetch new data if no valid cache
       final dio = Dio();
+      String baseAqiUrl = 'https://air-quality-api.open-meteo.com';
+
+      // Use Nimbus Meteo if selected
+      if (settings.weatherDataSource == 'nimbusmeteo') {
+        baseAqiUrl = 'https://nimbusmeteo.linuxgoose.com';
+      } else if (settings.useCustomOpenMeteoEndpoint &&
+          settings.customAirQualityUrl != null &&
+          settings.customAirQualityUrl!.isNotEmpty) {
+        baseAqiUrl = settings.customAirQualityUrl!;
+      }
+
       final response = await dio.get(
-        'https://air-quality-api.open-meteo.com/v1/air-quality',
+        '$baseAqiUrl/v1/air-quality',
         queryParameters: {
           'latitude': lat,
           'longitude': lon,
@@ -94,7 +105,7 @@ class _AqiPageState extends State<AqiPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint(
       '🔍 AQI Cache lookup for key: $locationKey (lat: $lat -> $roundedLat, lon: $lon -> $roundedLon)',
@@ -138,7 +149,7 @@ class _AqiPageState extends State<AqiPage> {
     // Round to 4 decimal places for consistent key matching
     final roundedLat = (lat * 10000).round() / 10000;
     final roundedLon = (lon * 10000).round() / 10000;
-    final locationKey = '${roundedLat}_${roundedLon}';
+    final locationKey = '${roundedLat}_$roundedLon';
 
     debugPrint(
       '💾 Caching AQI data with key: $locationKey, expires: $expiresAt',
@@ -502,9 +513,6 @@ class _AqiPageState extends State<AqiPage> {
       'Olive': current['olive_pollen'],
     };
 
-    // Check if any pollen data is available
-    final hasData = pollens.values.any((value) => value != null && value > 0);
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -527,20 +535,11 @@ class _AqiPageState extends State<AqiPage> {
               ],
             ),
             const Gap(16),
-            if (!hasData)
-              Text(
-                'No significant pollen activity detected',
-                style: context.textTheme.bodyMedium?.copyWith(
-                  color: context.theme.colorScheme.onSurfaceVariant,
-                ),
-              )
-            else
-              ...pollens.entries.map((entry) {
-                if (entry.value == null || entry.value <= 0) {
-                  return const SizedBox.shrink();
-                }
-                return _buildPollenItem(entry.key, entry.value);
-              }),
+            ...pollens.entries.map((entry) {
+              // Show all pollens with their levels (including None/Low)
+              final value = entry.value ?? 0;
+              return _buildPollenItem(entry.key, value);
+            }),
           ],
         ),
       ),
@@ -606,7 +605,9 @@ class _AqiPageState extends State<AqiPage> {
             ),
             const Gap(12),
             Text(
-              'Data source: Open-Meteo Air Quality API',
+              settings.weatherDataSource == 'nimbusmeteo'
+                  ? 'Data source: Nimbus Meteo Air Quality API'
+                  : 'Data source: Open-Meteo Air Quality API',
               style: context.textTheme.bodySmall?.copyWith(
                 fontStyle: FontStyle.italic,
                 color: context.theme.colorScheme.onSurfaceVariant,
@@ -676,9 +677,9 @@ class _AqiPageState extends State<AqiPage> {
     int maxBand = 1;
 
     // O3 bands (8-hour mean in µg/m³)
-    if (o3 > 240)
+    if (o3 > 240) {
       maxBand = 10;
-    else if (o3 > 213)
+    } else if (o3 > 213)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (o3 > 187)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -692,9 +693,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // NO2 bands (hourly mean in µg/m³)
-    if (no2 > 600)
+    if (no2 > 600) {
       maxBand = 10;
-    else if (no2 > 534)
+    } else if (no2 > 534)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (no2 > 467)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -708,9 +709,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // SO2 bands (15-min mean in µg/m³)
-    if (so2 > 1064)
+    if (so2 > 1064) {
       maxBand = 10;
-    else if (so2 > 887)
+    } else if (so2 > 887)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (so2 > 710)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -724,9 +725,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // PM2.5 bands (24-hour mean in µg/m³)
-    if (pm25 > 70)
+    if (pm25 > 70) {
       maxBand = 10;
-    else if (pm25 > 64)
+    } else if (pm25 > 64)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (pm25 > 58)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -740,9 +741,9 @@ class _AqiPageState extends State<AqiPage> {
       maxBand = maxBand > 4 ? maxBand : 4;
 
     // PM10 bands (24-hour mean in µg/m³)
-    if (pm10 > 100)
+    if (pm10 > 100) {
       maxBand = 10;
-    else if (pm10 > 91)
+    } else if (pm10 > 91)
       maxBand = maxBand > 9 ? maxBand : 9;
     else if (pm10 > 83)
       maxBand = maxBand > 8 ? maxBand : 8;
@@ -792,8 +793,10 @@ class _AqiPageState extends State<AqiPage> {
   }
 
   Map<String, dynamic> _getPollenLevel(dynamic value) {
-    final val = value.toDouble();
-    if (val < 20) {
+    final val = value is num ? value.toDouble() : 0.0;
+    if (val == 0) {
+      return {'label': 'None', 'color': Colors.grey};
+    } else if (val < 20) {
       return {'label': 'Low', 'color': const Color(0xFF50CCAA)};
     } else if (val < 50) {
       return {'label': 'Moderate', 'color': const Color(0xFFF0E641)};

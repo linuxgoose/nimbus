@@ -11,7 +11,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = 'com.yoshi.rain'
+    namespace = 'com.linuxgoose.nimbus'
     compileSdk = 36
     ndkVersion = '29.0.14206865'
 
@@ -37,7 +37,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = 'com.yoshi.rain'
+        applicationId = 'com.linuxgoose.nimbus'
         minSdkVersion flutter.minSdkVersion
         targetSdk = 34
         versionCode = flutter.versionCode

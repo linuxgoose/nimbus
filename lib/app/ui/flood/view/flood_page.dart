@@ -76,7 +76,7 @@ class _FloodPageState extends State<FloodPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('UK Flood Monitoring'),
+        title: Text('uk_flood_monitoring'.tr),
         leading: IconButton(
           onPressed: () => Get.back(),
           icon: const Icon(LucideIcons.arrowLeft, size: 20),
@@ -116,7 +116,7 @@ class _FloodPageState extends State<FloodPage> {
         ElevatedButton.icon(
           onPressed: _loadFloodData,
           icon: const Icon(LucideIcons.refreshCw),
-          label: const Text('Retry'),
+          label: Text('retry'.tr),
         ),
       ],
     ),
@@ -242,7 +242,7 @@ class _FloodPageState extends State<FloodPage> {
         _buildSummaryCard(),
         const SizedBox(height: 16),
         if (floodWarnings.isNotEmpty) ...[
-          _buildSectionHeader('Active Flood Warnings'),
+          _buildSectionHeader('active_flood_warnings'.tr),
           const SizedBox(height: 8),
           ...floodWarnings.map((warning) => _buildWarningCard(warning)),
           const SizedBox(height: 16),
@@ -287,7 +287,7 @@ class _FloodPageState extends State<FloodPage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Flood Summary',
+                  'flood_summary'.tr,
                   style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -295,12 +295,12 @@ class _FloodPageState extends State<FloodPage> {
               ],
             ),
             const SizedBox(height: 16),
-            _buildSummaryRow('Severe Warnings', severeCount, Colors.red),
-            _buildSummaryRow('Warnings', warningCount, Colors.orange),
-            _buildSummaryRow('Alerts', alertCount, Colors.yellow.shade700),
+            _buildSummaryRow('severe_warnings'.tr, severeCount, Colors.red),
+            _buildSummaryRow('warnings'.tr, warningCount, Colors.orange),
+            _buildSummaryRow('alerts'.tr, alertCount, Colors.yellow.shade700),
             const Divider(height: 24),
             Text(
-              '${monitoringStations.length} monitoring stations nearby',
+              '${monitoringStations.length} ${'monitoring_stations_nearby'.tr}',
               style: context.textTheme.bodyMedium?.copyWith(
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
