@@ -229,9 +229,53 @@ class WeatherApiService {
 
   static String _parseToIso(String? time, String? date) {
     if (time == null || date == null) return '';
-    // WeatherAPI returns time like "07:12 AM"
-    final parsed = DateTime.tryParse('$date $time');
-    return parsed?.toUtc().toIso8601String() ?? '';
+    try {
+      // WeatherAPI returns time like "07:12 AM" or "07:12 PM"
+      // Combine with date and parse
+      final cleanTime = time.trim();
+      final cleanDate = date.trim();
+
+      // Try to parse the combined string
+      final parsed = DateTime.tryParse('$cleanDate $cleanTime');
+      if (parsed != null) {
+        return parsed.toUtc().toIso8601String();
+      }
+
+      // If that fails, try manual parsing of AM/PM format
+      final timeRegex = RegExp(
+        r'(\d{1,2}):(\d{2})\s*(AM|PM)',
+        caseSensitive: false,
+      );
+      final match = timeRegex.firstMatch(cleanTime);
+      if (match != null) {
+        int hour = int.parse(match.group(1)!);
+        final minute = int.parse(match.group(2)!);
+        final period = match.group(3)!.toUpperCase();
+
+        // Convert to 24-hour format
+        if (period == 'PM' && hour != 12) {
+          hour += 12;
+        } else if (period == 'AM' && hour == 12) {
+          hour = 0;
+        }
+
+        final dateTime = DateTime.parse(cleanDate);
+        final combined = DateTime(
+          dateTime.year,
+          dateTime.month,
+          dateTime.day,
+          hour,
+          minute,
+        );
+        return combined.toUtc().toIso8601String();
+      }
+
+      debugPrint('⚠️ Failed to parse time: $time with date: $date');
+      return '';
+    } catch (e) {
+      debugPrint('❌ Error parsing time: $e');
+      return '';
+    }
   }
 
   static int? _mapConditionCodeToWmo(dynamic condition) {

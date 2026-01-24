@@ -95,29 +95,36 @@ class StatusWeather {
     String timeNight,
     Map<int, Map<bool, IconData>> icons,
   ) {
-    final currentTime = DateTime.parse(time);
-    final day = DateTime.parse(timeDay);
-    final night = DateTime.parse(timeNight);
+    try {
+      final currentTime = DateTime.parse(time);
+      final day = DateTime.parse(timeDay);
+      final night = DateTime.parse(timeNight);
 
-    final dayTime = DateTime(
-      day.year,
-      day.month,
-      day.day,
-      day.hour,
-      day.minute,
-    );
-    final nightTime = DateTime(
-      night.year,
-      night.month,
-      night.day,
-      night.hour,
-      night.minute,
-    );
+      final dayTime = DateTime(
+        day.year,
+        day.month,
+        day.day,
+        day.hour,
+        day.minute,
+      );
+      final nightTime = DateTime(
+        night.year,
+        night.month,
+        night.day,
+        night.hour,
+        night.minute,
+      );
 
-    final isDayTime =
-        currentTime.isAfter(dayTime) && currentTime.isBefore(nightTime);
+      final isDayTime =
+          currentTime.isAfter(dayTime) && currentTime.isBefore(nightTime);
 
-    return icons[weather]?[isDayTime] ?? LucideIcons.handHelping;
+      return icons[weather]?[isDayTime] ?? LucideIcons.handHelping;
+    } catch (e) {
+      debugPrint('❌ Error parsing time in _getIconBasedOnTime: $e');
+      debugPrint('   time: $time, timeDay: $timeDay, timeNight: $timeNight');
+      // Fallback to day icon if we can't parse times
+      return icons[weather]?[true] ?? LucideIcons.handHelping;
+    }
   }
 
   IconData _getDailyIcon(int? weather, {bool isDay = false}) {

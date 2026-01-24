@@ -42,57 +42,101 @@ class _MainPageState extends State<MainPage> {
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Obx(() {
-        if (weatherController.isLoading.isTrue) {
-          return _buildLoadingView();
+        try {
+          if (weatherController.isLoading.isTrue) {
+            return _buildLoadingView();
+          }
+
+          final mainWeather = weatherController.mainWeather;
+
+          // Check if mainWeather has any data
+          if (mainWeather.time == null || mainWeather.time!.isEmpty) {
+            debugPrint('⚠️ MainWeather has no time data');
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(LucideIcons.cloudOff, size: 48),
+                  const SizedBox(height: 16),
+                  const Text('No weather data available'),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: _handleRefresh,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final weatherCard = WeatherCard.fromJson(mainWeather.toJson());
+          final hourOfDay = weatherController.hourOfDay.value;
+          var dayOfNow = weatherController.dayOfNow.value;
+
+          // Ensure dayOfNow is within valid bounds for all arrays
+          final sunriseLen = mainWeather.sunrise?.length ?? 0;
+          final sunsetLen = mainWeather.sunset?.length ?? 0;
+          final tempMaxLen = mainWeather.temperature2MMax?.length ?? 0;
+          final tempMinLen = mainWeather.temperature2MMin?.length ?? 0;
+
+          if (sunriseLen == 0 ||
+              sunsetLen == 0 ||
+              tempMaxLen == 0 ||
+              tempMinLen == 0) {
+            debugPrint(
+              '⚠️ Missing daily data - sunrise: $sunriseLen, sunset: $sunsetLen, tempMax: $tempMaxLen, tempMin: $tempMinLen',
+            );
+            return _buildLoadingView();
+          }
+
+          final maxDayIndex =
+              [
+                sunriseLen,
+                sunsetLen,
+                tempMaxLen,
+                tempMinLen,
+              ].reduce((a, b) => a < b ? a : b) -
+              1;
+
+          if (maxDayIndex < 0 || dayOfNow > maxDayIndex || dayOfNow < 0) {
+            dayOfNow = 0;
+          }
+
+          final sunrise = mainWeather.sunrise?[dayOfNow];
+          final sunset = mainWeather.sunset?[dayOfNow];
+          final tempMax = mainWeather.temperature2MMax?[dayOfNow];
+          final tempMin = mainWeather.temperature2MMin?[dayOfNow];
+
+          return _buildMainView(
+            context,
+            mainWeather,
+            weatherCard,
+            hourOfDay,
+            dayOfNow,
+            sunrise ?? '',
+            sunset ?? '',
+            tempMax ?? 0.0,
+            tempMin ?? 0.0,
+          );
+        } catch (e, stackTrace) {
+          debugPrint('❌ Error building main page: $e');
+          debugPrint('Stack trace: $stackTrace');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(LucideIcons.circleAlert, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error loading weather: $e'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _handleRefresh,
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
         }
-
-        final mainWeather = weatherController.mainWeather;
-        final weatherCard = WeatherCard.fromJson(mainWeather.toJson());
-        final hourOfDay = weatherController.hourOfDay.value;
-        var dayOfNow = weatherController.dayOfNow.value;
-
-        // Ensure dayOfNow is within valid bounds for all arrays
-        final sunriseLen = mainWeather.sunrise?.length ?? 0;
-        final sunsetLen = mainWeather.sunset?.length ?? 0;
-        final tempMaxLen = mainWeather.temperature2MMax?.length ?? 0;
-        final tempMinLen = mainWeather.temperature2MMin?.length ?? 0;
-
-        if (sunriseLen == 0 ||
-            sunsetLen == 0 ||
-            tempMaxLen == 0 ||
-            tempMinLen == 0) {
-          return _buildLoadingView();
-        }
-
-        final maxDayIndex =
-            [
-              sunriseLen,
-              sunsetLen,
-              tempMaxLen,
-              tempMinLen,
-            ].reduce((a, b) => a < b ? a : b) -
-            1;
-
-        if (maxDayIndex < 0 || dayOfNow > maxDayIndex || dayOfNow < 0) {
-          dayOfNow = 0;
-        }
-
-        final sunrise = mainWeather.sunrise?[dayOfNow];
-        final sunset = mainWeather.sunset?[dayOfNow];
-        final tempMax = mainWeather.temperature2MMax?[dayOfNow];
-        final tempMin = mainWeather.temperature2MMin?[dayOfNow];
-
-        return _buildMainView(
-          context,
-          mainWeather,
-          weatherCard,
-          hourOfDay,
-          dayOfNow,
-          sunrise ?? '',
-          sunset ?? '',
-          tempMax ?? 0.0,
-          tempMin ?? 0.0,
-        );
       }),
     ),
   );
