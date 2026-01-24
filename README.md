@@ -169,15 +169,21 @@ With Nimbus, you can explore detailed weather data for your location and beyond.
 - **Temperature Preferences:** Choose Celsius or Fahrenheit display.
 - **Time Format Options:** Select 12-hour or 24-hour time display.
 - **Weather Provider Selection:** Dedicated settings section for weather data sources:
-  - Choose between Open-Meteo, MET Norway, or Hybrid mode
+  - Choose between Open-Meteo, MET Norway, Hybrid, WeatherAPI, PirateWeather, or Nimbus Meteo
   - Option to prefer MET Norway in Hybrid mode (override automatic region detection)
+  - API key configuration for WeatherAPI and PirateWeather
   - Toggle 6-hour rain forecast chart visibility
   - Located in Settings → Weather Provider
 - **Customisable Notifications:** Stay informed with configurable weather alerts with minimum severity filtering.
-- **Home Screen Widgets:** Quick weather access with customisable widgets including:
-  - Current weather widget with friendly summaries
-  - Hourly forecast widget (6 hours)
-  - Daily forecast widget (6 days)
+- **Home Screen Widgets:** Quick weather access with customisable home screen widgets (Android):
+  - **Current Weather Widget**: Displays current conditions with temperature, description, and key metrics
+  - **Detailed Forecast Widget**: Comprehensive current weather with friendly AI-generated summaries
+  - **Hourly Forecast Widget**: Journal-style widget showing next 4 hours with temperature, wind, and precipitation
+  - **Daily Forecast Widget**: 6-day outlook with high/low temps, weather icons, wind, and precipitation probability
+  - **Compact Widget**: Minimalist design with current time, date, location, temperature, and conditions
+  - Customizable background and text colors for all widgets
+  - Automatic updates every 15 minutes
+  - All widgets support light/dark themes
 - **Modern Material Design:** Beautiful, intuitive interface with dark mode support.
 
 ### Reliable Data Sources
@@ -190,6 +196,18 @@ Weather data is powered by **multiple sources** for optimal accuracy and coverag
   - Official weather alerts (MetAlerts) from national meteorological services
   - High-precision Nowcast with 2-hour precipitation forecasts (5-minute updates)
   - Specialized radar imagery for Nordic region
+- **[WeatherAPI](https://www.weatherapi.com/)**: Commercial weather API with comprehensive forecast data:
+  - Global coverage with high-quality weather data
+  - Up to 10-day forecasts (free tier)
+  - Air quality index and weather alerts included
+  - Requires free API key (available at weatherapi.com)
+  - Falls back to Open-Meteo for supplemental data
+- **[PirateWeather](https://pirateweather.net/)**: Free, open-source weather API compatible with Dark Sky:
+  - High-quality forecast data powered by open weather models
+  - Dark Sky API compatibility for seamless integration
+  - Community-driven with transparent data sources
+  - Requires free API key from pirateweather.net
+  - Supplemented by Open-Meteo for alerts and air quality
 - **Hybrid Mode**: Intelligent data source selection that automatically uses:
   - MET Norway for Nordic locations (54°N-72°N, 4°W-32°E)
   - Open-Meteo for global locations
@@ -213,9 +231,12 @@ Location search utilises [Open-Meteo's Geocoding API](https://open-meteo.com/en/
 Short-term rain forecasts utilize [Open-Meteo's Minutely API](https://open-meteo.com/en/docs) for high-resolution 15-minute precipitation data. UK flood monitoring data is provided by the [Environment Agency](https://environment.data.gov.uk/flood-monitoring/doc/reference) (England - warnings and monitoring stations), [SEPA](https://www2.sepa.org.uk/fwa/) (Scotland - warnings only), and [Natural Resources Wales](https://api.naturalresources.wales/) (Wales - warnings only). Northern Ireland's DfI Rivers does not currently provide a public API for automated flood data access.
 
 **Weather Provider Selection**: Choose your preferred weather data source in Settings → Weather Provider:
-- **Open-Meteo**: Global coverage (default)
-- **MET Norway**: Best for Nordic countries
+- **Open-Meteo**: Global coverage with free access (default)
+- **MET Norway**: Best for Nordic countries with official government data
 - **Hybrid**: Automatically selects the best source for your location
+- **WeatherAPI**: Commercial API with comprehensive forecasts (requires free API key)
+- **PirateWeather**: Open-source Dark Sky alternative (requires free API key)
+- **Nimbus Meteo**: Self-hosted Open-Meteo instance for enhanced privacy
 
 ### Get Nimbus
 
